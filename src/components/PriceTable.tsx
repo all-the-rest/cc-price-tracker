@@ -141,6 +141,7 @@ export default function PriceTable(props: PriceTableProps) {
     ((m.input ?? 0) === 0 && (m.output ?? 0) === 0 && (m.cachedRead ?? 0) === 0);
 
   const allowanceClass = (usage: number): string => {
+    if (usage / props.plan.priceMonthly <= 1) return "bg-red-800 border-red-800 text-red-100";
     const credits = props.plan.creditsMonthly;
     const low = props.plan.defaultAllowance;
     if (low !== null && usage < low) return "badge-error";

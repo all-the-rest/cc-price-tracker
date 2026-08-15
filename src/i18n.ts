@@ -49,7 +49,8 @@ export const i18n = {
     patternTooltip: "Muster: {input} Input · {cached} Cached · {output} Output Tokens/Anfrage",
     allowanceTooltip:
       "Inkl. Nutzung: ${usage} = {mult}× vom ${paid}/Monat, den du zahlst ({pct}% vom ${credit}-Guthaben)",
-    allowanceLegend: "unter {low} rot · {low} bis {credits} gelb · {credits} grün · darüber dunkelgrün",
+    allowanceLegend:
+      "Faktor ≤ 1× dunkelrot · unter {low} rot · {low} bis {credits} gelb · {credits} grün · darüber dunkelgrün",
     allowanceUnlimited: "unbegrenzt",
     allowanceFreeTip: "Kostenloses Modell: verbraucht keine Credits — Nutzung unbegrenzt.",
     contextTokens: "Tokens",
@@ -162,7 +163,8 @@ export const i18n = {
     patternTooltip: "Pattern: {input} input · {cached} cached · {output} output tokens/request",
     allowanceTooltip:
       "Included usage: ${usage} = {mult}× of the ${paid}/mo you pay ({pct}% of the ${credit} credit)",
-    allowanceLegend: "below {low} red · {low}–{credits} yellow · {credits} green · above dark green",
+    allowanceLegend:
+      "factor ≤ 1× dark red · below {low} red · {low}–{credits} yellow · {credits} green · above dark green",
     allowanceUnlimited: "unlimited",
     allowanceFreeTip: "Free model: consumes no credits — usage unlimited.",
     contextTokens: "tokens",
