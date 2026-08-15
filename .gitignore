@@ -5,3 +5,5 @@ dist/
 tests/.ssr/
 .idea/
 .run/
+test-results/
+playwright-report/
