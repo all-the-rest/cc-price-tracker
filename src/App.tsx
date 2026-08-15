@@ -38,6 +38,7 @@ function readParams(): {
   sort: SortState | null;
   basis: Basis | null;
   lang: "de" | "en" | null;
+  theme: "dark" | null;
   cap: CapId[] | null;
   matrixSearch: string | null;
   matrixCaps: CapId[] | null;
@@ -55,6 +56,7 @@ function readParams(): {
   const basis: Basis | null = b === "list" || b === "full" || b === "paid" ? b : null;
   const l = p.get("lang");
   const lang: "de" | "en" | null = l === "de" || l === "en" ? l : null;
+  const theme: "dark" | null = p.get("theme") === "dark" ? "dark" : null;
   const capRaw = p.get("cap");
   const cap: CapId[] | null =
     capRaw === null
@@ -69,13 +71,13 @@ function readParams(): {
       : Array.from(
           new Set(mcapRaw.split(",").filter((x): x is CapId => (CAP_IDS as readonly string[]).includes(x)))
         );
-  return { plan, sort, basis, lang, cap, matrixSearch, matrixCaps };
+  return { plan, sort, basis, lang, theme, cap, matrixSearch, matrixCaps };
 }
 const params = readParams();
 
 export default function App() {
   const [lang, setLang] = createSignal<Lang>(params.lang ?? defaultLang);
-  const [dark, setDark] = createSignal(storedTheme === "dark");
+  const [dark, setDark] = createSignal(params.theme === "dark" || storedTheme === "dark");
   const [planId, setPlanId] = createSignal<PlanId>(params.plan ?? "goat");
   const [basis, setBasis] = createSignal<Basis>(params.basis ?? defaultBasis);
   const [sort, setSort] = createSignal<SortState>(params.sort ?? { field: "cost", dir: 1 });
