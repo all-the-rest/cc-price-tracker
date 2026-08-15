@@ -39,6 +39,8 @@ function readParams(): {
   basis: Basis | null;
   lang: "de" | "en" | null;
   cap: CapId[] | null;
+  matrixSearch: string | null;
+  matrixCaps: CapId[] | null;
 } {
   const p =
     typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
@@ -58,7 +60,16 @@ function readParams(): {
     capRaw === null
       ? null
       : Array.from(new Set(capRaw.split(",").filter((x): x is CapId => (CAP_IDS as readonly string[]).includes(x))));
-  return { plan, sort, basis, lang, cap };
+  const ms = p.get("ms");
+  const matrixSearch: string | null = ms !== null ? ms : null;
+  const mcapRaw = p.get("mcap");
+  const matrixCaps: CapId[] | null =
+    mcapRaw === null
+      ? null
+      : Array.from(
+          new Set(mcapRaw.split(",").filter((x): x is CapId => (CAP_IDS as readonly string[]).includes(x)))
+        );
+  return { plan, sort, basis, lang, cap, matrixSearch, matrixCaps };
 }
 const params = readParams();
 
@@ -69,6 +80,8 @@ export default function App() {
   const [basis, setBasis] = createSignal<Basis>(params.basis ?? defaultBasis);
   const [sort, setSort] = createSignal<SortState>(params.sort ?? { field: "cost", dir: 1 });
   const [caps, setCaps] = createSignal<CapId[]>(params.cap ?? []);
+  const [matrixSearch, setMatrixSearch] = createSignal<string>(params.matrixSearch ?? "");
+  const [matrixCaps, setMatrixCaps] = createSignal<CapId[]>(params.matrixCaps ?? []);
 
   const t = () => i18n[lang()];
   const plan = () => data.plans.find((pl) => pl.id === planId()) ?? tabPlans[0] ?? data.plans[0]!;
@@ -107,6 +120,10 @@ export default function App() {
     else p.set("lang", lang());
     if (caps().length === 0) p.delete("cap");
     else p.set("cap", caps().join(","));
+    if (!matrixSearch()) p.delete("ms");
+    else p.set("ms", matrixSearch());
+    if (matrixCaps().length === 0) p.delete("mcap");
+    else p.set("mcap", matrixCaps().join(","));
     const qs = p.toString();
     const url = (qs ? window.location.pathname + "?" + qs : window.location.pathname) + window.location.hash;
     history.replaceState(null, "", url);
@@ -118,6 +135,8 @@ export default function App() {
     setBasis(defaultBasis);
     setLang(defaultLang);
     setCaps([]);
+    setMatrixSearch("");
+    setMatrixCaps([]);
     history.replaceState(null, "", window.location.pathname);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -143,7 +162,15 @@ export default function App() {
           caps={caps()}
           setCaps={setCaps}
         />
-        <PlanComparison models={data.models} plans={data.plans} t={t()} />
+        <PlanComparison
+          models={data.models}
+          plans={data.plans}
+          t={t()}
+          search={matrixSearch()}
+          setSearch={setMatrixSearch}
+          caps={matrixCaps()}
+          setCaps={setMatrixCaps}
+        />
         <ZdrNote t={t()} />
         <Changelog entries={changelogData.entries} t={t()} lang={lang()} />
         <Legal t={t()} />

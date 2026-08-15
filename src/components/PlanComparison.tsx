@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, Show } from "solid-js";
+import { createMemo, For, Show } from "solid-js";
 import type { Translation } from "../i18n";
 import type { Model, Plan } from "../types";
 import { modelOnPlan } from "../util";
@@ -9,20 +9,21 @@ interface PlanComparisonProps {
   models: Model[];
   plans: Plan[];
   t: Translation;
+  search: string;
+  setSearch: (s: string) => void;
+  caps: CapId[];
+  setCaps: (u: (prev: CapId[]) => CapId[]) => void;
 }
 
 export default function PlanComparison(props: PlanComparisonProps) {
-  const [search, setSearch] = createSignal("");
-  const [caps, setCaps] = createSignal<CapId[]>([]);
-
   const filtered = createMemo(() => {
-    const q = search().trim().toLowerCase();
+    const q = props.search.trim().toLowerCase();
     return [...props.models]
       .filter((m) => {
         if (q && !m.name.toLowerCase().includes(q)) return false;
-        if (caps().length > 0) {
+        if (props.caps.length > 0) {
           const s = capsOf(m);
-          if (!caps().some((cap) => s.has(cap))) return false;
+          if (!props.caps.some((cap) => s.has(cap))) return false;
         }
         return true;
       })
@@ -79,11 +80,11 @@ export default function PlanComparison(props: PlanComparisonProps) {
             type="search"
             class="input input-sm input-bordered w-56"
             placeholder={props.t.searchPlaceholder}
-            value={search()}
-            onInput={(e) => setSearch(e.currentTarget.value)}
+            value={props.search}
+            onInput={(e) => props.setSearch(e.currentTarget.value)}
           />
         </div>
-        <CapabilityFilter value={caps} setter={setCaps} t={props.t} />
+        <CapabilityFilter value={() => props.caps} setter={props.setCaps} t={props.t} />
         <div class="mt-4 w-full overflow-x-auto">
           <table class="table table-sm table-zebra table-pin-rows">
             <thead>
