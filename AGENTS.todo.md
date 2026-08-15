@@ -47,7 +47,9 @@ Status-Tracking für den Aufbau. Upstream: `reisi007/ocgo-price-tracker` (@ `260
 - [x] `pnpm test` (181), `pnpm typecheck`, `pnpm build` grün
 - [x] `pnpm preview` → 200; `/data/latest.json` antwortet
 - [x] `dist/` enthält `data/latest.json` + `CNAME`
-- [ ] Commit + Push `main`; CI grün; Pages-Custom-Domain + DNS prüfen
+- [x] Commit + Push `main`; CI grün; Pages-Custom-Domain + DNS prüfen (live: https://cc-pricing.all-the.rest)
+- [x] all-the.rest-Eintrag committet + gepusht (live)
+- [ ] **Follow-up:** GitHub-Actions Node-20-Deprecation-Warnung (checkout/setup-node/configure-pages/upload-artifact → neuere Versions) — optional
 - [x] Upstream-Sync-Workflow (manuell, change-by-change) in README dokumentiert
 
 ## Phase 6: Follow-up (separates Repo)
