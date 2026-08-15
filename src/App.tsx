@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal } from "solid-js";
+import { createEffect, createMemo, createSignal, Show } from "solid-js";
 import type { Basis, ChangelogData, PlanId, PriceData } from "./types";
 import { i18n, type Lang } from "./i18n";
 import { VALID_SORT, type SortState } from "./sort";
@@ -127,7 +127,9 @@ export default function App() {
       <Header lang={lang()} setLang={setLang} dark={dark()} setDark={setDark} onReset={resetAll} />
       <main class="mx-auto max-w-5xl px-4 py-8">
         <Hero t={t()} plan={plan()} modelCount={planModels().length} />
-        <ApiBanner plans={data.plans} t={t()} />
+        <Show when={planId() === "go"}>
+          <ApiBanner plans={data.plans} t={t()} />
+        </Show>
         <PlanTabs plans={tabPlans} active={planId()} onSelect={setPlanId} t={t()} />
         <PriceTable
           models={planModels()}
