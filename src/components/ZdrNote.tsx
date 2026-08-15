@@ -13,7 +13,7 @@ export default function ZdrNote(props: ZdrNoteProps) {
           <h3 class="font-bold">{props.t.zdrTitle}</h3>
           <p class="mt-1 text-sm leading-relaxed text-base-content/80">{props.t.zdrBody}</p>
           <div class="mt-2 flex flex-wrap items-center gap-2">
-            <span class="badge badge-success badge-sm">{props.t.zdrCmd}</span>
+            <span class="badge badge-neutral badge-sm font-mono">{props.t.zdrCmd}</span>
           </div>
         </div>
       </div>

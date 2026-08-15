@@ -1,15 +1,15 @@
 import { createEffect, createMemo, createSignal } from "solid-js";
 import type { Basis, ChangelogData, PlanId, PriceData } from "./types";
 import { i18n, type Lang } from "./i18n";
-import { VALID_SORT, type FreeSortState, type SortState } from "./sort";
+import { VALID_SORT, type SortState } from "./sort";
 import { CAP_IDS, type CapId } from "./capabilities";
 import { TAB_PLAN_IDS, isTabPlan } from "./plans";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
+import ApiBanner from "./components/ApiBanner";
 import PlanTabs from "./components/PlanTabs";
 import PriceTable from "./components/PriceTable";
 import PlanComparison from "./components/PlanComparison";
-import FreeModelsTable from "./components/FreeModelsTable";
 import ZdrNote from "./components/ZdrNote";
 import Changelog from "./components/Changelog";
 import Legal from "./components/Legal";
@@ -68,9 +68,7 @@ export default function App() {
   const [planId, setPlanId] = createSignal<PlanId>(params.plan ?? "goat");
   const [basis, setBasis] = createSignal<Basis>(params.basis ?? defaultBasis);
   const [sort, setSort] = createSignal<SortState>(params.sort ?? { field: "cost", dir: 1 });
-  const [freeSort, setFreeSort] = createSignal<FreeSortState>({ field: "availableFrom", dir: -1 });
   const [caps, setCaps] = createSignal<CapId[]>(params.cap ?? []);
-  const [freeCaps, setFreeCaps] = createSignal<CapId[]>([]);
 
   const t = () => i18n[lang()];
   const plan = () => data.plans.find((pl) => pl.id === planId()) ?? tabPlans[0] ?? data.plans[0]!;
@@ -117,11 +115,9 @@ export default function App() {
   const resetAll = () => {
     setPlanId("goat");
     setSort({ field: "cost", dir: 1 });
-    setFreeSort({ field: "availableFrom", dir: -1 });
     setBasis(defaultBasis);
     setLang(defaultLang);
     setCaps([]);
-    setFreeCaps([]);
     history.replaceState(null, "", window.location.pathname);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -131,6 +127,7 @@ export default function App() {
       <Header lang={lang()} setLang={setLang} dark={dark()} setDark={setDark} onReset={resetAll} />
       <main class="mx-auto max-w-5xl px-4 py-8">
         <Hero t={t()} plan={plan()} modelCount={planModels().length} />
+        <ApiBanner plans={data.plans} t={t()} />
         <PlanTabs plans={tabPlans} active={planId()} onSelect={setPlanId} t={t()} />
         <PriceTable
           models={planModels()}
@@ -144,16 +141,7 @@ export default function App() {
           caps={caps()}
           setCaps={setCaps}
         />
-        <PlanComparison plans={data.plans} models={data.models} activeId={planId()} t={t()} lang={lang()} />
-        <FreeModelsTable
-          freeModels={data.freeModels}
-          t={t()}
-          lang={lang()}
-          sort={freeSort()}
-          setSort={setFreeSort}
-          caps={freeCaps()}
-          setCaps={setFreeCaps}
-        />
+        <PlanComparison models={data.models} plans={data.plans} t={t()} />
         <ZdrNote t={t()} />
         <Changelog entries={changelogData.entries} t={t()} lang={lang()} />
         <Legal t={t()} />
