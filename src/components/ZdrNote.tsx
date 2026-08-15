@@ -8,7 +8,7 @@ export default function ZdrNote(props: ZdrNoteProps) {
   return (
     <section class="mt-10">
       <h2 class="text-lg font-bold tracking-tight">{props.t.headingZdr}</h2>
-      <div class="alert mt-2 max-w-3xl">
+      <div class="alert mt-2 w-full">
         <div>
           <h3 class="font-bold">{props.t.zdrTitle}</h3>
           <p class="mt-1 text-sm leading-relaxed text-base-content/80">{props.t.zdrBody}</p>
@@ -17,7 +17,7 @@ export default function ZdrNote(props: ZdrNoteProps) {
           </div>
         </div>
       </div>
-      <div class="alert alert-warning mt-2 max-w-3xl">
+      <div class="alert alert-warning mt-2 w-full">
         <div>
           <p class="text-sm leading-relaxed text-base-content/80">{props.t.zdrTrainingNote}</p>
         </div>
