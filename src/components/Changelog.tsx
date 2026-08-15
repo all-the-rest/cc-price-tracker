@@ -242,7 +242,9 @@ export default function Changelog(props: ChangelogProps) {
         <For each={props.entries}>
           {(entry) => (
             <div class="mt-4">
-              <h3 class="text-sm font-semibold text-base-content/70">{entry.date}</h3>
+              <h3 class="text-sm font-semibold text-base-content/70">
+                {fmtDateOnly(`${entry.date}T00:00:00.000Z`, props.lang)}
+              </h3>
               <Show when={entry.changes.length > 0} fallback={<p class="mt-1">{t().chgNone}</p>}>
                 <ul class="mt-1 space-y-1">
                   <For each={entry.changes}>

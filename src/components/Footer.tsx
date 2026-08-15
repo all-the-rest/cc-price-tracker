@@ -15,8 +15,8 @@ function scrollToSection(id: string, e: MouseEvent) {
 
 export default function Footer(props: FooterProps) {
   return (
-    <footer class="mx-auto max-w-5xl px-4 pb-10">
-      <div class="flex flex-col gap-2 border-t border-base-300 pt-4 text-xs text-base-content/40">
+    <footer class="mx-auto max-w-6xl px-4 pb-10">
+      <div class="flex flex-col gap-2 border-t border-base-300 pt-4 text-xs text-base-content/60">
         <p class="max-w-3xl">{props.t.metricNote}</p>
         <span>
           {props.t.fetchedAt}: {fmtDate(props.data.fetchedAt, props.lang)}
