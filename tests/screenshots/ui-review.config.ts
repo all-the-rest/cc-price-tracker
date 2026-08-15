@@ -11,6 +11,8 @@ export interface UiReviewRoute {
   states: UiReviewState[];
   viewports?: UiReviewViewport[];
   note?: string;
+  /** Static <title> of the app — guards against capturing a foreign server on the port. */
+  expectedTitle: string;
 }
 
 export interface UiReviewConfig {
@@ -27,12 +29,14 @@ export const uiReviewConfig: UiReviewConfig = {
       path: "/",
       states: ["filled"],
       note: "Statische Pricing-Seite (Daten beim Build importiert) — kein sinnvoller Empty-State.",
+      expectedTitle: "Price Tracking for Command Code",
     },
     {
       name: "home-de",
       path: "/?lang=de",
       states: ["filled"],
       note: "Deutsche Variante zur i18n-Kontrolle; Default-Lang ist en (Browser-Locale).",
+      expectedTitle: "Price Tracking for Command Code",
     },
   ],
 };

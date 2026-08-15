@@ -17,9 +17,12 @@ function viewportForProject(projectName: string): UiReviewViewport {
   return projectName === "Mobile Chrome" ? "mobile" : "desktop";
 }
 
-async function waitForAppSettled(page: Page): Promise<void> {
+async function waitForAppSettled(page: Page, expectedTitle: string): Promise<void> {
   await page.waitForLoadState("networkidle");
   await expect(page.getByRole("main")).toBeVisible();
+  // Guard: stellt sicher, dass wirklich diese App gerendert wird und nicht ein
+  // fremder Dev-Server, der zufällig den Port belegt (verhindert stille Fehl-Captures).
+  await expect(page).toHaveTitle(expectedTitle);
   await page.waitForTimeout(300);
 }
 
@@ -32,7 +35,7 @@ for (const route of routes) {
           `project ${testInfo.project.name} renders the ${viewportForProject(testInfo.project.name)} viewport`,
         );
         await page.goto(route.path);
-        await waitForAppSettled(page);
+        await waitForAppSettled(page, route.expectedTitle);
         // page.screenshot resolves relative paths against process.cwd(), not
         // the config outputDir — build the absolute path explicitly.
         const file = path.resolve(process.cwd(), uiReviewConfig.outputDir, state, viewport, `${route.name}.png`);

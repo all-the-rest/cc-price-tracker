@@ -64,7 +64,7 @@ export default function PriceTable(props: PriceTableProps) {
     return (
       <th class={right ? "text-right" : ""}>
         <button
-          class="inline-flex items-center gap-1 whitespace-nowrap"
+          class="inline-flex items-center gap-1 whitespace-nowrap py-1"
           classList={{ "text-primary": active }}
           aria-label={`${label} (${active ? (props.sort.dir === 1 ? "desc" : "asc") : "sort"})`}
           onClick={() => props.setSort((s) => ({ field, dir: s.field === field ? (s.dir === 1 ? -1 : 1) : 1 }))}
@@ -177,21 +177,21 @@ export default function PriceTable(props: PriceTableProps) {
         <div class="join">
           <button
             class="join-item btn btn-sm"
-            classList={{ "btn-active": props.basis === "list" }}
+            classList={{ "btn-active": props.basis === "list", "btn-primary": props.basis === "list" }}
             onClick={() => props.setBasis("list")}
           >
             {props.t.basisList}
           </button>
           <button
             class="join-item btn btn-sm"
-            classList={{ "btn-active": props.basis === "full" }}
+            classList={{ "btn-active": props.basis === "full", "btn-primary": props.basis === "full" }}
             onClick={() => props.setBasis("full")}
           >
             {props.t.basisFull}
           </button>
           <button
             class="join-item btn btn-sm"
-            classList={{ "btn-active": props.basis === "paid" }}
+            classList={{ "btn-active": props.basis === "paid", "btn-primary": props.basis === "paid" }}
             onClick={() => props.setBasis("paid")}
           >
             {props.t.basisPaid}

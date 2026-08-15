@@ -22,24 +22,29 @@ export default function Footer(props: FooterProps) {
           {props.t.fetchedAt}: {fmtDate(props.data.fetchedAt, props.lang)}
         </span>
         <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <a href={props.data.sourceUrl} target="_blank" rel="noopener noreferrer" class="underline">
+          <a href={props.data.sourceUrl} target="_blank" rel="noopener noreferrer" class="underline py-1">
             {props.t.sourceLink}
           </a>
-          <a href={props.data.capabilitiesSourceUrl} target="_blank" rel="noopener noreferrer" class="underline">
+          <a
+            href={props.data.capabilitiesSourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="underline py-1"
+          >
             {props.t.sourceCaps}
           </a>
           <a
             href="https://github.com/reisi007/cc-price-tracker/releases.atom"
             target="_blank"
             rel="noopener noreferrer"
-            class="underline"
+            class="underline py-1"
           >
             {props.t.rssFeed}
           </a>
-          <a href="#impressum" class="underline" onClick={(e) => scrollToSection("impressum", e)}>
+          <a href="#impressum" class="underline py-1" onClick={(e) => scrollToSection("impressum", e)}>
             {props.t.impressum}
           </a>
-          <a href="#datenschutz" class="underline" onClick={(e) => scrollToSection("datenschutz", e)}>
+          <a href="#datenschutz" class="underline py-1" onClick={(e) => scrollToSection("datenschutz", e)}>
             {props.t.datenschutz}
           </a>
         </div>
