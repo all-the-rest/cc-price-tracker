@@ -100,6 +100,8 @@ export const i18n = {
     zdrBody:
       "Übertragene Prompts und Antworten werden nicht für das Modelltraining verwendet; client-seitig lässt sich Zero Data Retention über CMD_ZDR=1 aktivieren.",
     zdrCmd: "CMD_ZDR=1",
+    zdrTrainingNote:
+      "Achtung: Es gibt Modelle, deren Input für das Modelltraining verwendet wird (z. B. Muse Spark 1.2 Contributor). Eine Aufschlüsselung pro Modell liegt derzeit nicht vor.",
     fetchedAt: "Stand",
     sourceLink: "Quelle",
     sourceCaps: "Quelle (models.dev)",
@@ -211,6 +213,8 @@ export const i18n = {
     zdrBody:
       "Prompts and responses are not used for model training; client-side, Zero Data Retention can be enabled via CMD_ZDR=1.",
     zdrCmd: "CMD_ZDR=1",
+    zdrTrainingNote:
+      "Note: there are models whose input is used for model training (e.g. Muse Spark 1.2 Contributor). No per-model breakdown is available.",
     fetchedAt: "As of",
     sourceLink: "Source",
     sourceCaps: "Source (models.dev)",

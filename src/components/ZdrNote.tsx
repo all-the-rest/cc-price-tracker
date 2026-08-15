@@ -17,6 +17,11 @@ export default function ZdrNote(props: ZdrNoteProps) {
           </div>
         </div>
       </div>
+      <div class="alert alert-warning mt-2 max-w-3xl">
+        <div>
+          <p class="text-sm leading-relaxed text-base-content/80">{props.t.zdrTrainingNote}</p>
+        </div>
+      </div>
     </section>
   );
 }
