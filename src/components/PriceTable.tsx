@@ -1,11 +1,12 @@
 import { createMemo, For, onCleanup, onMount, Show } from "solid-js";
 import type { Lang, Translation } from "../i18n";
-import type { Basis, Model, Plan } from "../types";
+import type { Basis, Model, Plan, PeakHours } from "../types";
 import { fmt, fmtContextWindow } from "../util";
 import { fieldPrice, formatTokens, requestCost, usageOf } from "../weighted";
 import { CapabilityBadges, CapabilityFilter, capsOf, type CapId } from "../capabilities";
 import { setupDragScroll } from "../dragscroll";
 import Tooltip from "./Tooltip";
+import PeakIndicator, { isPeakTier, isTierActive, peakRangesFor, usePeakClock } from "./PeakIndicator";
 import type { SortField, SortState } from "../sort";
 
 interface PriceTableProps {
@@ -19,10 +20,12 @@ interface PriceTableProps {
   setSort: (u: (prev: SortState) => SortState) => void;
   caps: CapId[];
   setCaps: (u: (prev: CapId[]) => CapId[]) => void;
+  peakHours?: PeakHours;
 }
 
 export default function PriceTable(props: PriceTableProps) {
   let scroller: HTMLDivElement | undefined;
+  const now = usePeakClock();
   onMount(() => {
     if (!scroller) return;
     const dispose = setupDragScroll(scroller);
@@ -117,20 +120,27 @@ export default function PriceTable(props: PriceTableProps) {
   };
 
   const modelCell = (m: Model) => {
-    const subline = [
-      m.tier,
+    const ranges = peakRangesFor(props.peakHours, m.name);
+    const peak = isPeakTier(m.tier) && ranges.length > 0;
+    const others = [
       m.provider,
       m.contextWindow !== null && m.contextWindow !== undefined
         ? `${fmtContextWindow(m.contextWindow)} ${props.t.contextTokens}`
         : null,
-    ]
-      .filter(Boolean)
-      .join(" · ");
+    ].filter(Boolean) as string[];
     return (
       <th class="font-medium">
         <span class="block">{m.name}</span>
-        <Show when={subline}>
-          <span class="block text-xs font-normal text-base-content/50">{subline}</span>
+        <Show when={peak}>
+          <span class="block text-xs font-normal text-base-content/50">
+            <PeakIndicator tier={m.tier ?? ""} ranges={ranges} now={now()} t={props.t} />
+          </span>
+        </Show>
+        <Show when={!peak && m.tier}>
+          <span class="block text-xs font-normal text-base-content/50">{m.tier}</span>
+        </Show>
+        <Show when={others.length > 0}>
+          <span class="block text-xs font-normal text-base-content/50">{others.join(" · ")}</span>
         </Show>
       </th>
     );
@@ -228,7 +238,14 @@ export default function PriceTable(props: PriceTableProps) {
           <tbody>
             <For each={sorted()}>
               {(m) => (
-                <tr>
+                <tr
+                  classList={{
+                    "opacity-50":
+                      isPeakTier(m.tier) &&
+                      peakRangesFor(props.peakHours, m.name).length > 0 &&
+                      !isTierActive(m.tier, now(), peakRangesFor(props.peakHours, m.name)),
+                  }}
+                >
                   {modelCell(m)}
                   <td>
                     <CapabilityBadges m={m} t={props.t} />

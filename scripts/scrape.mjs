@@ -214,40 +214,65 @@ export function mapAvailability(av) {
 
 const hasAnyAvailability = (av) => Object.values(mapAvailability(av)).some(Boolean);
 
+const isPeakTier = (tier) => /^(?:off[- ]?peak|peak)$/i.test(tier ?? "");
+
+/**
+ * Parst die Peak-Zeitfenster aus dem `windows`-String der `timeOfDay`-Struktur
+ * (z. B. "01–04 & 06–10 UTC" → [[1,4],[6,10]]). En-/Bis-Trennung per
+ * Bindestrich („–" oder „-"); mehrere Fenster per „&"/Leerzeichen. Ein
+ * unparsebares oder leeres Fenster bricht rot ab.
+ */
+export function parsePeakWindows(windows) {
+  if (typeof windows !== "string") {
+    throw new ScrapeError(`Peak-Zeitfenster fehlt (erwartet String, ${typeof windows})`);
+  }
+  const ranges = [];
+  const re = /(\d{1,2})\s*[–-]\s*(\d{1,2})/g;
+  let m;
+  while ((m = re.exec(windows)) !== null) {
+    const start = Number(m[1]);
+    const end = Number(m[2]);
+    if (start < 0 || start > 23 || end < 1 || end > 24 || start >= end) {
+      throw new ScrapeError(`Peak-Zeitfenster unparsebar: "${windows}"`);
+    }
+    ranges.push([start, end]);
+  }
+  if (ranges.length === 0) {
+    throw new ScrapeError(`keine gültigen Peak-Zeitfenster gefunden: "${windows}"`);
+  }
+  return ranges;
+}
+
 /**
  * Baut die Modelle aus den `rows` und reichert sie mit den Billing-Daten an
- * (JOIN über exakte `id` für `provider` und `allowances`).
+ * (JOIN über exakte `id` für `provider` und `allowances`). Modelle mit
+ * `timeOfDay` (DeepSeek V4) werden in zwei Zeilen aufgeteilt — eine
+ * Off-Peak- und eine Peak-Variante (eigene `tier`-Spalte, eigene Preise) —,
+ * analog zum OpenCode-Upstream. Liefert zusätzlich die `peakHours`-Map
+ * (Schlüssel: normalisierter Modellname → UTC-Bereiche).
  */
 export function buildModels(rows, billingModels, today = new Date().toISOString().slice(0, 10)) {
   const billingById = new Map((billingModels ?? []).map((b) => [b.id, b]));
   const models = [];
-  for (const row of rows ?? []) {
-    if (row.deprecated === true || !hasAnyAvailability(row.availability)) continue;
-    const billing = billingById.get(row.id);
-    const tiers = Array.isArray(row.tiers) ? row.tiers : [];
-    const rates = parseRates(tiers[0]?.rates);
-    const list = parseListRates(tiers);
-    const deal = toDeal(row);
-    // Abgelaufene Deals (expires < heute) verwerfen: der Listenpreis wird zum
-    // aktuellen Now-Preis (z. B. Qwen 3.7 Max, Deal endete 2026-06-22).
-    const expired = deal !== null && deal.expires !== null && deal.expires < today;
-    const tier = tiers.length > 1 ? tiers.map((t) => t.label).filter(Boolean).join(" / ") : null;
+  const peakHours = {};
+  const pushModel = (row, model) => {
+    const billing = billingById.get(model.id.replace(/-peak$/, ""));
     models.push({
-      id: row.id,
-      name: row.name,
+      id: model.id,
+      name: model.name,
       provider: billing?.provider ?? null,
       category: row.category ?? null,
-      tier,
+      tier: model.tier,
       contextWindow: typeof row.contextWindow === "number" ? row.contextWindow : null,
-      input: expired ? (list.input ?? rates.input) : rates.input,
-      output: expired ? (list.output ?? rates.output) : rates.output,
-      cachedRead: expired ? (list.cachedRead ?? rates.cachedRead) : rates.cachedRead,
-      cachedWrite: expired ? (list.cachedWrite ?? rates.cachedWrite) : rates.cachedWrite,
-      listInput: expired ? null : list.input,
-      listOutput: expired ? null : list.output,
-      listCachedRead: expired ? null : list.cachedRead,
-      listCachedWrite: expired ? null : list.cachedWrite,
-      deal: expired ? null : deal,
+      input: model.input,
+      output: model.output,
+      cachedRead: model.cachedRead,
+      cachedWrite: model.cachedWrite,
+      listInput: model.listInput ?? null,
+      listOutput: model.listOutput ?? null,
+      listCachedRead: model.listCachedRead ?? null,
+      listCachedWrite: model.listCachedWrite ?? null,
+      deal: model.deal ?? null,
       deprecated: false,
       availability: mapAvailability(row.availability),
       allowances: {
@@ -258,8 +283,64 @@ export function buildModels(rows, billingModels, today = new Date().toISOString(
       pattern: REQUEST_PATTERN,
       tip: typeof row.tip === "string" ? row.tip : null,
     });
+  };
+  for (const row of rows ?? []) {
+    if (row.deprecated === true || !hasAnyAvailability(row.availability)) continue;
+    const billing = billingById.get(row.id);
+    const tiers = Array.isArray(row.tiers) ? row.tiers : [];
+    const rates = parseRates(tiers[0]?.rates);
+    const list = parseListRates(tiers);
+    const deal = toDeal(row);
+    const tier = tiers.length > 1 ? tiers.map((t) => t.label).filter(Boolean).join(" / ") : null;
+    const tod = row.timeOfDay;
+    const hasPeak = !!(tod && tod.peak && tod.offPeak);
+
+    if (hasPeak) {
+      const num = (v) => (typeof v === "number" ? v : null);
+      // Peak-Pricing ersetzt laufende Deals → keine Deal-/Listenpreise.
+      pushModel(row, {
+        id: row.id,
+        name: row.name,
+        tier: "off-peak",
+        input: num(tod.offPeak.input) ?? rates.input,
+        output: num(tod.offPeak.output) ?? rates.output,
+        cachedRead: num(tod.offPeak.cacheRead) ?? rates.cachedRead,
+        cachedWrite: rates.cachedWrite,
+        deal: null,
+      });
+      pushModel(row, {
+        id: `${row.id}-peak`,
+        name: row.name,
+        tier: "peak",
+        input: num(tod.peak.input) ?? null,
+        output: num(tod.peak.output) ?? null,
+        cachedRead: num(tod.peak.cacheRead) ?? null,
+        cachedWrite: rates.cachedWrite,
+        deal: null,
+      });
+      peakHours[normalizeName(row.name)] = parsePeakWindows(tod.windows);
+      continue;
+    }
+
+    // Abgelaufene Deals (expires < heute) verwerfen: der Listenpreis wird zum
+    // aktuellen Now-Preis (z. B. Qwen 3.7 Max, Deal endete 2026-06-22).
+    const expired = deal !== null && deal.expires !== null && deal.expires < today;
+    pushModel(row, {
+      id: row.id,
+      name: row.name,
+      tier,
+      input: expired ? (list.input ?? rates.input) : rates.input,
+      output: expired ? (list.output ?? rates.output) : rates.output,
+      cachedRead: expired ? (list.cachedRead ?? rates.cachedRead) : rates.cachedRead,
+      cachedWrite: expired ? (list.cachedWrite ?? rates.cachedWrite) : rates.cachedWrite,
+      listInput: expired ? null : list.input,
+      listOutput: expired ? null : list.output,
+      listCachedRead: expired ? null : list.cachedRead,
+      listCachedWrite: expired ? null : list.cachedWrite,
+      deal: expired ? null : deal,
+    });
   }
-  return models;
+  return { models, peakHours };
 }
 
 /**
@@ -836,6 +917,7 @@ const SnapshotSchema = z.object({
   plans: z.array(PlanSchema).min(6),
   models: z.array(ModelSchema).min(1),
   freeModels: z.array(FreeModelSchema),
+  peakHours: z.record(z.string().min(1), z.array(z.tuple([z.number().int().min(0).max(23), z.number().int().min(1).max(24)]).refine(([s, e]) => s < e)).min(1)),
 });
 
 const PlanEventInfoSchema = z.object({
@@ -948,7 +1030,7 @@ async function main() {
 
     const { rows, billingModels } = extractCatalog(html);
     const capsById = new Map(rows.map((r) => [r.id, r.caps]));
-    const models = buildModels(rows, billingModels);
+    const { models, peakHours } = buildModels(rows, billingModels);
 
     const $ = cheerio.load(html);
     const plans = parsePlanTables($);
@@ -997,6 +1079,7 @@ async function main() {
       plans,
       models,
       freeModels,
+      peakHours,
     };
 
     validateSnapshot(latest);

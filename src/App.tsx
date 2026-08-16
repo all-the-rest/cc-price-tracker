@@ -163,6 +163,7 @@ export default function App() {
           setSort={setSort}
           caps={caps()}
           setCaps={setCaps}
+          peakHours={data.peakHours}
         />
         <PlanComparison
           models={data.models}

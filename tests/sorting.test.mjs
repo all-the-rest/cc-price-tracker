@@ -101,12 +101,12 @@ test("paid-Basis input asc (GOAT): Effektivpreis entscheidet, nicht der rohe Lis
   const mimo = models.find((m) => m.id === "mimo-v2.5");
   const flash = models.find((m) => m.id === "deepseek-v4-flash");
   assert.ok(mimo && flash, "MiMo V2.5 und DeepSeek V4 Flash sind im Datensatz");
-  assert.equal(mimo.input, flash.input, "rohe Input-Preise sind identisch (0.14)");
+  assert.ok(flash.input > mimo.input, "Flash hat höheren rohen Input-Preis (0.22 > 0.14)");
   const flashPaid = displayedValue(flash, "input", "paid", plan);
   const mimoPaid = displayedValue(mimo, "input", "paid", plan);
   assert.ok(
     flashPaid < mimoPaid,
-    "Effektivpreis (paid) von DeepSeek V4 Flash ist niedriger als der von MiMo V2.5"
+    "Effektivpreis (paid) von DeepSeek V4 Flash ist trotz höherem Listenpreis niedriger (höhere Allowance)"
   );
   const names = extractRowNames(
     ssr.renderPriceTable(models, plan, {

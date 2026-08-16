@@ -72,6 +72,9 @@ export interface ModelAllowances {
   pro: number | null;
 }
 
+/** UTC-Peak-Zeitfenster je Modell (Schlüssel: normalisierter Modellname). */
+export type PeakHours = Record<string, [number, number][]>;
+
 export interface Model {
   id: string;
   name: string;
@@ -114,6 +117,7 @@ export interface PriceData {
   plans: Plan[];
   models: Model[];
   freeModels: FreeModel[];
+  peakHours: PeakHours;
 }
 
 export type SupportedLocale = "en" | "de";

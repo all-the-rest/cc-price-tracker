@@ -10,6 +10,7 @@ import {
   extractArray,
   normalizeDate,
   buildModels,
+  parsePeakWindows,
   parsePlanTables,
   planApiAccessFromHtml,
   mapAvailability,
@@ -35,14 +36,27 @@ const goHtml = readFileSync(join(fixtures, "plans-go.html"), "utf8");
 
 const { rows, billingModels } = extractCatalog(pricingHtml);
 const today = "2026-08-15";
-const models = buildModels(rows, billingModels, today);
+const { models, peakHours } = buildModels(rows, billingModels, today);
 const $ = cheerio.load(pricingHtml);
 const plans = parsePlanTables($);
 
 test("extractCatalog: 58 rows + 54 Billing-Modelle aus der RSC-Payload", () => {
   assert.equal(rows.length, 58);
   assert.equal(billingModels.length, 54);
-  assert.equal(models.length, 56);
+  // 56 Modelle + 2 Peak-Splits (DeepSeek V4 Pro/Flash je off-peak + peak)
+  assert.equal(models.length, 58);
+});
+
+test("parsePeakWindows: parst UTC-Bereiche", () => {
+  assert.deepEqual(parsePeakWindows("01–04 & 06–10 UTC"), [[1, 4], [6, 10]]);
+  assert.deepEqual(parsePeakWindows("09-17 UTC"), [[9, 17]]);
+  assert.throws(() => parsePeakWindows(""));
+  assert.throws(() => parsePeakWindows("04-01 UTC"));
+});
+
+test("buildModels: peakHours-Map nach normalisiertem Namen", () => {
+  assert.deepEqual(peakHours["deepseekv4pro(latest)"], [[1, 4], [6, 10]]);
+  assert.deepEqual(peakHours["deepseekv4flash(latest)"], [[1, 4], [6, 10]]);
 });
 
 test("extractRscPayload: leere Seite wirft", () => {
@@ -53,20 +67,24 @@ test("extractArray: fehlender Marker wirft", () => {
   assert.throws(() => extractArray(extractRscPayload(pricingHtml), '"gibtsnicht"'));
 });
 
-test("buildModels: DeepSeek V4 Pro Deal was/now", () => {
-  const ds = models.find((m) => m.id === "deepseek-v4-pro");
-  assert.equal(ds.name, "DeepSeek V4 Pro (latest)");
-  assert.equal(ds.input, 0.435);
-  assert.equal(ds.output, 0.87);
-  assert.equal(ds.cachedRead, 0.003625);
-  assert.equal(ds.listInput, 1.74);
-  assert.equal(ds.listOutput, 3.48);
-  assert.equal(ds.listCachedRead, 0.0145);
-  assert.equal(ds.deal.id, "deepseek-v4-pro-4x-usage");
-  assert.equal(ds.deal.discountPercent, 75);
-  assert.equal(ds.deal.free, false);
-  assert.equal(ds.deal.expires, null);
-  assert.equal(ds.deal.revertNote, null);
+test("buildModels: DeepSeek V4 Pro Peak/Off-Peak Split (Deal ersetzt)", () => {
+  const off = models.find((m) => m.id === "deepseek-v4-pro");
+  assert.equal(off.name, "DeepSeek V4 Pro (latest)");
+  assert.equal(off.tier, "off-peak");
+  assert.equal(off.input, 0.66);
+  assert.equal(off.output, 1.98);
+  assert.equal(off.cachedRead, 0.022);
+  assert.equal(off.listInput, null);
+  assert.equal(off.deal, null);
+  assert.deepEqual(off.allowances, { goat: 20, pro: 30 });
+
+  const peak = models.find((m) => m.id === "deepseek-v4-pro-peak");
+  assert.equal(peak.name, "DeepSeek V4 Pro (latest)");
+  assert.equal(peak.tier, "peak");
+  assert.equal(peak.input, 1.32);
+  assert.equal(peak.output, 3.96);
+  assert.equal(peak.cachedRead, 0.044);
+  assert.equal(peak.deal, null);
 });
 
 test("buildModels: MiniMax M3 Deal was/now + Multi-Tier", () => {
@@ -318,8 +336,8 @@ test("computeModelChanges: model_added mit pricing + listPricing", () => {
   assert.equal(changes.length, 1);
   assert.equal(changes[0].type, "model_added");
   assert.equal(changes[0].model, "deepseek-v4-pro");
-  assert.deepEqual(changes[0].pricing, { input: 0.435, output: 0.87, cachedRead: 0.003625, cachedWrite: null });
-  assert.deepEqual(changes[0].listPricing, { input: 1.74, output: 3.48, cachedRead: 0.0145, cachedWrite: null });
+  assert.deepEqual(changes[0].pricing, { input: 0.66, output: 1.98, cachedRead: 0.022, cachedWrite: null });
+  assert.equal(changes[0].listPricing, null);
   // Modell ohne Deal → listPricing null
   const noDeal = models.find((m) => m.id === "grok-4.6");
   const changesNoDeal = computeModelChanges([], [noDeal]);
@@ -328,7 +346,7 @@ test("computeModelChanges: model_added mit pricing + listPricing", () => {
 
 test("computeModelChanges: price_changed + deal_changed + allowance_changed", () => {
   const glm = models.find((m) => m.id === "glm-5.2");
-  const ds = models.find((m) => m.id === "deepseek-v4-pro");
+  const ds = models.find((m) => m.id === "minimax-m3");
   const next = [
     { ...glm, input: 1.2, allowances: { goat: 55, pro: 80 } },
     { ...ds, deal: { ...ds.deal, discountPercent: 60 } },
@@ -337,7 +355,7 @@ test("computeModelChanges: price_changed + deal_changed + allowance_changed", ()
   assert.ok(changes.some((c) => c.type === "price_changed" && c.fields.includes("input")));
   assert.ok(
     changes.some(
-      (c) => c.type === "deal_changed" && c.from && c.from.discountPercent === 75 && c.to.discountPercent === 60
+      (c) => c.type === "deal_changed" && c.from && c.from.discountPercent === 50 && c.to.discountPercent === 60
     )
   );
   assert.ok(
@@ -434,6 +452,7 @@ test("validateSnapshot: vollständiger Snapshot aus den Fixtures ist valide", ()
     })),
     models,
     freeModels: buildFreeModels(rows, [], today),
+    peakHours,
   };
   assert.doesNotThrow(() => validateSnapshot(snap));
   const broken = { ...snap, models: [{ ...models[0], pattern: null }] };
