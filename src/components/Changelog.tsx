@@ -1,10 +1,9 @@
 import { For, Show } from "solid-js";
 import type { JSX } from "solid-js";
 import type { Lang, Translation } from "../i18n";
-import type { Change, ChangelogEntry, Deal, PlanPricing, PriceField, PricingType } from "../types";
+import type { Change, ChangelogEntry, PlanPricing, PriceField, PricingType } from "../types";
 import { fmt, fmtDateOnly, formatModelName } from "../util";
 import { capCount, fmtCaps } from "../capabilities";
-import { dealText } from "../deals";
 import { planLabel } from "../plans";
 import { formatTokens } from "../weighted";
 
@@ -19,8 +18,6 @@ const ALL_FIELDS: PriceField[] = ["input", "output", "cachedRead", "cachedWrite"
 
 const pricingSum = (p: PricingType): number =>
   (p.input ?? 0) + (p.output ?? 0) + (p.cachedRead ?? 0) + (p.cachedWrite ?? 0);
-
-const dealScore = (d: Deal | null): number => (d === null ? -1 : d.free ? 1000 : d.discountPercent);
 
 const planCost = (p: PlanPricing): number =>
   p.creditsMonthly ? p.priceMonthly / p.creditsMonthly : p.priceMonthly;
@@ -37,10 +34,17 @@ export default function Changelog(props: ChangelogProps) {
           ? t().colCachedRead
           : t().colCachedWrite;
 
+  const allowancesText = (p: PricingType): string => {
+    const parts = Object.entries(p.allowances)
+      .filter(([, v]) => typeof v === "number")
+      .map(([plan, v]) => `${planLabel(plan, t())} ${fmt(v as number)}`);
+    return parts.length ? ` @ ${parts.join(" / ")}` : "";
+  };
+
   const pricingString = (p: PricingType): string => {
     const parts = BASE_FIELDS.map((f) => `${fieldLabel(f)} ${fmt(p[f])}`);
     if (p.cachedWrite !== null) parts.push(`${fieldLabel("cachedWrite")} ${fmt(p.cachedWrite)}`);
-    return parts.join(" · ");
+    return parts.join(" · ") + allowancesText(p);
   };
 
   const pricingLine = (p: PricingType, changed: PriceField[], showWrite: boolean): JSX.Element => {
@@ -58,6 +62,7 @@ export default function Changelog(props: ChangelogProps) {
             )}
           </>
         ))}
+        {allowancesText(p) && <span class="opacity-70">{allowancesText(p)}</span>}
       </span>
     );
   };
@@ -93,12 +98,6 @@ export default function Changelog(props: ChangelogProps) {
         const diff = pricingSum(c.to) - pricingSum(c.from);
         if (diff > 1e-9) return <span class={`${base} badge-error`}>↑</span>;
         if (diff < -1e-9) return <span class={`${base} badge-success`}>↓</span>;
-        return <span class={`${base} badge-ghost`}>≈</span>;
-      }
-      case "deal_changed": {
-        const diff = dealScore(c.to) - dealScore(c.from);
-        if (diff > 0) return <span class={`${base} badge-success`}>↓</span>;
-        if (diff < 0) return <span class={`${base} badge-error`}>↑</span>;
         return <span class={`${base} badge-ghost`}>≈</span>;
       }
       case "allowance_changed": {
@@ -152,15 +151,6 @@ export default function Changelog(props: ChangelogProps) {
           </span>
         );
       }
-      case "deal_changed":
-        return (
-          <span>
-            {t()
-              .chgDealChanged.replace("{model}", c.model)
-              .replace("{from}", dealText(c.from, t()))
-              .replace("{to}", c.to ? dealText(c.to, t()) : t().dealEnded)}
-          </span>
-        );
       case "allowance_changed":
         return (
           <span>

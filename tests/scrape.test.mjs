@@ -336,7 +336,13 @@ test("computeModelChanges: model_added mit pricing + listPricing", () => {
   assert.equal(changes.length, 1);
   assert.equal(changes[0].type, "model_added");
   assert.equal(changes[0].model, "deepseek-v4-pro");
-  assert.deepEqual(changes[0].pricing, { input: 0.66, output: 1.98, cachedRead: 0.022, cachedWrite: null });
+  assert.deepEqual(changes[0].pricing, {
+    input: 0.66,
+    output: 1.98,
+    cachedRead: 0.022,
+    cachedWrite: null,
+    allowances: { goat: 20, pro: 30 },
+  });
   assert.equal(changes[0].listPricing, null);
   // Modell ohne Deal → listPricing null
   const noDeal = models.find((m) => m.id === "grok-4.6");
@@ -344,7 +350,7 @@ test("computeModelChanges: model_added mit pricing + listPricing", () => {
   assert.equal(changesNoDeal[0].listPricing, null);
 });
 
-test("computeModelChanges: price_changed + deal_changed + allowance_changed", () => {
+test("computeModelChanges: price_changed + allowance_changed (no deal_changed)", () => {
   const glm = models.find((m) => m.id === "glm-5.2");
   const ds = models.find((m) => m.id === "minimax-m3");
   const next = [
@@ -354,14 +360,12 @@ test("computeModelChanges: price_changed + deal_changed + allowance_changed", ()
   const changes = computeModelChanges([glm, ds], next);
   assert.ok(changes.some((c) => c.type === "price_changed" && c.fields.includes("input")));
   assert.ok(
-    changes.some(
-      (c) => c.type === "deal_changed" && c.from && c.from.discountPercent === 50 && c.to.discountPercent === 60
-    )
-  );
-  assert.ok(
     changes.some((c) => c.type === "allowance_changed" && c.plan === "goat" && c.from === 70 && c.to === 55)
   );
   assert.ok(!changes.some((c) => c.type === "allowance_changed" && c.plan === "pro"));
+  // Deal-Änderungen ohne Preisänderung erzeugen kein eigenes Event
+  assert.ok(!changes.some((c) => c.type === "deal_changed"));
+  assert.ok(!changes.some((c) => c.model === "minimax-m3"));
 });
 
 test("computeModelChanges: model_removed mit days aus firstSeen", () => {
@@ -469,8 +473,20 @@ test("validateChangelog: plan-aware Events sind valide", () => {
           {
             type: "model_added",
             model: "deepseek-v4-pro",
-            pricing: { input: 0.435, output: 0.87, cachedRead: 0.003625, cachedWrite: null },
-            listPricing: { input: 1.74, output: 3.48, cachedRead: 0.0145, cachedWrite: null },
+            pricing: {
+              input: 0.435,
+              output: 0.87,
+              cachedRead: 0.003625,
+              cachedWrite: null,
+              allowances: { goat: 20, pro: 30 },
+            },
+            listPricing: {
+              input: 1.74,
+              output: 3.48,
+              cachedRead: 0.0145,
+              cachedWrite: null,
+              allowances: { goat: null, pro: null },
+            },
           },
           {
             type: "model_removed",
@@ -480,22 +496,9 @@ test("validateChangelog: plan-aware Events sind valide", () => {
           {
             type: "price_changed",
             model: "glm-5.2",
-            from: { input: 1.4, output: 4.4, cachedRead: 0.26, cachedWrite: null },
-            to: { input: 1.2, output: 4.4, cachedRead: 0.26, cachedWrite: null },
+            from: { input: 1.4, output: 4.4, cachedRead: 0.26, cachedWrite: null, allowances: { goat: 70, pro: 80 } },
+            to: { input: 1.2, output: 4.4, cachedRead: 0.26, cachedWrite: null, allowances: { goat: 70, pro: 80 } },
             fields: ["input"],
-          },
-          {
-            type: "deal_changed",
-            model: "deepseek-v4-pro",
-            from: null,
-            to: {
-              id: "deepseek-v4-pro-4x-usage",
-              discountPercent: 75,
-              free: false,
-              expires: null,
-              endsWhen: null,
-              revertNote: null,
-            },
           },
           {
             type: "allowance_changed",

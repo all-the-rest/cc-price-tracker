@@ -624,6 +624,7 @@ const pricingOf = (m) => ({
   output: m.output,
   cachedRead: m.cachedRead,
   cachedWrite: m.cachedWrite,
+  allowances: m.allowances ?? { goat: null, pro: null },
 });
 
 const hasListPricing = (m) =>
@@ -636,21 +637,14 @@ const listPricingOfNullable = (m) =>
         output: m.listOutput,
         cachedRead: m.listCachedRead,
         cachedWrite: m.listCachedWrite,
+        allowances: { goat: null, pro: null },
       }
     : null;
 
-const listPricingEqual = (a, b) =>
-  ["listInput", "listOutput", "listCachedRead", "listCachedWrite"].every((f) => near(a[f], b[f]));
-
-const dealOf = (m) => m.deal ?? null;
-
-const dealEqual = (a, b) => JSON.stringify(dealOf(a)) === JSON.stringify(dealOf(b));
-
 /**
  * Modell-Diff: added/removed (mit `pricing` + `listPricing`), `price_changed`
- * (Now-Preise, Float-Toleranz), `deal_changed` (neuer/geänderter Deal oder
- * listRates; beendete Deals werden NICHT extra getrackt — das ist ein
- * price_changed), `allowance_changed` (goat/pro), `capabilities_changed`.
+ * (Now-Preise, Float-Toleranz; Deals sind im Preis enthalten und erzeugen
+ * kein eigenes Event), `allowance_changed` (goat/pro), `capabilities_changed`.
  */
 export function computeModelChanges(prevModels, nextModels, firstSeen = new Map(), today = "") {
   const prev = new Map(prevModels.map((m) => [modelKey(m), m]));
@@ -683,13 +677,6 @@ export function computeModelChanges(prevModels, nextModels, firstSeen = new Map(
     const fields = PRICE_FIELDS.filter((f) => !near(before[f], after[f]));
     if (fields.length > 0) {
       changes.push({ type: "price_changed", model: key, from: pricingOf(before), to: pricingOf(after), fields });
-    }
-
-    // Beendete Deals (deal → null) sind nur ein Preisunterschied und werden
-    // bereits via price_changed erfasst → kein eigenes deal_changed-Event.
-    const endingDeal = dealOf(before) !== null && dealOf(after) === null;
-    if ((!dealEqual(before, after) || !listPricingEqual(before, after)) && !endingDeal) {
-      changes.push({ type: "deal_changed", model: key, from: dealOf(before), to: dealOf(after) });
     }
 
     for (const plan of ["goat", "pro"]) {
@@ -829,11 +816,17 @@ const CapabilitiesSchema = z.object({
   toolCall: z.boolean(),
 });
 
+const ModelAllowancesSchema = z.object({
+  goat: z.number().nullable(),
+  pro: z.number().nullable(),
+});
+
 const PricingTypeSchema = z.object({
   input: z.number().nullable(),
   output: z.number().nullable(),
   cachedRead: z.number().nullable(),
   cachedWrite: z.number().nullable(),
+  allowances: ModelAllowancesSchema,
 });
 
 const DealSchema = z.object({
@@ -852,11 +845,6 @@ const ModelAvailabilitySchema = z.object({
   provider: z.boolean(),
   max: z.boolean(),
   team: z.boolean(),
-});
-
-const ModelAllowancesSchema = z.object({
-  goat: z.number().nullable(),
-  pro: z.number().nullable(),
 });
 
 const ModelSchema = z.object({
@@ -959,12 +947,6 @@ const ChangeSchema = z.discriminatedUnion("type", [
     from: PricingTypeSchema,
     to: PricingTypeSchema,
     fields: z.array(z.enum(["input", "output", "cachedRead", "cachedWrite"])).min(1),
-  }),
-  z.object({
-    type: z.literal("deal_changed"),
-    model: z.string().min(1),
-    from: DealSchema.nullable(),
-    to: DealSchema.nullable(),
   }),
   z.object({
     type: z.literal("allowance_changed"),
