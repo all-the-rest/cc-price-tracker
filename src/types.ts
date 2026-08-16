@@ -130,7 +130,7 @@ export type Change =
   | { type: "model_added"; model: string; pricing: PricingType; listPricing: PricingType | null }
   | { type: "model_removed"; model: string; days: number }
   | { type: "price_changed"; model: string; from: PricingType; to: PricingType; fields: PriceField[] }
-  | { type: "allowance_changed"; model: string; plan: string; from: number; to: number }
+  | { type: "allowance_changed"; model: string; plans: { plan: string; from: number; to: number }[] }
   | { type: "capabilities_changed"; model: string; from: Capabilities | null; to: Capabilities | null }
   | { type: "free_added"; model: string }
   | { type: "free_removed"; model: string; availableFrom: string; until: string }

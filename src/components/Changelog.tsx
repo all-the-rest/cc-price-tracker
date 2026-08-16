@@ -101,8 +101,10 @@ export default function Changelog(props: ChangelogProps) {
         return <span class={`${base} badge-ghost`}>≈</span>;
       }
       case "allowance_changed": {
-        if (c.to > c.from) return <span class={`${base} badge-success`}>↓</span>;
-        if (c.to < c.from) return <span class={`${base} badge-error`}>↑</span>;
+        const increased = c.plans.some((p) => p.to > p.from);
+        const decreased = c.plans.some((p) => p.to < p.from);
+        if (increased && !decreased) return <span class={`${base} badge-success`}>↓</span>;
+        if (decreased && !increased) return <span class={`${base} badge-error`}>↑</span>;
         return <span class={`${base} badge-ghost`}>≈</span>;
       }
       case "capabilities_changed": {
@@ -154,11 +156,17 @@ export default function Changelog(props: ChangelogProps) {
       case "allowance_changed":
         return (
           <span>
-            {t()
-              .chgAllowance.replace("{model}", c.model)
-              .replace("{plan}", planLabel(c.plan, t()))
-              .replace("{from}", fmt(c.from))
-              .replace("{to}", fmt(c.to))}
+            {t().chgAllowance.replace("{model}", c.model).replace("{plans}", "")}
+            <For each={c.plans}>
+              {(p, i) => (
+                <span>
+                  {i() > 0 ? ", " : " "}
+                  {planLabel(p.plan, t())}{" "}
+                  <strong class="font-bold">{fmt(p.from)}</strong> →{" "}
+                  <strong class="font-bold">{fmt(p.to)}</strong>
+                </span>
+              )}
+            </For>
           </span>
         );
       case "capabilities_changed":

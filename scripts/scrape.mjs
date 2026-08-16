@@ -679,11 +679,15 @@ export function computeModelChanges(prevModels, nextModels, firstSeen = new Map(
       changes.push({ type: "price_changed", model: key, from: pricingOf(before), to: pricingOf(after), fields });
     }
 
+    const planChanges = [];
     for (const plan of ["goat", "pro"]) {
       const from = before.allowances?.[plan] ?? null;
       const to = after.allowances?.[plan] ?? null;
       if (typeof from !== "number" || typeof to !== "number" || from === to) continue;
-      changes.push({ type: "allowance_changed", model: key, plan, from, to });
+      planChanges.push({ plan, from, to });
+    }
+    if (planChanges.length > 0) {
+      changes.push({ type: "allowance_changed", model: key, plans: planChanges });
     }
 
     if (!capabilitiesEqual(before.capabilities, after.capabilities)) {
@@ -951,9 +955,9 @@ const ChangeSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("allowance_changed"),
     model: z.string().min(1),
-    plan: z.string().min(1),
-    from: z.number(),
-    to: z.number(),
+    plans: z
+      .array(z.object({ plan: z.string(), from: z.number(), to: z.number() }))
+      .min(1),
   }),
   z.object({
     type: z.literal("capabilities_changed"),

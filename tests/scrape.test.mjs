@@ -360,12 +360,27 @@ test("computeModelChanges: price_changed + allowance_changed (no deal_changed)",
   const changes = computeModelChanges([glm, ds], next);
   assert.ok(changes.some((c) => c.type === "price_changed" && c.fields.includes("input")));
   assert.ok(
-    changes.some((c) => c.type === "allowance_changed" && c.plan === "goat" && c.from === 70 && c.to === 55)
+    changes.some(
+      (c) => c.type === "allowance_changed" && c.plans.some((p) => p.plan === "goat" && p.from === 70 && p.to === 55)
+    )
   );
-  assert.ok(!changes.some((c) => c.type === "allowance_changed" && c.plan === "pro"));
+  assert.ok(!changes.some((c) => c.type === "allowance_changed" && c.plans.some((p) => p.plan === "pro")));
   // Deal-Änderungen ohne Preisänderung erzeugen kein eigenes Event
   assert.ok(!changes.some((c) => c.type === "deal_changed"));
   assert.ok(!changes.some((c) => c.model === "minimax-m3"));
+});
+
+test("computeModelChanges: goat+pro Änderung wird zu EINEM allowance_changed (alle Pläne in einer Zeile)", () => {
+  const glm = models.find((m) => m.id === "glm-5.2");
+  const before = { ...glm, allowances: { goat: 70, pro: 80 } };
+  const after = { ...glm, allowances: { goat: 55, pro: 65 } };
+  const changes = computeModelChanges([before], [after]);
+  const ac = changes.filter((c) => c.type === "allowance_changed");
+  assert.equal(ac.length, 1);
+  assert.deepEqual(ac[0].plans, [
+    { plan: "goat", from: 70, to: 55 },
+    { plan: "pro", from: 80, to: 65 },
+  ]);
 });
 
 test("computeModelChanges: model_removed mit days aus firstSeen", () => {
@@ -416,11 +431,17 @@ test("buildChanges: identische Snapshots → keine Events; ohne Vorgänger → [
   assert.deepEqual(buildChanges(null, snap, today), []);
 });
 
-test("mergeChanges: Dedupe-Key enthält den Plan", () => {
-  const a = { type: "allowance_changed", model: "glm-5.2", plan: "goat", from: 70, to: 55 };
-  const b = { type: "allowance_changed", model: "glm-5.2", plan: "pro", from: 80, to: 70 };
-  const c = { type: "allowance_changed", model: "glm-5.2", plan: "goat", from: 55, to: 60 };
-  assert.deepEqual(mergeChanges([a, b], [c]), [c, b]);
+test("mergeChanges: allowance_changed wird pro Modell gemerged (alle Pläne in einem Event)", () => {
+  const a = {
+    type: "allowance_changed",
+    model: "glm-5.2",
+    plans: [
+      { plan: "goat", from: 70, to: 55 },
+      { plan: "pro", from: 80, to: 70 },
+    ],
+  };
+  const b = { type: "allowance_changed", model: "glm-5.2", plans: [{ plan: "goat", from: 55, to: 60 }] };
+  assert.deepEqual(mergeChanges([a], [b]), [b]);
   assert.deepEqual(mergeChanges([], [a]), [a]);
 });
 
@@ -503,9 +524,7 @@ test("validateChangelog: plan-aware Events sind valide", () => {
           {
             type: "allowance_changed",
             model: "glm-5.2",
-            plan: "goat",
-            from: 70,
-            to: 55,
+            plans: [{ plan: "goat", from: 70, to: 55 }],
           },
           {
             type: "capabilities_changed",
@@ -543,7 +562,7 @@ test("validateChangelog: ungültige Events brechen", () => {
   );
   assert.throws(() =>
     validateChangelog({
-      entries: [{ date: today, changes: [{ type: "allowance_changed", model: "x", plan: "goat", from: null, to: 55 }] }],
+      entries: [{ date: today, changes: [{ type: "allowance_changed", model: "x", plans: [{ plan: "goat", from: null, to: 55 }] }] }],
     })
   );
 });
