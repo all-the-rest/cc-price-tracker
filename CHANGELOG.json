@@ -1,1 +1,1 @@
-{"entries":[{"date":"2026-08-15","changes":[{"type":"text","lang":{"en":"Initial version","de":"Initialversion"}}]}]}
+{"entries":[{"date":"2026-08-16","changes":[{"type":"deal_changed","model":"deepseek-v4-pro","from":{"id":"deepseek-v4-pro-4x-usage","discountPercent":75,"free":false,"expires":null,"endsWhen":null,"revertNote":null},"to":{"id":"deepseek-v4-pro-4x-usage","discountPercent":75,"free":false,"expires":"2026-08-16","endsWhen":null,"revertNote":null}}]},{"date":"2026-08-15","changes":[{"type":"text","lang":{"en":"Initial version","de":"Initialversion"}}]}]}

@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-08-15T06:48:48.549Z",
+  "fetchedAt": "2026-08-16T17:23:41.608Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -844,7 +844,7 @@
         "id": "deepseek-v4-pro-4x-usage",
         "discountPercent": 75,
         "free": false,
-        "expires": null,
+        "expires": "2026-08-16",
         "endsWhen": null,
         "revertNote": null
       },
@@ -876,7 +876,7 @@
         "cachedRead": 50000,
         "output": 162
       },
-      "tip": "4× usage. 75% off — permanent. See the deals section above for details."
+      "tip": null
     },
     {
       "id": "deepseek-v4-flash",
