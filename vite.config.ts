@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import solid from "vite-plugin-solid";
 import tailwindcss from "@tailwindcss/vite";
+import Icons from "unplugin-icons/vite";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 function stampFetchedAt(raw: string): string {
@@ -14,6 +15,10 @@ export default defineConfig({
   plugins: [
     solid(),
     tailwindcss(),
+    Icons({
+      compiler: "solid",
+      defaultClass: "icon",
+    }),
     {
       name: "stamp-build-time",
       enforce: "pre",
