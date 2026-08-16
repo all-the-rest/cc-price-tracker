@@ -648,8 +648,9 @@ const dealEqual = (a, b) => JSON.stringify(dealOf(a)) === JSON.stringify(dealOf(
 
 /**
  * Modell-Diff: added/removed (mit `pricing` + `listPricing`), `price_changed`
- * (Now-Preise, Float-Toleranz), `deal_changed` (deal ODER listRates geändert),
- * `allowance_changed` (goat/pro), `capabilities_changed`.
+ * (Now-Preise, Float-Toleranz), `deal_changed` (neuer/geänderter Deal oder
+ * listRates; beendete Deals werden NICHT extra getrackt — das ist ein
+ * price_changed), `allowance_changed` (goat/pro), `capabilities_changed`.
  */
 export function computeModelChanges(prevModels, nextModels, firstSeen = new Map(), today = "") {
   const prev = new Map(prevModels.map((m) => [modelKey(m), m]));
@@ -684,7 +685,10 @@ export function computeModelChanges(prevModels, nextModels, firstSeen = new Map(
       changes.push({ type: "price_changed", model: key, from: pricingOf(before), to: pricingOf(after), fields });
     }
 
-    if (!dealEqual(before, after) || !listPricingEqual(before, after)) {
+    // Beendete Deals (deal → null) sind nur ein Preisunterschied und werden
+    // bereits via price_changed erfasst → kein eigenes deal_changed-Event.
+    const endingDeal = dealOf(before) !== null && dealOf(after) === null;
+    if ((!dealEqual(before, after) || !listPricingEqual(before, after)) && !endingDeal) {
       changes.push({ type: "deal_changed", model: key, from: dealOf(before), to: dealOf(after) });
     }
 
