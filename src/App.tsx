@@ -23,15 +23,13 @@ const changelogData = changelogJson as unknown as ChangelogData;
 
 const storedLang = typeof localStorage !== "undefined" ? localStorage.getItem("lang") : null;
 const storedTheme = typeof localStorage !== "undefined" ? localStorage.getItem("theme") : null;
-const storedBasis = typeof localStorage !== "undefined" ? localStorage.getItem("basis") : null;
 const browserLang =
   typeof navigator !== "undefined" ? (navigator.language || "").toLowerCase() : "";
 const defaultLang: Lang =
   storedLang === "de" || storedLang === "en" ? storedLang : browserLang.startsWith("de") ? "de" : "en";
 
 const tabPlans = data.plans.filter((p) => (TAB_PLAN_IDS as readonly string[]).includes(p.id));
-const defaultBasis: Basis =
-  storedBasis === "list" || storedBasis === "full" || storedBasis === "paid" ? storedBasis : "full";
+const defaultBasis: Basis = "full";
 
 function readParams(): {
   plan: PlanId | null;
@@ -103,10 +101,6 @@ export default function App() {
       el.removeAttribute("data-theme");
       localStorage.setItem("theme", "light");
     }
-  });
-
-  createEffect(() => {
-    localStorage.setItem("basis", basis());
   });
 
   createEffect(() => {
