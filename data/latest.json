@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-08-16T17:23:41.608Z",
+  "fetchedAt": "2026-08-16T18:10:53.891Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -830,24 +830,63 @@
       "name": "DeepSeek V4 Pro (latest)",
       "provider": "DeepSeek",
       "category": "opensource",
-      "tier": null,
+      "tier": "off-peak",
       "contextWindow": 1000000,
-      "input": 0.435,
-      "output": 0.87,
-      "cachedRead": 0.003625,
+      "input": 0.66,
+      "output": 1.98,
+      "cachedRead": 0.022,
       "cachedWrite": null,
-      "listInput": 1.74,
-      "listOutput": 3.48,
-      "listCachedRead": 0.0145,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
       "listCachedWrite": null,
-      "deal": {
-        "id": "deepseek-v4-pro-4x-usage",
-        "discountPercent": 75,
-        "free": false,
-        "expires": "2026-08-16",
-        "endsWhen": null,
-        "revertNote": null
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
       },
+      "allowances": {
+        "goat": 20,
+        "pro": 30
+      },
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "deepseek-v4-pro-peak",
+      "name": "DeepSeek V4 Pro (latest)",
+      "provider": "DeepSeek",
+      "category": "opensource",
+      "tier": "peak",
+      "contextWindow": 1000000,
+      "input": 1.32,
+      "output": 3.96,
+      "cachedRead": 0.044,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
       "deprecated": false,
       "availability": {
         "go": true,
@@ -883,11 +922,57 @@
       "name": "DeepSeek V4 Flash (latest)",
       "provider": "DeepSeek",
       "category": "opensource",
-      "tier": null,
+      "tier": "off-peak",
       "contextWindow": 1000000,
-      "input": 0.14,
-      "output": 0.28,
-      "cachedRead": 0.0028,
+      "input": 0.22,
+      "output": 0.66,
+      "cachedRead": 0.007,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 60,
+        "pro": 70
+      },
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "deepseek-v4-flash-peak",
+      "name": "DeepSeek V4 Flash (latest)",
+      "provider": "DeepSeek",
+      "category": "opensource",
+      "tier": "peak",
+      "contextWindow": 1000000,
+      "input": 0.44,
+      "output": 1.32,
+      "cachedRead": 0.014,
       "cachedWrite": null,
       "listInput": null,
       "listOutput": null,
@@ -2840,5 +2925,27 @@
       },
       "note": "Free while capacity lasts."
     }
-  ]
+  ],
+  "peakHours": {
+    "deepseekv4pro(latest)": [
+      [
+        1,
+        4
+      ],
+      [
+        6,
+        10
+      ]
+    ],
+    "deepseekv4flash(latest)": [
+      [
+        1,
+        4
+      ],
+      [
+        6,
+        10
+      ]
+    ]
+  }
 }
