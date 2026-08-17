@@ -1,4 +1,5 @@
 import type { Basis, Model, Plan, PriceField } from "./types";
+import { actualPaid } from "./fees";
 
 export type { PriceField };
 
@@ -26,7 +27,7 @@ export function fieldPrice(m: Model, f: PriceField, basis: Basis, plan: Plan): n
   if (basis === "list") return raw;
   const usage = usageOf(m, plan);
   if (usage <= 0) return null;
-  const factor = basis === "full" ? plan.creditsMonthly : plan.priceMonthly;
+  const factor = basis === "full" ? plan.creditsMonthly : actualPaid(plan);
   if (factor === null || factor === undefined) return null;
   return raw * (factor / usage);
 }

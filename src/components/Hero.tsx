@@ -1,5 +1,7 @@
 import type { Translation } from "../i18n";
 import type { Plan } from "../types";
+import { actualPaid, processingFee } from "../fees";
+import { fmt } from "../util";
 
 interface HeroProps {
   t: Translation;
@@ -17,8 +19,13 @@ export default function Hero(props: HeroProps) {
       <div class="stats stats-vertical mt-6 w-full shadow sm:stats-horizontal sm:w-auto">
         <div class="stat">
           <div class="stat-title">{props.t.statsPriceTitle}</div>
-          <div class="stat-value">${props.plan.priceMonthly}</div>
+          <div class="stat-value">${actualPaid(props.plan)}</div>
           <div class="stat-desc">{props.t.statsPriceDesc}</div>
+          <div class="stat-desc text-xs text-base-content/70">
+            {props.t.priceFeeNote
+              .replace("{fee}", fmt(processingFee(props.plan.priceMonthly)))
+              .replace("{advertised}", fmt(props.plan.priceMonthly))}
+          </div>
         </div>
         <div class="stat">
           <div class="stat-title">{props.t.statsCreditsTitle}</div>

@@ -3,6 +3,7 @@ import type { Lang, Translation } from "../i18n";
 import type { Basis, Model, Plan, PeakHours } from "../types";
 import { fmt, fmtContextWindow } from "../util";
 import { fieldPrice, formatTokens, requestCost, usageOf } from "../weighted";
+import { actualPaid } from "../fees";
 import { CapabilityBadges, CapabilityFilter, capsOf, type CapId } from "../capabilities";
 import { setupDragScroll } from "../dragscroll";
 import Tooltip from "./Tooltip";
@@ -34,6 +35,8 @@ export default function PriceTable(props: PriceTableProps) {
 
   const formatMult = (n: number) =>
     new Intl.NumberFormat(props.lang === "de" ? "de-DE" : "en-US", { maximumFractionDigits: 2 }).format(n);
+
+  const paid = actualPaid(props.plan);
 
   const sortValue = (m: Model, f: SortField): number | string | null => {
     if (f === "cost") return requestCost(m, props.basis, props.plan);
@@ -77,7 +80,7 @@ export default function PriceTable(props: PriceTableProps) {
             {(tip) => (
               <Tooltip tip={tip()} class="inline-flex">
                 <svg
-                  class="h-3.5 w-3.5 text-base-content/50"
+                  class="h-3.5 w-3.5 text-base-content/70"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -132,15 +135,15 @@ export default function PriceTable(props: PriceTableProps) {
       <th class="font-medium">
         <span class="block">{m.name}</span>
         <Show when={peak}>
-          <span class="block text-xs font-normal text-base-content/50">
+          <span class="block text-xs font-normal text-base-content/70">
             <PeakIndicator tier={m.tier ?? ""} ranges={ranges} now={now()} t={props.t} />
           </span>
         </Show>
         <Show when={!peak && m.tier}>
-          <span class="block text-xs font-normal text-base-content/50">{m.tier}</span>
+          <span class="block text-xs font-normal text-base-content/70">{m.tier}</span>
         </Show>
         <Show when={others.length > 0}>
-          <span class="block text-xs font-normal text-base-content/50">{others.join(" · ")}</span>
+          <span class="block text-xs font-normal text-base-content/70">{others.join(" · ")}</span>
         </Show>
       </th>
     );
@@ -151,25 +154,25 @@ export default function PriceTable(props: PriceTableProps) {
     ((m.input ?? 0) === 0 && (m.output ?? 0) === 0 && (m.cachedRead ?? 0) === 0);
 
   const allowanceClass = (usage: number): string => {
-    if (usage / props.plan.priceMonthly <= 1) return "bg-red-800 border-red-800 text-red-100";
+    if (usage / paid <= 1) return "badge-error";
     const credits = props.plan.creditsMonthly;
     const low = props.plan.defaultAllowance;
     if (low !== null && usage < low) return "badge-error";
     if (credits === null) return "badge-ghost";
     if (usage < credits) return "badge-warning";
     if (usage === credits) return "badge-success";
-    return "bg-green-800 border-green-800 text-green-100";
+    return "badge-success";
   };
 
   const allowanceTip = (usage: number): string => {
     const credits = props.plan.creditsMonthly;
     const low = props.plan.defaultAllowance;
-    const mult = usage / props.plan.priceMonthly;
+    const mult = usage / paid;
     const pct = credits !== null ? Math.round((usage / credits) * 100) : null;
     let tip = props.t.allowanceTooltip
       .replace("{usage}", String(usage))
       .replace("{mult}", formatMult(mult))
-      .replace("{paid}", String(props.plan.priceMonthly))
+      .replace("{paid}", String(paid))
       .replace("{pct}", pct === null ? "–" : String(pct))
       .replace("{credit}", credits === null ? "" : String(credits));
     if (low !== null && credits !== null) {
@@ -240,7 +243,7 @@ export default function PriceTable(props: PriceTableProps) {
               {(m) => (
                 <tr
                   classList={{
-                    "opacity-50":
+                    "opacity-70":
                       isPeakTier(m.tier) &&
                       peakRangesFor(props.peakHours, m.name).length > 0 &&
                       !isTierActive(m.tier, now(), peakRangesFor(props.peakHours, m.name)),
@@ -259,7 +262,7 @@ export default function PriceTable(props: PriceTableProps) {
                       when={!isFree(m)}
                       fallback={
                         <Tooltip tip={props.t.allowanceFreeTip} class="inline-block">
-                          <span class="badge badge-sm bg-green-800 border-green-800 text-green-100">
+                          <span class="badge badge-sm badge-success">
                             {props.t.allowanceUnlimited}
                           </span>
                         </Tooltip>
@@ -267,7 +270,7 @@ export default function PriceTable(props: PriceTableProps) {
                     >
                       <Tooltip tip={allowanceTip(usageOf(m, props.plan))} class="inline-block">
                         <span class={`badge badge-sm tabular-nums ${allowanceClass(usageOf(m, props.plan))}`}>
-                          ${usageOf(m, props.plan)} · {formatMult(usageOf(m, props.plan) / props.plan.priceMonthly)}×
+                          ${usageOf(m, props.plan)} · {formatMult(usageOf(m, props.plan) / paid)}×
                         </span>
                       </Tooltip>
                     </Show>

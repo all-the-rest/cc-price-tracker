@@ -106,7 +106,7 @@ export default function PlanComparison(props: PlanComparisonProps) {
                           {modelOnPlan(m, id) ? (
                             <span class="badge badge-success badge-sm">✓</span>
                           ) : (
-                            <span class="text-base-content/30">–</span>
+                            <span class="text-base-content/60">–</span>
                           )}
                         </td>
                       )}
@@ -116,7 +116,7 @@ export default function PlanComparison(props: PlanComparisonProps) {
               </For>
               <Show when={filtered().length === 0}>
                 <tr>
-                  <td colspan={TAB_PLAN_IDS.length + 1} class="py-4 text-center text-base-content/40">
+                  <td colspan={TAB_PLAN_IDS.length + 1} class="py-4 text-center text-base-content/60">
                     {props.t.chgNone}
                   </td>
                 </tr>

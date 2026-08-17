@@ -6,7 +6,7 @@ export const i18n = {
     subtitle:
       "Tägliche Preisübersicht für Command Code — pro Plan: Listenpreise, Effektivpreise aufs monatliche Guthaben oder auf das, was du wirklich zahlst.",
     intro:
-      "Einmal täglich von der offiziellen Command-Code-Dokumentation abgerufen. Preise pro 1M Tokens. Effektivpreise: volles Guthaben = Listenpreis × (monatliche Credits / inkl. Nutzung), was du zahlst = Listenpreis × (Monatspreis / inkl. Nutzung). Die Kosten pro Anfrage nutzen das in der Doku dokumentierte Anfragemuster des jeweiligen Modells (Details im Tooltip).",
+      "Einmal täglich von der offiziellen Command-Code-Dokumentation abgerufen. Preise pro 1M Tokens. Effektivpreise: volles Guthaben = Listenpreis × (monatliche Credits / inkl. Nutzung), was du zahlst = Listenpreis × (tatsächlich berechneter Monatspreis / inkl. Nutzung). Der tatsächlich berechnete Preis enthält die separate Stripe-Bearbeitungsgebühr (eigene Position bei Checkout, z. B. Go $1 → $1,36), die in den beworbenen Planpreisen nicht enthalten ist. Die Kosten pro Anfrage nutzen das in der Doku dokumentierte Anfragemuster des jeweiligen Modells (Details im Tooltip).",
     headingPrices: "Preise",
     headingComparison: "Modell-Verfügbarkeit je Plan",
     headingApi: "API-Zugang je Plan",
@@ -16,6 +16,7 @@ export const i18n = {
     headingChangelog: "Changelog",
     statsPriceTitle: "Preis/Monat",
     statsPriceDesc: "für den gewählten Plan",
+    priceFeeNote: "inkl. {fee} Stripe-Gebühr (beworben {advertised}/Monat)",
     statsCreditsTitle: "Credits/Monat",
     statsCreditsDesc: "im Plan enthalten",
     statsModelsTitle: "Modelle",
@@ -114,7 +115,7 @@ export const i18n = {
     footer:
       "Automatisch täglich aktualisiert. Kein offizielles Command-Code-Angebot. Command Code ist ein Produkt von commandcode.ai; diese Seite ist weder mit commandcode.ai verbunden noch von ihr gesponsert.",
     metricNote:
-      "Preisbasis: Listenpreis (aktuelle Now-Preise) · volles Guthaben = Listenpreis × (monatliche Credits / inkl. Nutzung) · was du zahlst = Listenpreis × (Monatspreis / inkl. Nutzung). Kosten pro Anfrage = Modellpreis × typisches Anfragemuster (~800 frische Input-, ~50.000 Cached-Read- und ~125–200 Output-Tokens — laut Command-Code-Doku; Input-Tokens: 5 % Input-Preis + 95 % Cached-Write-Preis, Cached: Cached-Read, Output: Output — Heuristik). Fehlt ein Cached-Write-Preis („–“), zählt er wie der Input-Preis.",
+      "Preisbasis: Listenpreis (aktuelle Now-Preise) · volles Guthaben = Listenpreis × (monatliche Credits / inkl. Nutzung) · was du zahlst = Listenpreis × (tatsächlich berechneter Monatspreis / inkl. Nutzung). Der tatsächlich berechnete Preis schließt die separate Stripe-Bearbeitungsgebühr ein (eigene Position bei Checkout, z. B. Go $1 → $1,36), die in den beworbenen Planpreisen fehlt. Kosten pro Anfrage = Modellpreis × typisches Anfragemuster (~800 frische Input-, ~50.000 Cached-Read- und ~125–200 Output-Tokens — laut Command-Code-Doku; Input-Tokens: 5 % Input-Preis + 95 % Cached-Write-Preis, Cached: Cached-Read, Output: Output — Heuristik). Fehlt ein Cached-Write-Preis („–“), zählt er wie der Input-Preis.",
   },
   en: {
     title: "Price Tracking for Command Code",
@@ -131,6 +132,7 @@ export const i18n = {
     headingChangelog: "Changelog",
     statsPriceTitle: "Price/month",
     statsPriceDesc: "for the selected plan",
+    priceFeeNote: "incl. {fee} Stripe fee (advertised {advertised}/mo)",
     statsCreditsTitle: "Credits/month",
     statsCreditsDesc: "included in the plan",
     statsModelsTitle: "Models",
