@@ -141,7 +141,7 @@ export default function App() {
     <div class="min-h-screen w-full bg-base-100 text-base-content">
       <Header lang={lang()} setLang={setLang} dark={dark()} setDark={setDark} onReset={resetAll} />
       <main class="mx-auto max-w-6xl px-4 py-8">
-        <Hero t={t()} plan={plan()} modelCount={planModels().length} />
+        <Hero t={t()} plan={plan()} modelCount={planModels().length} lang={lang()} />
         <Show when={planId() === "go"}>
           <ApiBanner plans={data.plans} t={t()} />
         </Show>
@@ -167,6 +167,7 @@ export default function App() {
           setSearch={setMatrixSearch}
           caps={matrixCaps()}
           setCaps={setMatrixCaps}
+          lang={lang()}
         />
         <ZdrNote t={t()} />
         <Changelog entries={changelogData.entries} t={t()} lang={lang()} />

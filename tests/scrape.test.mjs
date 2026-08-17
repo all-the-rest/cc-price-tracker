@@ -27,6 +27,7 @@ import {
   validateSnapshot,
   validateChangelog,
   modelKey,
+  validatePlanBaselines,
 } from "../scripts/scrape.mjs";
 
 const fixtures = join(dirname(fileURLToPath(import.meta.url)), "fixtures");
@@ -252,6 +253,26 @@ test("parsePlanTables: 6 Individual-Pläne mit Preisen/Credits/Requests/Limits",
   assert.equal(max20.requestEstimate, 370000);
   assert.equal(max20.limits.h5, 90);
   assert.equal(max20.limits.weekly, 180);
+});
+
+test("validatePlanBaselines: bekannte Pläne passieren, neuer Plan ohne scrapebare Baseline schlägt fehl", () => {
+  const baselines = {
+    go: { creditsIncluded: 10, advertisedPrice: 1 },
+    goat: { creditsIncluded: 70, advertisedPrice: 10 },
+    pro: { creditsIncluded: 80, advertisedPrice: 20 },
+    provider: null,
+    max10: { creditsIncluded: 150, advertisedPrice: 100 },
+    max20: { creditsIncluded: 300, advertisedPrice: 200 },
+  };
+  assert.deepEqual(validatePlanBaselines(plans, baselines), plans);
+
+  const scrapable = { id: "max40", name: "Max 40×", priceMonthly: 400, creditsMonthly: 600 };
+  const nonScrapable = { id: "ultra", name: "Ultra", priceMonthly: 500, creditsMonthly: null };
+  assert.deepEqual(validatePlanBaselines([scrapable], baselines), [scrapable]);
+  assert.throws(
+    () => validatePlanBaselines([nonScrapable], baselines),
+    /neuer Plan "ultra".*Baseline nicht scrapbar/
+  );
 });
 
 test("toCapabilities: filtert auf gültige Modalitäten", () => {

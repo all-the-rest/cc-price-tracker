@@ -1,9 +1,11 @@
 import { createMemo, For, Show } from "solid-js";
-import type { Translation } from "../i18n";
+import type { Lang, Translation } from "../i18n";
 import type { Model, Plan } from "../types";
-import { modelOnPlan } from "../util";
+import { actualPaid } from "../fees";
+import { fmt, formatMult, modelOnPlan } from "../util";
 import { TAB_PLAN_IDS, planLabel } from "../plans";
 import { CapabilityFilter, capsOf, type CapId } from "../capabilities";
+import { planValue } from "../weighted";
 
 interface PlanComparisonProps {
   models: Model[];
@@ -13,6 +15,7 @@ interface PlanComparisonProps {
   setSearch: (s: string) => void;
   caps: CapId[];
   setCaps: (u: (prev: CapId[]) => CapId[]) => void;
+  lang: Lang;
 }
 
 export default function PlanComparison(props: PlanComparisonProps) {
@@ -68,6 +71,53 @@ export default function PlanComparison(props: PlanComparisonProps) {
                   </tr>
                 )}
               </For>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="mt-10">
+        <h2 class="text-lg font-bold tracking-tight">{props.t.headingValue}</h2>
+        <div class="mt-4 w-full overflow-x-auto">
+          <table class="table table-sm table-zebra">
+            <thead>
+              <tr>
+                <th>{props.t.colPlan}</th>
+                <For each={TAB_PLAN_IDS}>{(id) => <th class="text-center">{planLabel(id, props.t)}</th>}</For>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{props.t.cmpCredits}</td>
+                <For each={TAB_PLAN_IDS}>
+                  {(id) => {
+                    const plan = props.plans.find((p) => p.id === id);
+                    return <td class="text-center">{plan?.creditsMonthly ?? props.t.noValue}</td>;
+                  }}
+                </For>
+              </tr>
+              <tr>
+                <td>{props.t.cmpActualPaid}</td>
+                <For each={TAB_PLAN_IDS}>
+                  {(id) => {
+                    const plan = props.plans.find((p) => p.id === id);
+                    return <td class="text-center">{plan ? fmt(actualPaid(plan)) : props.t.noValue}</td>;
+                  }}
+                </For>
+              </tr>
+              <tr>
+                <td>{props.t.cmpValue}</td>
+                <For each={TAB_PLAN_IDS}>
+                  {(id) => {
+                    const plan = props.plans.find((p) => p.id === id);
+                    return (
+                      <td class="text-center">
+                        {plan && planValue(plan) !== null ? `${formatMult(planValue(plan)!, props.lang)}×` : props.t.noValue}
+                      </td>
+                    );
+                  }}
+                </For>
+              </tr>
             </tbody>
           </table>
         </div>

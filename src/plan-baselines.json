@@ -1,0 +1,8 @@
+{
+  "go": { "creditsIncluded": 10, "advertisedPrice": 1 },
+  "goat": { "creditsIncluded": 70, "advertisedPrice": 10 },
+  "pro": { "creditsIncluded": 80, "advertisedPrice": 20 },
+  "provider": null,
+  "max10": { "creditsIncluded": 150, "advertisedPrice": 100 },
+  "max20": { "creditsIncluded": 300, "advertisedPrice": 200 }
+}

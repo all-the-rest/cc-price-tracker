@@ -43,6 +43,8 @@ const PLAN_NAMES = {
 // Dokumentierte Regel für Modelle ohne eigenen Eintrag (pro Plan).
 const DEFAULT_ALLOWANCES = { goat: 20, pro: 30 };
 
+const PLAN_BASELINES_PATH = join(ROOT, "src", "plan-baselines.json");
+
 const AVAILABILITY_KEYS = {
   "individual-go": "go",
   "individual-goat": "goat",
@@ -450,6 +452,49 @@ export function parsePlanTables($) {
   if (plans.length < 6) {
     throw new ScrapeError(
       `unerwartete Plan-Struktur: ${plans.length} Pläne statt 6 geparst (${plans.map((p) => p.id).join(", ")})`
+    );
+  }
+  return plans;
+}
+
+/**
+ * Liest die persistierte Kredit-Baseline-Config (src/plan-baselines.json) —
+ * die beworbene „credits included" / „advertised price"-Schwelle je Plan.
+ * `null` = unbegrenzt (Provider). Unbekannte Struktur → rot.
+ */
+export function loadPlanBaselines(file = PLAN_BASELINES_PATH) {
+  try {
+    const raw = JSON.parse(readFileSync(file, "utf8"));
+    for (const [id, p] of Object.entries(raw)) {
+      if (p !== null && (typeof p?.creditsIncluded !== "number" || typeof p?.advertisedPrice !== "number")) {
+        throw new Error(`Eintrag "${id}" ungültig (erwartet { creditsIncluded, advertisedPrice } oder null)`);
+      }
+    }
+    return raw;
+  } catch (err) {
+    throw new ScrapeError(
+      `Plan-Baseline-Config nicht lesbar (${PLAN_BASELINES_PATH}): ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+}
+
+/**
+ * Stellt sicher, dass zu jedem geparsten Plan eine Baseline existiert: entweder
+ * in der persistierten Config oder aus den gescrapten Preisen ableitbar.
+ * Ein neuer Plan (nicht in der Config) schlägt rot fehl, wenn seine Baseline
+ * (Credits oder Preis) nicht gescrapt werden kann.
+ */
+export function validatePlanBaselines(plans, baselines = loadPlanBaselines()) {
+  for (const plan of plans) {
+    const configured = baselines[plan.id];
+    if (configured !== undefined) continue;
+    if (plan.creditsMonthly === null || plan.priceMonthly === null) {
+      throw new ScrapeError(
+        `neuer Plan "${plan.id}" (${plan.name}): Baseline nicht scrapbar (Credits oder Preis fehlen) — in src/plan-baselines.json aufnehmen`
+      );
+    }
+    console.error(
+      `[scrape] Warnung: neuer Plan "${plan.id}" (${plan.name}): Baseline aus gescrapten Preisen abgeleitet (${plan.creditsMonthly}/${plan.priceMonthly})`
     );
   }
   return plans;
@@ -1023,7 +1068,7 @@ async function main() {
     const { models, peakHours } = buildModels(rows, billingModels);
 
     const $ = cheerio.load(html);
-    const plans = parsePlanTables($);
+    const plans = validatePlanBaselines(parsePlanTables($));
     const apiAccess = await fetchApiAccess();
     for (const plan of plans) {
       const acc = apiAccess[plan.id];

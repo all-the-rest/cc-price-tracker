@@ -73,6 +73,12 @@ pnpm typecheck        # nur tsc --noEmit
 - **Effektivpreis-Berechnung (UI, `weighted.ts`):** `usage = model.allowances[plan] ?? plan.defaultAllowance ?? plan.creditsMonthly`;
   `full = list × plan.creditsMonthly/usage`, `paid = list × plan.priceMonthly/usage`. Go/Max haben keine Allowances →
   `usage = creditsMonthly` (full = 1×, paid = price/credits).
+- **Plan-Wert / grüne Schwelle (`weighted.ts` `planValue`):** aus der persistierten Config `src/plan-baselines.json`
+  („credits included" ÷ „advertised price", vgl. commandcode.ai/pricing). Die beworbene Baseline enthält die
+  Stripe-Gebühr NICHT; der Modell-Faktor (`usage ÷ actualPaid`) zählt sie aber ein → Modelle am Credit-Baseline-Punkt
+  liegen unter der grünen Schwelle (Angebot schlechter als beworben). `null` = unbegrenzt (Provider) → dunkelgrün.
+  Fällt für nicht-configurierte Pläne auf `creditsMonthly ÷ priceMonthly` zurück. `defaultAllowance`/`planValue`
+  steuern nicht mehr die Farbklassen.
 - `input/output/cachedRead/cachedWrite` = **Deal-Now**-Preise (was man zahlt); `list*` = Was-Preise (nur bei Deals,
   sonst null). `rates`/`listRates` aus `tiers[0]`; `listRates` kann String-Referenz sein → null.
 - `deal.expires` ist `YYYY-MM-DD` (normalisiert), `endsWhen` freier Text (z. B. „while capacity lasts").
@@ -89,6 +95,9 @@ pnpm typecheck        # nur tsc --noEmit
   `"models":[…]` per Klammer-Tiefenscan (`extractArray`) extrahieren. Unbekannte/changed Struktur → `process.exit(1)`.
 - **Plan-Tabellen** über Header-Zeile identifizieren („Price/mo" + „Credits/mo"; „5-hour limit" + „Weekly limit") —
   nicht nth-child. `~75K requests` → 75000; `Pay as you go` → `creditsMonthly: null`.
+- **Baseline-Validierung:** `validatePlanBaselines` prüft je Plan, dass eine Baseline existiert (persistierte Config
+  `src/plan-baselines.json` oder aus gescrapten Preisen ableitbar). Neuer Plan (nicht in Config) mit nicht scrapbarer
+  Baseline (Credits oder Preis fehlen) → `process.exit(1)`.
 - **API-Zugang:** pro Plan-Seite `only plan without API access` → `apiAccess: false` (Go); sonst true. HTTP-Fehler → rot.
 - **Deals/Preise:** `rates` = Now, `listRates` = Was. `price_changed` bei Now-Änderung, `deal_changed` bei
   deal/listRates-Änderung. Float-Toleranz 1e-9. `expires` auf `YYYY-MM-DD` normalisieren.

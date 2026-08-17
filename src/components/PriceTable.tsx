@@ -2,13 +2,14 @@ import { createMemo, For, onCleanup, onMount, Show } from "solid-js";
 import type { Lang, Translation } from "../i18n";
 import type { Basis, Model, Plan, PeakHours } from "../types";
 import { fmt, fmtContextWindow } from "../util";
-import { fieldPrice, formatTokens, requestCost, usageOf } from "../weighted";
+import { fieldPrice, formatTokens, planValue, requestCost, requestsPerMonth, usageOf } from "../weighted";
 import { actualPaid } from "../fees";
 import { CapabilityBadges, CapabilityFilter, capsOf, type CapId } from "../capabilities";
 import { setupDragScroll } from "../dragscroll";
 import Tooltip from "./Tooltip";
 import PeakIndicator, { isPeakTier, isTierActive, peakRangesFor, usePeakClock } from "./PeakIndicator";
 import type { SortField, SortState } from "../sort";
+import { formatRequests } from "../util";
 
 interface PriceTableProps {
   models: Model[];
@@ -36,10 +37,11 @@ export default function PriceTable(props: PriceTableProps) {
   const formatMult = (n: number) =>
     new Intl.NumberFormat(props.lang === "de" ? "de-DE" : "en-US", { maximumFractionDigits: 2 }).format(n);
 
-  const paid = actualPaid(props.plan);
+  const paid = createMemo(() => actualPaid(props.plan));
 
   const sortValue = (m: Model, f: SortField): number | string | null => {
     if (f === "cost") return requestCost(m, props.basis, props.plan);
+    if (f === "requests") return requestsPerMonth(m, props.basis, props.plan);
     if (f === "allowance") return usageOf(m, props.plan);
     if (f === "name") return m.name.toLowerCase();
     return fieldPrice(m, f, props.basis, props.plan);
@@ -154,29 +156,29 @@ export default function PriceTable(props: PriceTableProps) {
     ((m.input ?? 0) === 0 && (m.output ?? 0) === 0 && (m.cachedRead ?? 0) === 0);
 
   const allowanceClass = (usage: number): string => {
-    if (usage / paid <= 1) return "badge-error";
-    const credits = props.plan.creditsMonthly;
-    const low = props.plan.defaultAllowance;
-    if (low !== null && usage < low) return "badge-error";
-    if (credits === null) return "badge-ghost";
-    if (usage < credits) return "badge-warning";
-    if (usage === credits) return "badge-success";
+    const mult = usage / paid();
+    const green = planValue(props.plan);
+    if (mult < 1) return "badge-error";
+    if (mult < 1.5) return "bg-error/20 text-error border border-error";
+    if (green === null) return "badge-success";
+    if (mult < green - 1e-6) return "badge-warning";
+    if (mult <= green + 1e-6) return "bg-success/20 text-success border border-success";
     return "badge-success";
   };
 
   const allowanceTip = (usage: number): string => {
     const credits = props.plan.creditsMonthly;
-    const low = props.plan.defaultAllowance;
-    const mult = usage / paid;
+    const mult = usage / paid();
     const pct = credits !== null ? Math.round((usage / credits) * 100) : null;
+    const green = planValue(props.plan);
     let tip = props.t.allowanceTooltip
       .replace("{usage}", String(usage))
       .replace("{mult}", formatMult(mult))
-      .replace("{paid}", String(paid))
+      .replace("{paid}", formatMult(paid()))
       .replace("{pct}", pct === null ? "–" : String(pct))
       .replace("{credit}", credits === null ? "" : String(credits));
-    if (low !== null && credits !== null) {
-      tip += ` · ${props.t.allowanceLegend.replace("{low}", String(low)).replace("{credits}", String(credits))}`;
+    if (green !== null) {
+      tip += ` · ${props.t.allowanceLegend.replace("{green}", formatMult(green))}`;
     }
     return tip;
   };
@@ -270,7 +272,7 @@ export default function PriceTable(props: PriceTableProps) {
                     >
                       <Tooltip tip={allowanceTip(usageOf(m, props.plan))} class="inline-block">
                         <span class={`badge badge-sm tabular-nums ${allowanceClass(usageOf(m, props.plan))}`}>
-                          ${usageOf(m, props.plan)} · {formatMult(usageOf(m, props.plan) / paid)}×
+                          ${usageOf(m, props.plan)} · {formatMult(usageOf(m, props.plan) / paid())}×
                         </span>
                       </Tooltip>
                     </Show>

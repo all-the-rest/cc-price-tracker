@@ -1,12 +1,15 @@
-import type { Translation } from "../i18n";
+import { Show } from "solid-js";
+import type { Lang, Translation } from "../i18n";
 import type { Plan } from "../types";
 import { actualPaid, processingFee } from "../fees";
-import { fmt } from "../util";
+import { fmt, formatMult } from "../util";
+import { planValue } from "../weighted";
 
 interface HeroProps {
   t: Translation;
   plan: Plan;
   modelCount: number;
+  lang: Lang;
 }
 
 export default function Hero(props: HeroProps) {
@@ -19,7 +22,7 @@ export default function Hero(props: HeroProps) {
       <div class="stats stats-vertical mt-6 w-full shadow sm:stats-horizontal sm:w-auto">
         <div class="stat">
           <div class="stat-title">{props.t.statsPriceTitle}</div>
-          <div class="stat-value">${actualPaid(props.plan)}</div>
+          <div class="stat-value">{fmt(actualPaid(props.plan))}</div>
           <div class="stat-desc">{props.t.statsPriceDesc}</div>
           <div class="stat-desc text-xs text-base-content/70">
             {props.t.priceFeeNote
@@ -31,6 +34,11 @@ export default function Hero(props: HeroProps) {
           <div class="stat-title">{props.t.statsCreditsTitle}</div>
           <div class="stat-value">{props.plan.creditsMonthly ?? props.t.noValue}</div>
           <div class="stat-desc">{props.t.statsCreditsDesc}</div>
+          <Show when={planValue(props.plan) !== null}>
+            <div class="stat-desc text-xs text-base-content/70">
+              {props.t.priceValueNote.replace("{mult}", formatMult(planValue(props.plan)!, props.lang))}
+            </div>
+          </Show>
         </div>
         <div class="stat">
           <div class="stat-title">{props.t.statsModelsTitle}</div>

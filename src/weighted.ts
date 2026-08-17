@@ -1,5 +1,12 @@
 import type { Basis, Model, Plan, PriceField } from "./types";
 import { actualPaid } from "./fees";
+import planBaselinesJson from "./plan-baselines.json";
+
+interface PlanBaseline {
+  creditsIncluded: number;
+  advertisedPrice: number;
+}
+const PLAN_BASELINES = planBaselinesJson as unknown as Record<string, PlanBaseline | null>;
 
 export type { PriceField };
 
@@ -13,6 +20,23 @@ export function usageOf(m: Model, plan: Plan): number {
   if (typeof allowance === "number") return allowance;
   if (typeof plan.defaultAllowance === "number") return plan.defaultAllowance;
   return plan.creditsMonthly ?? 0;
+}
+
+/**
+ * Plan-Wert: beworbene Kredit-Baseline je Plan („credits included" ÷
+ * „advertised price"). Null → unbegrenzt (Provider, pay-as-you-go). Diese
+ * Baseline ist zugleich die grüne Schwelle in PriceTable.
+ *
+ * Fällt auf die gescrapten Werte (Credits ÷ Listenpreis) zurück, wenn der Plan
+ * nicht in der persistierten Config steht (neuer Plan).
+ */
+export function planValue(plan: Plan): number | null {
+  const baseline = PLAN_BASELINES[plan.id];
+  if (baseline !== undefined && baseline !== null) {
+    return baseline.creditsIncluded / baseline.advertisedPrice;
+  }
+  if (plan.creditsMonthly === null) return null;
+  return plan.creditsMonthly / plan.priceMonthly;
 }
 
 /**
