@@ -78,7 +78,7 @@ export default function App() {
   const [dark, setDark] = createSignal(params.theme === "dark" || storedTheme === "dark");
   const [planId, setPlanId] = createSignal<PlanId>(params.plan ?? "goat");
   const [basis, setBasis] = createSignal<Basis>(params.basis ?? defaultBasis);
-  const [sort, setSort] = createSignal<SortState>(params.sort ?? { field: "cost", dir: 1 });
+  const [sort, setSort] = createSignal<SortState>(params.sort ?? { field: "requests", dir: -1 });
   const [caps, setCaps] = createSignal<CapId[]>(params.cap ?? []);
   const [matrixSearch, setMatrixSearch] = createSignal<string>(params.matrixSearch ?? "");
   const [matrixCaps, setMatrixCaps] = createSignal<CapId[]>(params.matrixCaps ?? []);

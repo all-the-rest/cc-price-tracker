@@ -91,7 +91,7 @@ export function requestCost(m: Model, basis: Basis, plan: Plan): number | null {
  * Fehlendes Anfragemuster/Kosten → null.
  */
 export function requestsPerMonth(m: Model, basis: Basis, plan: Plan): number | null {
-  const cost = requestCost(m, basis, plan);
+  const cost = requestCost(m, "list", plan);
   if (cost === null) return null;
   if (cost <= 0) return Infinity;
   const usage = usageOf(m, plan);
