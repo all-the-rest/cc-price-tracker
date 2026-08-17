@@ -228,6 +228,7 @@ export default function PriceTable(props: PriceTableProps) {
               {thSort("cachedWrite", props.t.colCachedWrite, true)}
               {thSort("allowance", props.t.colAllowance, true)}
               {thSort("cost", props.t.colCost, true, props.t.tooltipWeighted)}
+              {thSort("requests", props.t.colRequests, true, props.t.tooltipRequests)}
             </tr>
             <tr>
               <th></th>
@@ -238,6 +239,7 @@ export default function PriceTable(props: PriceTableProps) {
               <th class="text-right font-normal text-base-content/40">{props.t.per1m}</th>
               <th></th>
               <th class="text-right font-normal text-base-content/40">{props.t.perReq}</th>
+              <th class="text-right font-normal text-base-content/40">{props.t.perMonth}</th>
             </tr>
           </thead>
           <tbody>
@@ -283,6 +285,9 @@ export default function PriceTable(props: PriceTableProps) {
                         {priceCell(requestCost(m, props.basis, props.plan))}
                       </Tooltip>
                     </Show>
+                  </td>
+                  <td class="text-right whitespace-nowrap tabular-nums">
+                    {formatRequests(requestsPerMonth(m, props.basis, props.plan), props.lang)}
                   </td>
                 </tr>
               )}

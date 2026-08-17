@@ -85,6 +85,20 @@ export function requestCost(m: Model, basis: Basis, plan: Plan): number | null {
   );
 }
 
+/**
+ * Anfragen pro Monat für ein Modell: inkl. Nutzung (Guthaben in $) ÷ Kosten
+ * pro Anfrage. Null-Kosten (kostenloses Modell) → Infinity (unbegrenzt).
+ * Fehlendes Anfragemuster/Kosten → null.
+ */
+export function requestsPerMonth(m: Model, basis: Basis, plan: Plan): number | null {
+  const cost = requestCost(m, basis, plan);
+  if (cost === null) return null;
+  if (cost <= 0) return Infinity;
+  const usage = usageOf(m, plan);
+  if (usage <= 0) return null;
+  return usage / cost;
+}
+
 export function formatTokens(n: number, lang: "de" | "en"): string {
   return new Intl.NumberFormat(lang === "de" ? "de-DE" : "en-US").format(n);
 }

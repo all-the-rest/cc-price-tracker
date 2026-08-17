@@ -4,7 +4,7 @@ import type { Basis, Model, Plan, PeakHours } from "../src/types";
 import type { SortField } from "../src/sort";
 import { i18n, type Lang } from "../src/i18n";
 
-export { fieldPrice, requestCost } from "../src/weighted";
+export { fieldPrice, requestCost, requestsPerMonth } from "../src/weighted";
 export { modelOnPlan } from "../src/util";
 export { TAB_PLAN_IDS } from "../src/plans";
 

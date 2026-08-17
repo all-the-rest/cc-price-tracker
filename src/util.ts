@@ -22,6 +22,16 @@ export function fmtDateOnly(iso: string, lang: "de" | "en"): string {
   }).format(d);
 }
 
+export function formatMult(n: number, lang: "de" | "en" = "en"): string {
+  return new Intl.NumberFormat(lang === "de" ? "de-DE" : "en-US", { maximumFractionDigits: 2 }).format(n);
+}
+
+export function formatRequests(n: number | null, lang: "de" | "en" = "en"): string {
+  if (n === null || n === undefined || Number.isNaN(n)) return "–";
+  if (!Number.isFinite(n)) return "∞";
+  return new Intl.NumberFormat(lang === "de" ? "de-DE" : "en-US", { maximumFractionDigits: 0 }).format(Math.round(n));
+}
+
 export function formatModelName(id: string): string {
   return id
     .split("-")
