@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-08-16T18:10:53.891Z",
+  "fetchedAt": "2026-08-18T04:52:32.790Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -1932,7 +1932,7 @@
       "name": "GPT-5.6 Sol",
       "provider": "OpenAI",
       "category": "premium",
-      "tier": null,
+      "tier": "Standard / Long context",
       "contextWindow": 1050000,
       "input": 5,
       "output": 30,
@@ -1946,15 +1946,15 @@
       "deprecated": false,
       "availability": {
         "go": false,
-        "goat": false,
+        "goat": true,
         "pro": true,
         "provider": true,
         "max": true,
         "team": true
       },
       "allowances": {
-        "goat": 20,
-        "pro": 20
+        "goat": 70,
+        "pro": 80
       },
       "capabilities": {
         "input": [
@@ -1973,7 +1973,7 @@
         "cachedRead": 50000,
         "output": 162
       },
-      "tip": null
+      "tip": "Available on GOAT and above — it bills as an open model, but the $1 Go plan is carved out. Rates shown are the ≤ 272K tokens band; > 272K tokens bills $10.00 input / $45.00 output / $1.00 cache read / $12.50 cache write (per 1M tokens)."
     },
     {
       "id": "gpt-5.6-terra",
