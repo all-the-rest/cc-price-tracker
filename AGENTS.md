@@ -135,6 +135,7 @@ pnpm typecheck        # nur tsc --noEmit
   (`node scripts/ensure-release.mjs --all`, Tag = Changelog-Datum, RSS via `releases.atom`) →
   `upload-pages-artifact` (dist) + `upload-artifact` → `deploy-pages`.
 - `scripts/release-notes.mjs` rendert plan-aware, rein englische Notizen. Fehlgeschlagenes `pnpm scrape` bricht ab.
+- Nach einem Daten-Commit (`changed=true`) benachrichtigt der Deploy-Job das Vergleichs-Projekt `reisi007/ai-10-usd` per `repository_dispatch` (`event_type=source-updated`, POST auf `/repos/reisi007/ai-10-usd/dispatches`). Secret: `AI10USD_DISPATCH_TOKEN` (PAT mit `repo`-Scope bzw. fine-grained mit Contents read/write auf `ai-10-usd`). Fehlt das Secret → Step übersprungen (grün); vorhanden → der Step prüft den HTTP-Status und bricht bei ≠ 2xx **rot** ab (kein stiller Verlust wie beim alten `curl -sS` ohne `-f`).
 
 ## Tests
 
