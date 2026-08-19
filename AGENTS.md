@@ -129,7 +129,7 @@ pnpm typecheck        # nur tsc --noEmit
 
 ## CI/CD (`.github/workflows/price-tracker.yml`)
 
-- Trigger: `schedule` (Mo–Fr 08:00 + täglich 20:00 UTC), `workflow_dispatch`, `push` auf `main`.
+- Trigger: `schedule` (Mo–Fr 08:00 + täglich 19:30 UTC), `workflow_dispatch`, `push` auf `main`.
 - Pipeline: install (`--frozen-lockfile`) → `pnpm test` → `pnpm scrape` → `pnpm build` → Commit
   (CHANGELOG.json + data + src/data, `github-actions[bot]`, nur bei Änderungen) → Release
   (`node scripts/ensure-release.mjs --all`, Tag = Changelog-Datum, RSS via `releases.atom`) →

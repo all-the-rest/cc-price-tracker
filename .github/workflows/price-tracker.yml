@@ -3,7 +3,7 @@ name: Price Tracker
 on:
   schedule:
     - cron: "0 8 * * 1-5"
-    - cron: "0 20 * * *"
+    - cron: "30 19 * * *"   # 19:30 UTC = 21:30 CEST — daily capture, before midnight
   workflow_dispatch:
   push:
     branches:
