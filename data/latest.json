@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-08-18T04:52:32.790Z",
+  "fetchedAt": "2026-08-19T05:43:30.690Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -1044,6 +1044,54 @@
           "image",
           "video",
           "pdf"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "qwen-3.8-27b",
+      "name": "Qwen 3.8 27B",
+      "provider": "Alibaba",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 262144,
+      "input": 0.4,
+      "output": 3,
+      "cachedRead": 0.04,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 30
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "video"
         ],
         "output": [
           "text"
