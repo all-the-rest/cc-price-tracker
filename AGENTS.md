@@ -136,6 +136,13 @@ pnpm typecheck        # nur tsc --noEmit
   `upload-pages-artifact` (dist) + `upload-artifact` → `deploy-pages`.
 - `scripts/release-notes.mjs` rendert plan-aware, rein englische Notizen. Fehlgeschlagenes `pnpm scrape` bricht ab.
 - Nach einem Daten-Commit (`changed=true`) benachrichtigt der Deploy-Job das Vergleichs-Projekt `reisi007/ai-10-usd` per `repository_dispatch` (`event_type=source-updated`, POST auf `/repos/reisi007/ai-10-usd/dispatches`). Secret: `AI10USD_DISPATCH_TOKEN` (PAT mit `repo`-Scope bzw. fine-grained mit Contents read/write auf `ai-10-usd`). Fehlt das Secret → Step übersprungen (grün); vorhanden → der Step prüft den HTTP-Status und bricht bei ≠ 2xx **rot** ab (kein stiller Verlust wie beim alten `curl -sS` ohne `-f`).
+- **Lokale Daten-Commits (Push statt CI-Commit):** Wird eine Datenänderung lokal committet und per Push auf `main` gebracht — statt vom CI-Job (der `changed=true` erzeugt und committet) —, feuert der automatische Dispatch **nicht**: Der Scrape im CI findet dann keine Diffs (`changed=false`), der Notify-Step wird übersprungen. Das Vergleichs-Projekt dann manuell triggern:
+  ```bash
+  gh api -X POST repos/reisi007/ai-10-usd/dispatches --input - <<'EOF'
+  {"event_type":"source-updated","client_payload":{"source":"reisi007/cc-price-tracker","sha":"<SHA>"}}
+  EOF
+  ```
+  `<SHA>` = committeter Datenstand (z. B. `git rev-parse HEAD`). Verifikation: `gh run list -R reisi007/ai-10-usd` → neuer `repository_dispatch`-Lauf (`source-updated`) wird grün.
 
 ## Tests
 
