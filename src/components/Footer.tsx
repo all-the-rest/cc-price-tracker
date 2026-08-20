@@ -34,7 +34,7 @@ export default function Footer(props: FooterProps) {
             {props.t.sourceCaps}
           </a>
           <a
-            href="https://github.com/reisi007/cc-price-tracker/releases.atom"
+            href="https://github.com/all-the-rest/cc-price-tracker/releases.atom"
             target="_blank"
             rel="noopener noreferrer"
             class="underline py-1"

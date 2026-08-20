@@ -16,7 +16,7 @@ const MODELS_DEV_URL = "https://models.dev/api.json";
 const SOURCE_LANG = "en";
 const FLOAT_TOLERANCE = 1e-9;
 const USER_AGENT =
-  "cc-price-tracker/0.1.0 (+https://github.com/reisi007/cc-price-tracker)";
+  "cc-price-tracker/0.1.0 (+https://github.com/all-the-rest/cc-price-tracker)";
 
 // Dokumentiertes Standard-Anfragemuster (Input/Cached/Output Tokens pro Anfrage):
 // "~800 fresh input tokens, ~50,000 cache-read tokens, and ~125-200 output tokens

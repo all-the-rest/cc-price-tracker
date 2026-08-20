@@ -1,6 +1,6 @@
 # AGENTS.todo.md — cc-price-tracker
 
-Status-Tracking für den Aufbau. Upstream: `reisi007/ocgo-price-tracker` (@ `2601608f58f7819b7cb37d570b3b235fcf3871ee`), Domain `cc-pricing.all-the.rest`.
+Status-Tracking für den Aufbau. Upstream: `all-the-rest/ocgo-price-tracker` (@ `2601608f58f7819b7cb37d570b3b235fcf3871ee`), Domain `cc-pricing.all-the.rest`.
 
 ## Phase 1: Grundgerüst
 - [x] Template-Kopie (rsync, ohne .git/node_modules/dist/data/.idea/.run/tests-Fixtures)

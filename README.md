@@ -50,15 +50,15 @@ GitHub Pages über `.github/workflows/price-tracker.yml` (täglich per Cron, man
 
 Setup:
 
-1. Repo: `reisi007/cc-price-tracker`
+1. Repo: `all-the-rest/cc-price-tracker`
 2. Initialisieren und pushen (siehe `git log`/Erst-Commit).
 3. GitHub → Settings → Pages → Source „GitHub Actions", Custom domain
    `cc-pricing.all-the.rest` setzen.
-4. DNS: CNAME `cc-pricing.all-the.rest` → `reisi007.github.io`
+4. DNS: CNAME `cc-pricing.all-the.rest` → `all-the-rest.github.io`
 
 ## Upstream (ocg-price-tracker)
 
-Dieses Projekt entstand als Fresh Copy von `reisi007/ocgo-price-tracker` (Basis-Revision
+Dieses Projekt entstand als Fresh Copy von `all-the-rest/ocgo-price-tracker` (Basis-Revision
 `2601608f58f7819b7cb37d570b3b235fcf3871ee`) und ist ein eigenständiges Projekt. Das
 Original ist als `upstream`-Remote verknüpft; Fixes aus dem Original werden **manuell
 übernommen** (diff gegen `upstream/main` prüfen, passende Teile rüberziehen):
