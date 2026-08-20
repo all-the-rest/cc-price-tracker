@@ -74,11 +74,13 @@ pnpm typecheck        # nur tsc --noEmit
   `full = list × plan.creditsMonthly/usage`, `paid = list × plan.priceMonthly/usage`. Go/Max haben keine Allowances →
   `usage = creditsMonthly` (full = 1×, paid = price/credits).
 - **Plan-Wert / grüne Schwelle (`weighted.ts` `planValue`):** aus der persistierten Config `src/plan-baselines.json`
-  („credits included" ÷ „advertised price", vgl. commandcode.ai/pricing). Die beworbene Baseline enthält die
-  Stripe-Gebühr NICHT; der Modell-Faktor (`usage ÷ actualPaid`) zählt sie aber ein → Modelle am Credit-Baseline-Punkt
-  liegen unter der grünen Schwelle (Angebot schlechter als beworben). `null` = unbegrenzt (Provider) → dunkelgrün.
-  Fällt für nicht-configurierte Pläne auf `creditsMonthly ÷ priceMonthly` zurück. `defaultAllowance`/`planValue`
-  steuern nicht mehr die Farbklassen.
+  („credits included" ÷ **tatsächlich gezahlter Preis** `actualPaid`, inkl. Stripe-Gebühr, vgl. commandcode.ai/pricing).
+  Dadurch stimmt die Schwelle mit dem `paid`-Faktor (`usage ÷ actualPaid`) überein: ein Modell am Credit-Baseline-Punkt
+  liegt exakt auf der grünen Schwelle. `null` = unbegrenzt (Provider) → dunkelgrün. Fällt für nicht-configurierte
+  Pläne auf `creditsMonthly ÷ actualPaid` zurück. `defaultAllowance`/`planValue` steuern nicht mehr die Farbklassen.
+- **Beworbenes Verhältnis (`weighted.ts` `advertisedValue`):** „credits included" ÷ „advertised price" (OHNE
+  Stripe-Gebühr) — dient als Kontrast zu `planValue` (Hero „Wert"-Stat + PlanComparison-Zeile „Beworben"), um den
+  Effekt der separaten Stripe-Gebühr sichtbar zu machen.
 - `input/output/cachedRead/cachedWrite` = **Deal-Now**-Preise (was man zahlt); `list*` = Was-Preise (nur bei Deals,
   sonst null). `rates`/`listRates` aus `tiers[0]`; `listRates` kann String-Referenz sein → null.
 - `deal.expires` ist `YYYY-MM-DD` (normalisiert), `endsWhen` freier Text (z. B. „while capacity lasts").

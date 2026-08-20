@@ -23,20 +23,38 @@ export function usageOf(m: Model, plan: Plan): number {
 }
 
 /**
- * Plan-Wert: beworbene Kredit-Baseline je Plan („credits included" ÷
- * „advertised price"). Null → unbegrenzt (Provider, pay-as-you-go). Diese
- * Baseline ist zugleich die grüne Schwelle in PriceTable.
+ * Plan-Wert: Kredit-Baseline je Plan, gerechnet vom tatsächlich gezahlten
+ * Preis („credits included" ÷ `actualPaid` inkl. Stripe-Gebühr). Null →
+ * unbegrenzt (Provider, pay-as-you-go). Diese Baseline ist zugleich die grüne
+ * Schwelle in PriceTable und stimmt so mit dem „paid"-Faktor
+ * (`usage ÷ actualPaid`) überein: ein Modell am Credit-Baseline-Punkt liegt
+ * exakt auf der grünen Schwelle.
  *
- * Fällt auf die gescrapten Werte (Credits ÷ Listenpreis) zurück, wenn der Plan
- * nicht in der persistierten Config steht (neuer Plan).
+ * Fällt auf die gescrapten Werte (Credits ÷ tatsächlich gezahlt) zurück, wenn
+ * der Plan nicht in der persistierten Config steht (neuer Plan).
  */
 export function planValue(plan: Plan): number | null {
+  const baseline = PLAN_BASELINES[plan.id];
+  if (baseline !== undefined && baseline !== null) {
+    return baseline.creditsIncluded / actualPaid(plan);
+  }
+  if (plan.creditsMonthly === null) return null;
+  return plan.creditsMonthly / actualPaid(plan);
+}
+
+/**
+ * Beworbenes Verhältnis je Plan („credits included" ÷ „advertised price", ohne
+ * Stripe-Gebühr) — dient als Kontrast zum tatsächlichen Plan-Wert
+ * (`planValue`), um den Effekt der separaten Stripe-Gebühr sichtbar zu machen.
+ * Null → unbegrenzt (Provider, pay-as-you-go).
+ */
+export function advertisedValue(plan: Plan): number | null {
   const baseline = PLAN_BASELINES[plan.id];
   if (baseline !== undefined && baseline !== null) {
     return baseline.creditsIncluded / baseline.advertisedPrice;
   }
   if (plan.creditsMonthly === null) return null;
-  return plan.creditsMonthly / plan.priceMonthly;
+  return plan.creditsMonthly / (plan.priceMonthly ?? 0);
 }
 
 /**

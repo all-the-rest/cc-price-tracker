@@ -3,7 +3,7 @@ import type { Lang, Translation } from "../i18n";
 import type { Plan } from "../types";
 import { actualPaid, processingFee } from "../fees";
 import { fmt, formatMult } from "../util";
-import { planValue } from "../weighted";
+import { advertisedValue, planValue } from "../weighted";
 
 interface HeroProps {
   t: Translation;
@@ -36,7 +36,9 @@ export default function Hero(props: HeroProps) {
           <div class="stat-desc">{props.t.statsCreditsDesc}</div>
           <Show when={planValue(props.plan) !== null}>
             <div class="stat-desc text-xs text-base-content/70">
-              {props.t.priceValueNote.replace("{mult}", formatMult(planValue(props.plan)!, props.lang))}
+              {props.t.priceValueNote
+                .replace("{mult}", formatMult(planValue(props.plan)!, props.lang))
+                .replace("{adv}", formatMult(advertisedValue(props.plan)!, props.lang))}
             </div>
           </Show>
         </div>

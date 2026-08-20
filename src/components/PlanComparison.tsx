@@ -5,7 +5,7 @@ import { actualPaid } from "../fees";
 import { fmt, formatMult, modelOnPlan } from "../util";
 import { TAB_PLAN_IDS, planLabel } from "../plans";
 import { CapabilityFilter, capsOf, type CapId } from "../capabilities";
-import { planValue } from "../weighted";
+import { advertisedValue, planValue } from "../weighted";
 
 interface PlanComparisonProps {
   models: Model[];
@@ -88,11 +88,11 @@ export default function PlanComparison(props: PlanComparisonProps) {
             </thead>
             <tbody>
               <tr>
-                <td>{props.t.cmpCredits}</td>
+                <td>{props.t.cmpAdvertisedPrice}</td>
                 <For each={TAB_PLAN_IDS}>
                   {(id) => {
                     const plan = props.plans.find((p) => p.id === id);
-                    return <td class="text-center">{plan?.creditsMonthly ?? props.t.noValue}</td>;
+                    return <td class="text-center">{plan ? fmt(plan.priceMonthly) : props.t.noValue}</td>;
                   }}
                 </For>
               </tr>
@@ -113,6 +113,19 @@ export default function PlanComparison(props: PlanComparisonProps) {
                     return (
                       <td class="text-center">
                         {plan && planValue(plan) !== null ? `${formatMult(planValue(plan)!, props.lang)}×` : props.t.noValue}
+                      </td>
+                    );
+                  }}
+                </For>
+              </tr>
+              <tr>
+                <td>{props.t.cmpAdvertised}</td>
+                <For each={TAB_PLAN_IDS}>
+                  {(id) => {
+                    const plan = props.plans.find((p) => p.id === id);
+                    return (
+                      <td class="text-center text-base-content/60">
+                        {plan && advertisedValue(plan) !== null ? `${formatMult(advertisedValue(plan)!, props.lang)}×` : props.t.noValue}
                       </td>
                     );
                   }}
