@@ -1,4 +1,4 @@
-import { For, Show } from "solid-js";
+import { For, Show, createSignal, onMount } from "solid-js";
 import type { JSX } from "solid-js";
 import type { Lang, Translation } from "../i18n";
 import Heading, { AnchorLink } from "./Heading";
@@ -14,6 +14,9 @@ interface ChangelogProps {
   lang: Lang;
 }
 
+// Einträge pro Changelog-Seite (Pagination).
+const PAGE_SIZE = 20;
+
 const BASE_FIELDS: PriceField[] = ["input", "output", "cachedRead"];
 const ALL_FIELDS: PriceField[] = ["input", "output", "cachedRead", "cachedWrite"];
 
@@ -25,6 +28,21 @@ const planCost = (p: PlanPricing): number =>
 
 export default function Changelog(props: ChangelogProps) {
   const t = () => props.t;
+
+  const totalPages = () => Math.max(1, Math.ceil(props.entries.length / PAGE_SIZE));
+  const [page, setPage] = createSignal(1);
+
+  // Deep-Link auf einen Eintrag (#<entry-date>): direkt auf die passende Seite.
+  onMount(() => {
+    const hash = window.location.hash.slice(1);
+    const idx = props.entries.findIndex((e) => e.date === hash);
+    if (idx >= 0) setPage(Math.floor(idx / PAGE_SIZE) + 1);
+  });
+
+  // Klemmt die Seite, falls `entries` schrumpft (z. B. nach Daten-Patch).
+  const clampedPage = () => Math.min(Math.max(1, page()), totalPages());
+  const visibleEntries = () =>
+    props.entries.slice((clampedPage() - 1) * PAGE_SIZE, clampedPage() * PAGE_SIZE);
 
   const fieldLabel = (f: PriceField): string =>
     f === "input"
@@ -238,7 +256,7 @@ export default function Changelog(props: ChangelogProps) {
     <section id="changelog" class="mt-10">
       <Heading anchor="changelog">{t().headingChangelog}</Heading>
       <div class="mt-2 max-w-3xl text-sm leading-relaxed text-base-content/80">
-        <For each={props.entries}>
+        <For each={visibleEntries()}>
           {(entry) => (
             <div id={entry.date} class="mt-4 scroll-mt-24">
               <h3 class="text-sm font-semibold text-base-content/70">
@@ -261,6 +279,31 @@ export default function Changelog(props: ChangelogProps) {
           )}
         </For>
       </div>
+      <Show when={totalPages() > 1}>
+        <nav class="mt-6 flex items-center justify-center gap-2" aria-label="Changelog pagination">
+          <button
+            type="button"
+            class="btn btn-sm"
+            disabled={clampedPage() <= 1}
+            onClick={() => setPage(clampedPage() - 1)}
+          >
+            ‹ {t().chgPrev}
+          </button>
+          <span class="text-sm text-base-content/60">
+            {t()
+              .chgPage.replace("{page}", String(clampedPage()))
+              .replace("{total}", String(totalPages()))}
+          </span>
+          <button
+            type="button"
+            class="btn btn-sm"
+            disabled={clampedPage() >= totalPages()}
+            onClick={() => setPage(clampedPage() + 1)}
+          >
+            {t().chgNext} ›
+          </button>
+        </nav>
+      </Show>
     </section>
   );
 }
