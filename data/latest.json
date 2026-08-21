@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-08-21T08:30:51.650Z",
+  "fetchedAt": "2026-08-21T19:49:17.631Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -1055,6 +1055,99 @@
         ],
         "reasoning": true,
         "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "deepseek-v4-flash-vision-exp",
+      "name": "DeepSeek V4 Flash Vision (exp)",
+      "provider": "DeepSeek",
+      "category": "opensource",
+      "tier": "off-peak",
+      "contextWindow": 1000000,
+      "input": 0.22,
+      "output": 0.66,
+      "cachedRead": 0.01,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 35,
+        "pro": 45
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "deepseek-v4-flash-vision-exp-peak",
+      "name": "DeepSeek V4 Flash Vision (exp)",
+      "provider": "DeepSeek",
+      "category": "opensource",
+      "tier": "peak",
+      "contextWindow": 1000000,
+      "input": 0.44,
+      "output": 1.32,
+      "cachedRead": 0.02,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 35,
+        "pro": 45
+      },
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": false,
+        "toolCall": false
       },
       "pattern": {
         "input": 800,
@@ -3057,6 +3150,16 @@
       ]
     ],
     "deepseekv4flash(latest)": [
+      [
+        1,
+        4
+      ],
+      [
+        6,
+        10
+      ]
+    ],
+    "deepseekv4flashvision(exp)": [
       [
         1,
         4
