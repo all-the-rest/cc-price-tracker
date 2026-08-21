@@ -139,7 +139,7 @@ export default function App() {
 
   return (
     <div class="min-h-screen w-full bg-base-100 text-base-content">
-      <Header lang={lang()} setLang={setLang} dark={dark()} setDark={setDark} onReset={resetAll} />
+      <Header lang={lang()} setLang={setLang} dark={dark()} setDark={setDark} onReset={resetAll} t={t()} />
       <main class="mx-auto max-w-6xl px-4 py-8">
         <Hero t={t()} plan={plan()} modelCount={planModels().length} lang={lang()} />
         <Show when={planId() === "go"}>
