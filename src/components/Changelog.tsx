@@ -1,6 +1,7 @@
 import { For, Show } from "solid-js";
 import type { JSX } from "solid-js";
 import type { Lang, Translation } from "../i18n";
+import Heading, { AnchorLink } from "./Heading";
 import type { Change, ChangelogEntry, PlanPricing, PriceField, PricingType } from "../types";
 import { fmt, fmtDateOnly, formatModelName } from "../util";
 import { capCount, fmtCaps } from "../capabilities";
@@ -234,14 +235,15 @@ export default function Changelog(props: ChangelogProps) {
   };
 
   return (
-    <section class="mt-10">
-      <h2 class="text-lg font-bold tracking-tight">{t().headingChangelog}</h2>
+    <section id="changelog" class="mt-10">
+      <Heading anchor="changelog">{t().headingChangelog}</Heading>
       <div class="mt-2 max-w-3xl text-sm leading-relaxed text-base-content/80">
         <For each={props.entries}>
           {(entry) => (
-            <div class="mt-4">
+            <div id={entry.date} class="mt-4 scroll-mt-24">
               <h3 class="text-sm font-semibold text-base-content/70">
                 {fmtDateOnly(`${entry.date}T00:00:00.000Z`, props.lang)}
+                <AnchorLink id={entry.date} label="Direktlink zu diesem Changelog-Eintrag" />
               </h3>
               <Show when={entry.changes.length > 0} fallback={<p class="mt-1">{t().chgNone}</p>}>
                 <ul class="mt-1 space-y-1">

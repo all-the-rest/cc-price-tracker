@@ -1,4 +1,5 @@
 import type { Translation } from "../i18n";
+import Heading from "./Heading";
 
 interface ZdrNoteProps {
   t: Translation;
@@ -6,8 +7,8 @@ interface ZdrNoteProps {
 
 export default function ZdrNote(props: ZdrNoteProps) {
   return (
-    <section class="mt-10">
-      <h2 class="text-lg font-bold tracking-tight">{props.t.headingZdr}</h2>
+    <section id="zdr" class="mt-10">
+      <Heading anchor="zdr">{props.t.headingZdr}</Heading>
       <div class="alert mt-2 w-full">
         <div>
           <h3 class="font-bold">{props.t.zdrTitle}</h3>

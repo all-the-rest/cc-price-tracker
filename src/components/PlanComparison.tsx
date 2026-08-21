@@ -1,6 +1,7 @@
 import { createMemo, For, Show } from "solid-js";
 import type { Lang, Translation } from "../i18n";
 import type { Model, Plan } from "../types";
+import Heading from "./Heading";
 import { actualPaid } from "../fees";
 import { fmt, formatMult, modelOnPlan } from "../util";
 import { TAB_PLAN_IDS, planLabel } from "../plans";
@@ -35,8 +36,8 @@ export default function PlanComparison(props: PlanComparisonProps) {
 
   return (
     <>
-      <section class="mt-10">
-        <h2 class="text-lg font-bold tracking-tight">{props.t.headingApi}</h2>
+      <section id="api" class="mt-10">
+        <Heading anchor="api">{props.t.headingApi}</Heading>
         <div class="mt-4 w-full overflow-x-auto">
           <table class="table table-sm table-zebra">
             <thead>
@@ -76,8 +77,8 @@ export default function PlanComparison(props: PlanComparisonProps) {
         </div>
       </section>
 
-      <section class="mt-10">
-        <h2 class="text-lg font-bold tracking-tight">{props.t.headingValue}</h2>
+      <section id="value" class="mt-10">
+        <Heading anchor="value">{props.t.headingValue}</Heading>
         <div class="mt-4 w-full overflow-x-auto">
           <table class="table table-sm table-zebra">
             <thead>
@@ -136,8 +137,8 @@ export default function PlanComparison(props: PlanComparisonProps) {
         </div>
       </section>
 
-      <section class="mt-10">
-        <h2 class="text-lg font-bold tracking-tight">{props.t.headingComparison}</h2>
+      <section id="comparison" class="mt-10">
+        <Heading anchor="comparison">{props.t.headingComparison}</Heading>
         <div class="mt-4 flex flex-wrap items-center gap-3">
           <input
             type="search"

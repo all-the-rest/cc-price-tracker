@@ -1,6 +1,7 @@
 import { createMemo, For, onCleanup, onMount, Show } from "solid-js";
 import type { Lang, Translation } from "../i18n";
 import type { Basis, Model, Plan, PeakHours } from "../types";
+import Heading from "./Heading";
 import { fmt, fmtContextWindow } from "../util";
 import { fieldPrice, formatTokens, planValue, requestCost, requestsPerMonth, usageOf } from "../weighted";
 import { actualPaid } from "../fees";
@@ -184,8 +185,8 @@ export default function PriceTable(props: PriceTableProps) {
   };
 
   return (
-    <section class="mt-10">
-      <h2 class="text-lg font-bold tracking-tight">{props.t.headingPrices}</h2>
+    <section id="prices" class="mt-10">
+      <Heading anchor="prices">{props.t.headingPrices}</Heading>
 
       <div class="mt-4 flex flex-wrap items-center gap-3">
         <span>{props.t.basisLabel}</span>
