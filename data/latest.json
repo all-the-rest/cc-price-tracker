@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-08-20T08:29:06.570Z",
+  "fetchedAt": "2026-08-21T08:30:51.650Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -109,6 +109,60 @@
     }
   ],
   "models": [
+    {
+      "id": "ox-alpha",
+      "name": "Ox Alpha",
+      "provider": null,
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1048576,
+      "input": 0,
+      "output": 0,
+      "cachedRead": 0,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": {
+        "id": "ox-alpha-free",
+        "discountPercent": 100,
+        "free": true,
+        "expires": null,
+        "endsWhen": "while the stealth preview lasts",
+        "revertNote": null
+      },
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": null,
+        "pro": null
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Free while the preview lasts. The provider retains prompts; not routed under ZDR."
+    },
     {
       "id": "laguna-s-2.1-free",
       "name": "Laguna S 2.1",
@@ -731,7 +785,7 @@
         "cachedRead": 50000,
         "output": 162
       },
-      "tip": "2× usage. Permanent 50% off. See the deals section above for details. Rates shown are the ≤ 512K tokens band; > 512K tokens bills $0.30 input / $1.20 output / $0.06 cache read (per 1M tokens)."
+      "tip": "2× usage. 50% off. See the deals section above for details. Rates shown are the ≤ 512K tokens band; > 512K tokens bills $0.30 input / $1.20 output / $0.06 cache read (per 1M tokens)."
     },
     {
       "id": "minimax-m2.7",
@@ -1487,7 +1541,7 @@
         "cachedRead": 50000,
         "output": 162
       },
-      "tip": "Up to 99% off — permanent. See the deals section below for details."
+      "tip": "Up to 99% off. See the deals section below for details."
     },
     {
       "id": "mimo-v2.5",
@@ -1543,7 +1597,7 @@
         "cachedRead": 50000,
         "output": 162
       },
-      "tip": "Up to 98% off — permanent. See the deals section below for details."
+      "tip": "Up to 98% off. See the deals section below for details."
     },
     {
       "id": "nemotron-3-ultra",
@@ -2021,7 +2075,7 @@
         "cachedRead": 50000,
         "output": 162
       },
-      "tip": "Available on GOAT and above — it bills as an open model, but the $1 Go plan is carved out. Rates shown are the ≤ 272K tokens band; > 272K tokens bills $10.00 input / $45.00 output / $1.00 cache read / $12.50 cache write (per 1M tokens)."
+      "tip": "Available on GOAT and above. It bills as an open model, but the $1 Go plan is carved out. Rates shown are the ≤ 272K tokens band; > 272K tokens bills $10.00 input / $45.00 output / $1.00 cache read / $12.50 cache write (per 1M tokens)."
     },
     {
       "id": "gpt-5.6-terra",
@@ -2117,7 +2171,7 @@
         "cachedRead": 50000,
         "output": 162
       },
-      "tip": "Available on every plan, including Go — unlike the other models in this table, it isn't gated. Rates shown are the ≤ 272K tokens band; > 272K tokens bills $0.40 input / $1.80 output / $0.04 cache read / $0.50 cache write (per 1M tokens)."
+      "tip": "Available on every plan, including Go. Unlike the other models in this table, it isn't gated. Rates shown are the ≤ 272K tokens band; > 272K tokens bills $0.40 input / $1.80 output / $0.04 cache read / $0.50 cache write (per 1M tokens)."
     },
     {
       "id": "gpt-5.5",
@@ -2125,7 +2179,7 @@
       "provider": "OpenAI",
       "category": "premium",
       "tier": null,
-      "contextWindow": null,
+      "contextWindow": 400000,
       "input": 5,
       "output": 30,
       "cachedRead": 0.5,
@@ -2856,7 +2910,7 @@
         "cachedRead": 50000,
         "output": 162
       },
-      "tip": "Available on every plan, including Go — unlike the other models in this table, it isn't gated."
+      "tip": "Available on every plan, including Go. Unlike the other models in this table, it isn't gated."
     },
     {
       "id": "inkling",
@@ -2956,6 +3010,23 @@
     }
   ],
   "freeModels": [
+    {
+      "id": "ox-alpha",
+      "name": "Ox Alpha",
+      "availableFrom": "2026-08-21",
+      "until": null,
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": false,
+        "toolCall": false
+      },
+      "note": "Free while the preview lasts. The provider retains prompts; not routed under ZDR."
+    },
     {
       "id": "laguna-s-2.1-free",
       "name": "Laguna S 2.1",
