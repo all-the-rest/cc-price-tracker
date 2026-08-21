@@ -11,6 +11,12 @@ export interface UiReviewRoute {
   states: UiReviewState[];
   viewports?: UiReviewViewport[];
   note?: string;
+  /**
+   * Optional CSS selectors for "notice areas" (Hinweis-Bereiche) that deserve
+   * their own focused, element-scoped capture in addition to the full-page and
+   * section shots — e.g. the privacy table or the changelog.
+   */
+  elements?: string[];
   /** Static <title> of the app — guards against capturing a foreign server on the port. */
   expectedTitle: string;
 }
@@ -28,6 +34,7 @@ export const uiReviewConfig: UiReviewConfig = {
       name: "home",
       path: "/",
       states: ["filled"],
+      elements: ["#changelog", "#zdr"],
       note: "Statische Pricing-Seite (Daten beim Build importiert) — kein sinnvoller Empty-State.",
       expectedTitle: "Price Tracking for Command Code",
     },
@@ -35,6 +42,7 @@ export const uiReviewConfig: UiReviewConfig = {
       name: "home-de",
       path: "/?lang=de",
       states: ["filled"],
+      elements: ["#changelog", "#zdr"],
       note: "Deutsche Variante zur i18n-Kontrolle; Default-Lang ist en (Browser-Locale).",
       expectedTitle: "Price Tracking for Command Code",
     },
@@ -42,6 +50,7 @@ export const uiReviewConfig: UiReviewConfig = {
       name: "home-dark",
       path: "/?theme=dark",
       states: ["filled"],
+      elements: ["#changelog", "#zdr"],
       note: "Dark-Mode-Variante (data-theme=dark) — prüft Farben/Kontrast im dunklen Theme.",
       expectedTitle: "Price Tracking for Command Code",
     },
@@ -49,6 +58,7 @@ export const uiReviewConfig: UiReviewConfig = {
       name: "home-de-dark",
       path: "/?lang=de&theme=dark",
       states: ["filled"],
+      elements: ["#changelog", "#zdr"],
       note: "Deutsche Dark-Mode-Variante — prüft i18n + dunkles Theme zusammen.",
       expectedTitle: "Price Tracking for Command Code",
     },
