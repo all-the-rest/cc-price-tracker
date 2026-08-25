@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+  pull_request:
 
 permissions:
   contents: write
@@ -55,6 +56,7 @@ jobs:
 
       - name: Commit data changes
         id: commit
+        if: github.event_name != 'pull_request'
         run: |
           if git diff --quiet CHANGELOG.json data src/data; then
             echo "no data changes, skipping commit"
@@ -69,14 +71,17 @@ jobs:
           fi
 
       - name: Ensure release for changelog days
+        if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/ensure-release.mjs --all
 
       - name: Setup Pages
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v6
 
       - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5
         with:
           path: dist
@@ -89,6 +94,7 @@ jobs:
 
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
