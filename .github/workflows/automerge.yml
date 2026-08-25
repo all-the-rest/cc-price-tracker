@@ -8,6 +8,8 @@ name: Dependabot Auto-Merge
 #
 # Kanonische Vorlage: portal.reisinger.pictures/.github/workflows/automerge.yml
 # (Commit b607aef) — hier 1:1 übernommen, Logik unverändert.
+# Einzige ergänzte Abweichung: permissions.checks: read (wait-on-check listet
+# Check Runs via API -> braucht explizites checks: read bei restriktivem Token).
 on:
   pull_request_target:
     types: [opened, reopened, synchronize, labeled]
@@ -17,6 +19,7 @@ permissions:
   contents: write
   pull-requests: write
   actions: read
+  checks: read
 
 concurrency:
   group: dependabot-automerge-${{ github.event.pull_request.number }}
