@@ -2,21 +2,28 @@ name: Price Tracker
 
 on:
   schedule:
-    - cron: "0 8 * * 1-5"
-    - cron: "30 19 * * *"   # 19:30 UTC = 21:30 CEST — daily capture, before midnight
+    # Safety-net: one daily run ~22:28 Vienna time (20:28 UTC CEST / 21:28 UTC CET)
+    # Catches any changes the server cron missed.
+    - cron: "28 20 * * *"
   workflow_dispatch:
   push:
     branches:
       - main
+  # CI-Validierung für Dependabot-/Abhängigkeits-PRs: baut und testet den
+  # Merge-Stand, committet/deployt aber NICHT (siehe if-Guards unten).
   pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
   pages: write
   id-token: write
 
+# PR-Runs bekommen eine eigene Concurrency-Gruppe, damit sie die
+# Production-"pages"-Queue (Schedule/Cron) nicht blockieren.
 concurrency:
-  group: pages
+  group: ${{ github.event_name == 'pull_request' && format('{0}-pr-{1}', github.workflow, github.event.number) || 'pages' }}
   cancel-in-progress: false
 
 jobs:
@@ -75,6 +82,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/ensure-release.mjs --all
+
+      - name: Check changelog/release sync
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/check-release-sync.mjs
 
       - name: Setup Pages
         if: github.event_name != 'pull_request'

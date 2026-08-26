@@ -152,8 +152,21 @@ cat << CRON > "$CRON_TMP"
 SHELL=/bin/bash
 PATH=/usr/local/bin:/usr/bin:/bin
 
-# ─── Daily ───
-0 8 * * * root ${WRAPPER} ${CRON_MARKER}
+# ─── Weekdays (Mon-Fri): every 2h, 06:00–20:00 ───
+0  6  * * 1-5  root  ${WRAPPER} ${CRON_MARKER}
+0  8  * * 1-5  root  ${WRAPPER} ${CRON_MARKER}
+0 10  * * 1-5  root  ${WRAPPER} ${CRON_MARKER}
+0 12  * * 1-5  root  ${WRAPPER} ${CRON_MARKER}
+0 14  * * 1-5  root  ${WRAPPER} ${CRON_MARKER}
+0 16  * * 1-5  root  ${WRAPPER} ${CRON_MARKER}
+0 18  * * 1-5  root  ${WRAPPER} ${CRON_MARKER}
+0 20  * * 1-5  root  ${WRAPPER} ${CRON_MARKER}
+
+# ─── Weekends (Sat-Sun): 06:00 and 14:00 ───
+0  6  * * 6,0  root  ${WRAPPER} ${CRON_MARKER}
+0 14  * * 6,0  root  ${WRAPPER} ${CRON_MARKER}
+
+# ─── Daily 22:30 REMOVED — replaced by GitHub Actions schedule at 20:28 UTC ───
 CRON
 
 # --- 5. Upload dispatch wrapper + apply cron (single SSH connection, one password) ---
@@ -181,7 +194,9 @@ else
   echo "Schedule installed, token stored on ${SERVER}."
 fi
 echo "Schedule (server local time = Europe/Vienna):"
-echo "  Daily: 08:00"
+echo "  Weekdays:  every 2h from 06:00–20:00"
+echo "  Weekends:  06:00 and 14:00"
+echo "  Daily 22:30: handled by GitHub Actions schedule (20:28 UTC)"
 echo ""
 echo "To uninstall:"
 echo "  ./scripts/uninstall-cron.sh"
