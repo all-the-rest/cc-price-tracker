@@ -134,7 +134,7 @@ pnpm typecheck        # nur tsc --noEmit
 - Trigger: `workflow_dispatch` (extern per Server-Cron getriggert via `scripts/install-cron.sh`: Mo–Fr alle 2h 06:00–20:00 MEZ/MESZ, Sa/So 06:00+14:00) + täglicher GitHub-Actions-Safety-Net-Lauf (`schedule: "28 20 * * *"` = 20:28 UTC), `push` auf `main`.
 - Pipeline: install (`--frozen-lockfile`) → `pnpm test` → `pnpm scrape` → `pnpm build` → Commit
   (CHANGELOG.json + data + src/data, `github-actions[bot]`, nur bei Änderungen) → Release
-  (`node scripts/ensure-release.mjs --all`, Tag = Changelog-Datum, RSS via `releases.atom`) →
+  (`node scripts/ensure-release.mjs --all`, Tag = Eintrags-id, RSS via `releases.atom`) →
   Sync-Check (`node scripts/check-release-sync.mjs` bricht rot ab, wenn Changelog-Einträge und GitHub-Releases
   divergieren) → `upload-pages-artifact` (dist) + `upload-artifact` → `deploy-pages`.
 - `scripts/release-notes.mjs` rendert plan-aware, rein englische Notizen. Fehlgeschlagenes `pnpm scrape` bricht ab.

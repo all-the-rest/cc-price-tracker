@@ -864,16 +864,27 @@ export function mergeChanges(existing, incoming) {
   return [...map.values()];
 }
 
-export function upsertChangelogJson(existing, date, changes) {
+export function upsertChangelogJson(existing, id, date, changes) {
   const entries = Array.isArray(existing?.entries) ? existing.entries : [];
   const keep = entries.filter((e) => Array.isArray(e.changes) && e.changes.length > 0);
   const hasChanges = Array.isArray(changes) && changes.length > 0;
   if (!hasChanges) return { entries: keep };
-  const rest = keep.filter((e) => e.date !== date);
-  const sameDate = keep.find((e) => e.date === date);
-  const merged = sameDate ? mergeChanges(sameDate.changes, changes) : changes;
-  rest.unshift({ date, changes: merged });
+  const rest = keep.filter((e) => e.id !== id);
+  const sameId = keep.find((e) => e.id === id);
+  const merged = sameId ? mergeChanges(sameId.changes, changes) : changes;
+  rest.unshift({ id, date, changes: merged });
   return { entries: rest };
+}
+
+/**
+ * Migration des Vorschemas (ein Eintrag pro Tag, kein `id`): weist fehlenden
+ * Einträgen `id = date` zu, damit bestehende GitHub-Releases (Tag = Datum)
+ * weiterhin zum Changelog passen. Neue Einträge bekommen ein `id` aus dem
+ * Run-Zeitstempel.
+ */
+export function normalizeChangelogIds(changelog) {
+  const entries = Array.isArray(changelog?.entries) ? changelog.entries : [];
+  return { entries: entries.map((e) => (e && e.id ? e : { ...e, id: e?.date })) };
 }
 
 const RequestPatternSchema = z.object({
@@ -1055,6 +1066,7 @@ const ChangeSchema = z.discriminatedUnion("type", [
 const ChangelogSchema = z.object({
   entries: z.array(
     z.object({
+      id: z.string().min(1),
       date: z.string(),
       changes: z.array(ChangeSchema).min(1),
     })
@@ -1105,6 +1117,8 @@ async function main() {
 
     const fetchedAt = new Date().toISOString();
     const date = fetchedAt.slice(0, 10);
+    // git-tag-sicheres `id` (kein `:`), z.B. 2026-08-19T06-00-00Z
+    const runId = fetchedAt.replace(/:/g, "-").replace(/\.\d{3}Z$/, "Z");
 
     const prevPath = join(ROOT, "data", "latest.json");
     const prev = existsSync(prevPath) ? JSON.parse(readFileSync(prevPath, "utf8")) : null;
@@ -1155,13 +1169,10 @@ async function main() {
       : buildChanges(prev, latest, date, firstSeen);
 
     const changelogPath = join(ROOT, "CHANGELOG.json");
-    let existingChangelog = { entries: [] };
-    if (!isFirstRun && existsSync(changelogPath)) {
-      existingChangelog = JSON.parse(readFileSync(changelogPath, "utf8"));
-    }
-    const changelog = isFirstRun
-      ? { entries: [{ date, changes }] }
-      : upsertChangelogJson(existingChangelog, date, changes);
+    const existingChangelog = existsSync(changelogPath)
+      ? normalizeChangelogIds(JSON.parse(readFileSync(changelogPath, "utf8")))
+      : { entries: [] };
+    const changelog = upsertChangelogJson(existingChangelog, runId, date, changes);
     validateChangelog(changelog);
     const changelogJson = JSON.stringify(changelog) + "\n";
     writeFileSync(changelogPath, changelogJson);

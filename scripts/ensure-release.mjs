@@ -66,14 +66,14 @@ function main() {
     targets = [entries[0]];
   }
 
-  const newestDate = entries[0].date;
+  const newestId = entries[0].id;
   for (const entry of targets) {
     const notes = renderReleaseNotesForEntry(entry);
     if (notes === null) {
-      console.log(`entry ${entry.date}: no changes, skipping release`);
+      console.log(`entry ${entry.id}: no changes, skipping release`);
       continue;
     }
-    ensureRelease(entry.date, notes, { latest: entry.date === newestDate });
+    ensureRelease(entry.id, notes, { latest: entry.id === newestId });
   }
 }
 

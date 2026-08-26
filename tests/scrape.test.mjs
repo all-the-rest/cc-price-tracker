@@ -26,6 +26,7 @@ import {
   capsFallback,
   validateSnapshot,
   validateChangelog,
+  normalizeChangelogIds,
   modelKey,
   validatePlanBaselines,
 } from "../scripts/scrape.mjs";
@@ -485,22 +486,28 @@ test("mergeChanges: allowance_changed wird pro Modell gemerged (alle Pläne in e
   assert.deepEqual(mergeChanges([], [a]), [a]);
 });
 
-test("upsertChangelogJson: Eintrag desselben Datums wird gemerged, leere entfernt", () => {
+test("upsertChangelogJson: Eintrag derselben id wird gemerged, leere entfernt", () => {
   const existing = {
     entries: [
-      { date: "2026-08-15", changes: [{ type: "free_added", model: "laguna-s-2.1-free" }] },
-      { date: "2026-08-10", changes: [] },
+      { id: "2026-08-15T10-00-00Z", date: "2026-08-15", changes: [{ type: "free_added", model: "laguna-s-2.1-free" }] },
+      { id: "2026-08-10", date: "2026-08-10", changes: [] },
     ],
   };
-  const result = upsertChangelogJson(existing, "2026-08-15", [
+  const result = upsertChangelogJson(existing, "2026-08-15T10-00-00Z", "2026-08-15", [
     { type: "free_removed", model: "laguna-s-2.1-free", availableFrom: "2026-08-01", until: today },
   ]);
   assert.equal(result.entries.length, 1);
+  assert.equal(result.entries[0].id, "2026-08-15T10-00-00Z");
   assert.equal(result.entries[0].date, "2026-08-15");
   assert.deepEqual(
     result.entries[0].changes.map((c) => c.type).sort(),
     ["free_added", "free_removed"]
   );
+});
+
+test("normalizeChangelogIds: weist fehlendes id = date zu", () => {
+  const out = normalizeChangelogIds({ entries: [{ date: "2026-08-15", changes: [{ type: "text", lang: { en: "x" } }] }] });
+  assert.equal(out.entries[0].id, "2026-08-15");
 });
 
 test("validateSnapshot: vollständiger Snapshot aus den Fixtures ist valide", () => {
@@ -528,6 +535,7 @@ test("validateChangelog: plan-aware Events sind valide", () => {
   const changelog = {
     entries: [
       {
+        id: today,
         date: today,
         changes: [
           { type: "text", lang: { en: "Initial version", de: "Initialversion" } },
@@ -594,15 +602,15 @@ test("validateChangelog: plan-aware Events sind valide", () => {
 });
 
 test("validateChangelog: ungültige Events brechen", () => {
-  assert.throws(() => validateChangelog({ entries: [{ date: today, changes: [] }] }));
+  assert.throws(() => validateChangelog({ entries: [{ id: today, date: today, changes: [] }] }));
   assert.throws(() =>
     validateChangelog({
-      entries: [{ date: today, changes: [{ type: "plan_pricing_changed", plan: "goat", from: {}, to: {} }] }],
+      entries: [{ id: today, date: today, changes: [{ type: "plan_pricing_changed", plan: "goat", from: {}, to: {} }] }],
     })
   );
   assert.throws(() =>
     validateChangelog({
-      entries: [{ date: today, changes: [{ type: "allowance_changed", model: "x", plans: [{ plan: "goat", from: null, to: 55 }] }] }],
+      entries: [{ id: today, date: today, changes: [{ type: "allowance_changed", model: "x", plans: [{ plan: "goat", from: null, to: 55 }] }] }],
     })
   );
 });
