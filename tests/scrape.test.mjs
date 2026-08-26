@@ -452,6 +452,25 @@ test("buildChanges: identische Snapshots → keine Events; ohne Vorgänger → [
   assert.deepEqual(buildChanges(null, snap, today), []);
 });
 
+test("buildChanges: Gratis-Modell → nur free_added/free_removed, kein doppeltes model_added/-removed", () => {
+  const freeModel = {
+    id: "laguna-s-2.1-free",
+    name: "Laguna S 2.1 Free",
+    input: 0,
+    output: 0,
+    cachedRead: 0,
+    cachedWrite: null,
+  };
+  const empty = { models: [], plans: [], freeModels: [] };
+  const withFree = { models: [freeModel], plans: [], freeModels: [{ id: "laguna-s-2.1-free" }] };
+  assert.deepEqual(buildChanges(empty, withFree, today), [{ type: "free_added", model: "laguna-s-2.1-free" }]);
+
+  const gone = { models: [freeModel], plans: [], freeModels: [{ id: "laguna-s-2.1-free", availableFrom: "2026-08-01" }] };
+  assert.deepEqual(buildChanges(gone, empty, today), [
+    { type: "free_removed", model: "laguna-s-2.1-free", availableFrom: "2026-08-01", until: today },
+  ]);
+});
+
 test("mergeChanges: allowance_changed wird pro Modell gemerged (alle Pläne in einem Event)", () => {
   const a = {
     type: "allowance_changed",

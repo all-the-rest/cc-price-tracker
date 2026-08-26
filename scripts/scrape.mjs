@@ -827,14 +827,27 @@ export function computeFreeChanges(prevFree, nextFree, today) {
 /**
  * Gesamt-Diff zweier Snapshots. Ohne Vorgänger (Erstlauf) → keine Events
  * (der `text`-Event wird separat vom Hauptprogramm erzeugt).
+ *
+ * Gratis-Modelle erzeugen sonst Doppelmeldungen: `free_added`/`free_removed`
+ * ist das maßgebliche Event — das redundante `model_added`/`model_removed`
+ * desselben Modells wird unterdrückt.
  */
 export function buildChanges(prev, next, today = "", firstSeen = new Map()) {
   if (prev === null) return [];
-  return [
+  const changes = [
     ...computeModelChanges(prev.models ?? [], next.models ?? [], firstSeen, today),
     ...computePlanChanges(prev.plans ?? [], next.plans ?? []),
     ...computeFreeChanges(prev.freeModels ?? [], next.freeModels ?? [], today),
   ];
+  const freeIds = new Set(
+    changes.filter((c) => c.type === "free_added" || c.type === "free_removed").map((c) => c.model)
+  );
+  if (freeIds.size === 0) return changes;
+  return changes.filter(
+    (c) =>
+      !(c.type === "model_added" && freeIds.has(c.model)) &&
+      !(c.type === "model_removed" && freeIds.has(c.model))
+  );
 }
 
 /**

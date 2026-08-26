@@ -49,8 +49,5 @@ Status-Tracking für den Aufbau. Upstream: `all-the-rest/ocgo-price-tracker` (@ 
 - [x] `dist/` enthält `data/latest.json` + `CNAME`
 - [x] Commit + Push `main`; CI grün; Pages-Custom-Domain + DNS prüfen (live: https://cc-pricing.all-the.rest)
 - [x] all-the.rest-Eintrag committet + gepusht (live)
-- [ ] **Follow-up:** GitHub-Actions Node-20-Deprecation-Warnung (checkout/setup-node/configure-pages/upload-artifact → neuere Versions) — optional
 - [x] Upstream-Sync-Workflow (manuell, change-by-change) in README dokumentiert
 
-## Phase 6: Follow-up (separates Repo)
-- [ ] ocg-price-tracker: Preise ebenfalls dynamisch fetchen (eigenes Issue/Task)
