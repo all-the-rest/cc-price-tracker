@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-08-26T06:18:00.774Z",
+  "fetchedAt": "2026-08-26T18:25:55.654Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -109,60 +109,6 @@
     }
   ],
   "models": [
-    {
-      "id": "ox-alpha",
-      "name": "Ox Alpha",
-      "provider": null,
-      "category": "opensource",
-      "tier": null,
-      "contextWindow": 1048576,
-      "input": 0,
-      "output": 0,
-      "cachedRead": 0,
-      "cachedWrite": null,
-      "listInput": null,
-      "listOutput": null,
-      "listCachedRead": null,
-      "listCachedWrite": null,
-      "deal": {
-        "id": "ox-alpha-free",
-        "discountPercent": 100,
-        "free": true,
-        "expires": null,
-        "endsWhen": "while the stealth preview lasts",
-        "revertNote": null
-      },
-      "deprecated": false,
-      "availability": {
-        "go": true,
-        "goat": true,
-        "pro": true,
-        "provider": true,
-        "max": true,
-        "team": true
-      },
-      "allowances": {
-        "goat": null,
-        "pro": null
-      },
-      "capabilities": {
-        "input": [
-          "text",
-          "image"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": true,
-        "toolCall": false
-      },
-      "pattern": {
-        "input": 800,
-        "cachedRead": 50000,
-        "output": 162
-      },
-      "tip": "Free while the preview lasts. The provider retains prompts; not routed under ZDR."
-    },
     {
       "id": "laguna-s-2.1-free",
       "name": "Laguna S 2.1",
@@ -596,6 +542,55 @@
           "text",
           "image",
           "video"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "glm-5.3-flash",
+      "name": "GLM-5.3 Flash",
+      "provider": "Z.ai",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1048576,
+      "input": 0.15,
+      "output": 0.5,
+      "cachedRead": 0.03,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 40,
+        "pro": 50
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "video",
+          "pdf"
         ],
         "output": [
           "text"
@@ -3211,23 +3206,6 @@
     }
   ],
   "freeModels": [
-    {
-      "id": "ox-alpha",
-      "name": "Ox Alpha",
-      "availableFrom": "2026-08-21",
-      "until": null,
-      "capabilities": {
-        "input": [
-          "text"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": false,
-        "toolCall": false
-      },
-      "note": "Free while the preview lasts. The provider retains prompts; not routed under ZDR."
-    },
     {
       "id": "laguna-s-2.1-free",
       "name": "Laguna S 2.1",
