@@ -138,7 +138,7 @@ export default function PriceTable(props: PriceTableProps) {
       <th class="font-medium">
         <span class="block">{m.name}</span>
         <Show when={peak}>
-          <span class="block text-xs font-normal text-base-content/70">
+          <span class="flex items-center text-xs font-normal text-base-content/70">
             <PeakIndicator tier={m.tier ?? ""} ranges={ranges} now={now()} t={props.t} />
           </span>
         </Show>
