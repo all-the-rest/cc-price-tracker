@@ -618,3 +618,56 @@ test("validateChangelog: ungültige Events brechen", () => {
 test("modelKey: id ist der Schlüssel", () => {
   assert.equal(modelKey({ id: "glm-5.2" }), "glm-5.2");
 });
+
+test("buildChanges: non-free model_added bleibt trotz gleichzeitigem free_added erhalten (Regression deepseek-v4-flash-vision-exp)", () => {
+  // Am 2026-08-21 kamen gleichzeitig ox-alpha (gratis) und deepseek-v4-flash-vision-exp (bezahlt).
+  // buildChanges darf das bezahlte model_added nicht als Duplikat des free_added filtern.
+  const freeModel = {
+    id: "ox-alpha",
+    name: "Ox Alpha",
+    input: 0,
+    output: 0,
+    cachedRead: 0,
+    cachedWrite: null,
+    allowances: { goat: null, pro: null },
+  };
+  const vision = {
+    id: "deepseek-v4-flash-vision-exp",
+    name: "DeepSeek V4 Flash Vision (exp)",
+    input: 0.22,
+    output: 0.66,
+    cachedRead: 0.01,
+    cachedWrite: null,
+    allowances: { goat: 35, pro: 45 },
+  };
+  const empty = { models: [], plans: [], freeModels: [] };
+  const withBoth = {
+    models: [freeModel, vision],
+    plans: [],
+    freeModels: [{ id: "ox-alpha", availableFrom: today }],
+  };
+  const changes = buildChanges(empty, withBoth, today);
+  assert.ok(
+    changes.some((c) => c.type === "free_added" && c.model === "ox-alpha"),
+    "free_added für ox-alpha muss vorhanden sein"
+  );
+  assert.ok(
+    changes.some((c) => c.type === "model_added" && c.model === "deepseek-v4-flash-vision-exp"),
+    "model_added für vision-exp darf nicht durch free-Dedup unterdrückt werden"
+  );
+  // Umgekehrt: echtes Gratis-Modell soll nur free_added liefern
+  const onlyFree = { id: "laguna-s-2.1-free", name: "Laguna S 2.1 Free", input: 0, output: 0, cachedRead: 0, cachedWrite: null };
+  const onlyFreeSnap = { models: [onlyFree], plans: [], freeModels: [{ id: "laguna-s-2.1-free" }] };
+  const onlyFreeChanges = buildChanges(empty, onlyFreeSnap, today);
+  assert.deepEqual(onlyFreeChanges, [{ type: "free_added", model: "laguna-s-2.1-free" }]);
+});
+
+test("CHANGELOG.json: 2026-08-21 enthält model_added für deepseek-v4-flash-vision-exp (Regression)", () => {
+  const changelog = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "CHANGELOG.json"), "utf8"));
+  const entry = changelog.entries.find((e) => e.date === "2026-08-21" || e.id === "2026-08-21");
+  assert.ok(entry, "Eintrag 2026-08-21 muss existieren");
+  const hasVision = entry.changes.some((c) => c.type === "model_added" && c.model === "deepseek-v4-flash-vision-exp");
+  const hasVisionPeak = entry.changes.some((c) => c.type === "model_added" && c.model === "deepseek-v4-flash-vision-exp-peak");
+  assert.ok(hasVision, "model_added deepseek-v4-flash-vision-exp fehlt – aus history.json wiederherstellen");
+  assert.ok(hasVisionPeak, "model_added deepseek-v4-flash-vision-exp-peak fehlt");
+});

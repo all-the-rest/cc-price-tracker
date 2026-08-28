@@ -122,8 +122,8 @@ export default function Changelog(props: ChangelogProps) {
       case "allowance_changed": {
         const increased = c.plans.some((p) => p.to > p.from);
         const decreased = c.plans.some((p) => p.to < p.from);
-        if (increased && !decreased) return <span class={`${base} badge-success`}>↓</span>;
-        if (decreased && !increased) return <span class={`${base} badge-error`}>↑</span>;
+        if (increased && !decreased) return <span class={`${base} badge-success`}>↑</span>;
+        if (decreased && !increased) return <span class={`${base} badge-error`}>↓</span>;
         return <span class={`${base} badge-ghost`}>≈</span>;
       }
       case "capabilities_changed": {

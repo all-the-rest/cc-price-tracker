@@ -40133,7 +40133,7 @@
       }
     },
     {
-      "fetchedAt": "2026-08-28T06:08:51.312Z",
+      "fetchedAt": "2026-08-28T09:46:46.425Z",
       "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
       "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
       "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -40403,6 +40403,52 @@
             "output": 162
           },
           "tip": "Free through September 5, 2026."
+        },
+        {
+          "id": "tencent/hy4-preview",
+          "name": "Tencent Hy4 Preview",
+          "provider": "Tencent",
+          "category": "opensource",
+          "tier": null,
+          "contextWindow": 1048576,
+          "input": 0.834,
+          "output": 2.501,
+          "cachedRead": 0.042,
+          "cachedWrite": null,
+          "listInput": null,
+          "listOutput": null,
+          "listCachedRead": null,
+          "listCachedWrite": null,
+          "deal": null,
+          "deprecated": false,
+          "availability": {
+            "go": true,
+            "goat": true,
+            "pro": true,
+            "provider": true,
+            "max": true,
+            "team": true
+          },
+          "allowances": {
+            "goat": 20,
+            "pro": 30
+          },
+          "capabilities": {
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ],
+            "reasoning": true,
+            "toolCall": false
+          },
+          "pattern": {
+            "input": 800,
+            "cachedRead": 50000,
+            "output": 162
+          },
+          "tip": null
         },
         {
           "id": "tencent/hy3-paid",
