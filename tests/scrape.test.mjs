@@ -486,6 +486,24 @@ test("mergeChanges: allowance_changed wird pro Modell gemerged (alle Pläne in e
   assert.deepEqual(mergeChanges([], [a]), [a]);
 });
 
+test("upsertChangelogJson: zwei Läufe derselben Stunde werden gemerged (max. 1 Eintrag/Stunde)", () => {
+  const existing = {
+    entries: [
+      { id: "2026-08-15T10-00-00Z", date: "2026-08-15", changes: [{ type: "allowance_changed", model: "gemini-3.7-flash", plans: [{ plan: "goat", from: 40, to: 20 }] }] },
+    ],
+  };
+  const result = upsertChangelogJson(existing, "2026-08-15T10-33-12Z", "2026-08-15", [
+    { type: "model_added", model: "tencent/hy4-preview" },
+  ]);
+  assert.equal(result.entries.length, 1);
+  // id des ersten Laufs bleibt erhalten (git-tag-sicher, wie ocgo)
+  assert.equal(result.entries[0].id, "2026-08-15T10-00-00Z");
+  assert.deepEqual(
+    result.entries[0].changes.map((c) => c.type).sort(),
+    ["allowance_changed", "model_added"]
+  );
+});
+
 test("upsertChangelogJson: Eintrag derselben id wird gemerged, leere entfernt", () => {
   const existing = {
     entries: [

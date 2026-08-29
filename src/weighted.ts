@@ -62,6 +62,11 @@ export function advertisedValue(plan: Plan): number | null {
  * - "list" → aktueller Preis aus der Doku (Now-Preis, inkl. Deals)
  * - "full" → Listenpreis × monatliche Credits / inkl. Nutzung
  * - "paid" → Listenpreis × Monatspreis / inkl. Nutzung
+ *
+ * Im "full"-Modus (Volles Guthaben) kann der quotient aus monatlichen Credits
+ * und inkl. Nutzung viele Nachkommastellen erzeugen (z. B. 0,04167 × 70/20 =
+ * 0,145845); wir runden auf höchstens 4 Nachkommastellen, damit die Tabelle
+ * lesbare Werte zeigt.
  */
 export function fieldPrice(m: Model, f: PriceField, basis: Basis, plan: Plan): number | null {
   const raw = m[f];
@@ -71,7 +76,13 @@ export function fieldPrice(m: Model, f: PriceField, basis: Basis, plan: Plan): n
   if (usage <= 0) return null;
   const factor = basis === "full" ? plan.creditsMonthly : actualPaid(plan);
   if (factor === null || factor === undefined) return null;
-  return raw * (factor / usage);
+  const price = raw * (factor / usage);
+  return basis === "full" ? round4(price) : price;
+}
+
+/** Rundet auf höchstens 4 Nachkommastellen (at most 4 digits after the comma). */
+export function round4(n: number): number {
+  return Math.round(n * 1e4) / 1e4;
 }
 
 /**

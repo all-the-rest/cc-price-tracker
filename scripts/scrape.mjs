@@ -864,15 +864,28 @@ export function mergeChanges(existing, incoming) {
   return [...map.values()];
 }
 
+/**
+ * Stunden-Schlüssel eines Changelog-`id` für „max. 1 Eintrag pro Stunde":
+ * `2026-08-28T09-46-46Z` → `2026-08-28T09`. Altschema-IDs ohne Stunde
+ * (nur `YYYY-MM-DD`) bleiben unverändert.
+ */
+export function hourKey(id) {
+  return id && id.length >= 13 ? id.slice(0, 13) : id;
+}
+
 export function upsertChangelogJson(existing, id, date, changes) {
   const entries = Array.isArray(existing?.entries) ? existing.entries : [];
   const keep = entries.filter((e) => Array.isArray(e.changes) && e.changes.length > 0);
   const hasChanges = Array.isArray(changes) && changes.length > 0;
   if (!hasChanges) return { entries: keep };
-  const rest = keep.filter((e) => e.id !== id);
-  const sameId = keep.find((e) => e.id === id);
-  const merged = sameId ? mergeChanges(sameId.changes, changes) : changes;
-  rest.unshift({ id, date, changes: merged });
+  // Mehrere Läufe derselben Stunde werden zu EINEM Eintrag gemerged (das `id`
+  // bleibt wie bei ocgo ein git-tag-sicherer Run-Zeitstempel, hier nach Stunde
+  // gebucketet). So entstehen keine doppelten Einträge mehr, wenn der Scraper
+  // innerhalb derselben Stunde mehrfach läuft.
+  const rest = keep.filter((e) => hourKey(e.id) !== hourKey(id));
+  const sameHour = keep.find((e) => hourKey(e.id) === hourKey(id));
+  const merged = sameHour ? mergeChanges(sameHour.changes, changes) : changes;
+  rest.unshift({ id: sameHour ? sameHour.id : id, date, changes: merged });
   return { entries: rest };
 }
 
