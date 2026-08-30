@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-08-28T09:46:46.425Z",
+  "fetchedAt": "2026-08-30T22:52:34.500Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -2662,22 +2662,15 @@
       "category": "premium",
       "tier": null,
       "contextWindow": 1048576,
-      "input": 0.75,
-      "output": 3.75,
-      "cachedRead": 0.075,
-      "cachedWrite": 0.04167,
-      "listInput": 1.5,
-      "listOutput": 7.5,
-      "listCachedRead": 0.15,
-      "listCachedWrite": 0.08334,
-      "deal": {
-        "id": "gemini-3.7-flash-50-off",
-        "discountPercent": 50,
-        "free": false,
-        "expires": "2026-12-31",
-        "endsWhen": null,
-        "revertNote": null
-      },
+      "input": 1.5,
+      "output": 7.5,
+      "cachedRead": 0.15,
+      "cachedWrite": 0.08334,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
       "deprecated": false,
       "availability": {
         "go": false,
@@ -2688,8 +2681,8 @@
         "team": true
       },
       "allowances": {
-        "goat": 20,
-        "pro": 30
+        "goat": 40,
+        "pro": 50
       },
       "capabilities": {
         "input": [
