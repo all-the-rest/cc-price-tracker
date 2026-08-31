@@ -70,7 +70,7 @@ function renderChange(c) {
     case "deal_changed":
       return `- **${c.model}** — deal: ${fmtDeal(c.from)} → ${fmtDeal(c.to)}`;
     case "allowance_changed":
-      return `- **${c.model}** — ${c.plan} allowance: $${c.from} → $${c.to}`;
+      return `- **${c.model}** — allowance: ${c.plans.map((p) => `${p.plan} $${p.from} → $${p.to}`).join(", ")}`;
     case "capabilities_changed":
       return `- **${c.model}** — capabilities: ${fmtCaps(c.from)} → ${fmtCaps(c.to)}`;
     case "free_added":
