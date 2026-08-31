@@ -29,6 +29,9 @@ import {
   normalizeChangelogIds,
   modelKey,
   validatePlanBaselines,
+  enrichFreeModels,
+  parseUsd,
+  parseRequests,
 } from "../scripts/scrape.mjs";
 
 const fixtures = join(dirname(fileURLToPath(import.meta.url)), "fixtures");
@@ -688,4 +691,57 @@ test("CHANGELOG.json: 2026-08-21 enthält model_added für deepseek-v4-flash-vis
   const hasVisionPeak = entry.changes.some((c) => c.type === "model_added" && c.model === "deepseek-v4-flash-vision-exp-peak");
   assert.ok(hasVision, "model_added deepseek-v4-flash-vision-exp fehlt – aus history.json wiederherstellen");
   assert.ok(hasVisionPeak, "model_added deepseek-v4-flash-vision-exp-peak fehlt");
+});
+
+test("parseUsd: $10 → 10, $-Zeichen/Gemeinde egal, Pay-as-you-go/- → null, unparsebar → Fehler", () => {
+  assert.equal(parseUsd("$10"), 10);
+  assert.equal(parseUsd("$70 of usage"), 70);
+  assert.equal(parseUsd("1,234.5"), 1234.5);
+  assert.equal(parseUsd("Pay as you go"), null);
+  assert.equal(parseUsd("Custom"), null);
+  assert.equal(parseUsd("—"), null);
+  assert.equal(parseUsd(""), null);
+  assert.equal(parseUsd(null), null);
+  assert.throws(() => parseUsd("abc"));
+});
+
+test("parseRequests: ~75K → 75000, 2M → 2.000.000, Ausschlüsse → null", () => {
+  assert.equal(parseRequests("~75K requests"), 75000);
+  assert.equal(parseRequests("~75k requests"), 75000);
+  assert.equal(parseRequests("370000 requests"), 370000);
+  assert.equal(parseRequests("~2M requests"), 2_000_000);
+  assert.equal(parseRequests("Pay as you go"), null);
+  assert.equal(parseRequests("Provider API access"), null);
+  assert.equal(parseRequests("-"), null);
+  assert.equal(parseRequests(""), null);
+});
+
+test("enrichFreeModels: models.dev-Treffer + text-only-Fallback", () => {
+  const oc = {
+    "laguna-s-2.1-free": {
+      id: "laguna-s-2.1-free",
+      name: "Laguna S 2.1 Free",
+      reasoning: false,
+      tool_call: false,
+      modalities: { input: ["text"], output: ["text"] },
+    },
+  };
+  const free = [
+    { id: "laguna-s-2.1-free", name: "Laguna S 2.1 Free", availableFrom: "2026-08-15", note: null },
+    { id: "unbekannt-free", name: "Unbekannt Free", availableFrom: "2026-08-15", note: null },
+  ];
+  const out = enrichFreeModels(free, oc, {});
+  assert.deepEqual(out[0].capabilities, {
+    input: ["text"],
+    output: ["text"],
+    reasoning: false,
+    toolCall: false,
+  });
+  // Kein models.dev-Treffer → text-only-Fallback
+  assert.deepEqual(out[1].capabilities, {
+    input: ["text"],
+    output: ["text"],
+    reasoning: false,
+    toolCall: false,
+  });
 });
