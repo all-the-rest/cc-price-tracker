@@ -54,16 +54,6 @@ export function pricingLine(p) {
   return parts.join(" / ") + fmtAllowances(p);
 }
 
-function fmtDeal(d) {
-  if (!d) return "no deal";
-  if (d.free) return "free";
-  let s = `-${d.discountPercent}%`;
-  if (d.expires) s += ` (valid until ${d.expires})`;
-  else if (d.endsWhen) s += ` (${d.endsWhen})`;
-  else s += " (permanent)";
-  return s;
-}
-
 export function fmtCaps(c) {
   if (!c) return "–";
   const inp = Array.isArray(c.input) && c.input.length ? c.input.join("+") : "–";
@@ -96,8 +86,6 @@ export function renderChange(c) {
       const fields = c.fields.map((f) => PRICE_FIELD_NAMES[f] ?? f).join(", ");
       return `- **${c.model}** — price change (${fields}): ${pricingLine(c.from)} → ${pricingLine(c.to)}`;
     }
-    case "deal_changed":
-      return `- **${c.model}** — deal: ${fmtDeal(c.from)} → ${fmtDeal(c.to)}`;
     case "allowance_changed":
       return `- **${c.model}** — allowance: ${c.plans.map((p) => `${p.plan} $${p.from} → $${p.to}`).join(", ")}`;
     case "capabilities_changed":

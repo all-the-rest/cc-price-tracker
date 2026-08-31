@@ -101,8 +101,9 @@ pnpm typecheck        # nur tsc --noEmit
   `src/plan-baselines.json` oder aus gescrapten Preisen ableitbar). Neuer Plan (nicht in Config) mit nicht scrapbarer
   Baseline (Credits oder Preis fehlen) → `process.exit(1)`.
 - **API-Zugang:** pro Plan-Seite `only plan without API access` → `apiAccess: false` (Go); sonst true. HTTP-Fehler → rot.
-- **Deals/Preise:** `rates` = Now, `listRates` = Was. `price_changed` bei Now-Änderung, `deal_changed` bei
-  deal/listRates-Änderung. Float-Toleranz 1e-9. `expires` auf `YYYY-MM-DD` normalisieren.
+- **Deals/Preise:** `rates` = Now, `listRates` = Was. `price_changed` bei Now-Änderung; Deal-/`listRates`-Änderungen
+  ohne Now-Änderung erzeugen kein separates Event (kein `deal_changed`-Typ). Float-Toleranz 1e-9. `expires` auf
+  `YYYY-MM-DD` normalisieren.
 - **Allowances:** `allowance_changed` je Plan (goat/pro) mit from/to; `planAllowanceUsd` ist maßgeblich.
 - **Deprecated/unverfügbar:** Modelle ohne availability-Key auf mindestens einem Plan → `model_removed` (wenn vorher da),
   sonst aus dem Snapshot ausgeschlossen (z. B. `ling-3.0-flash-free`).

@@ -25,7 +25,7 @@ Status-Tracking für den Aufbau. Upstream: `all-the-rest/ocgo-price-tracker` (@ 
   - Capabilities via `@opencode-ai/models` (models.dev/api.json, Live→Snapshot-Fallback)
   - `pattern` = globales Standard-Anfragemuster (**800 in / 50.000 cached / 162 out**, ~125–200-Output-Range-Mitte)
   - zod-Validierung (`validateSnapshot`, `validateChangelog`); Erstlauf erzeugt Daten + „Initial version"-Event
-  - Plan-aware Diff/Events (`allowance_changed`, `deal_changed`, `plan_*`, `api_access_changed`)
+  - Plan-aware Diff/Events (`allowance_changed`, `plan_*`, `api_access_changed`)
   - **Expired-Deals-Filter** (`expires < heute` → Deal verwerfen, listRates als Now)
 - [x] Fixtures: pricing-limits-HTML + Go/GOAT/Pro/Max-Seiten + models.dev-Snapshot
 - [x] `tests/scrape.test.mjs` (Parser, Deals was/now, Allowances, deprecated-Filter, Free, Expired-Deal)

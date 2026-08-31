@@ -375,7 +375,7 @@ test("computeModelChanges: model_added mit pricing + listPricing", () => {
   assert.equal(changesNoDeal[0].listPricing, null);
 });
 
-test("computeModelChanges: price_changed + allowance_changed (no deal_changed)", () => {
+test("computeModelChanges: price_changed + allowance_changed, Deal-only-Änderung ohne Event", () => {
   const glm = models.find((m) => m.id === "glm-5.2");
   const ds = models.find((m) => m.id === "minimax-m3");
   const next = [
@@ -390,8 +390,7 @@ test("computeModelChanges: price_changed + allowance_changed (no deal_changed)",
     )
   );
   assert.ok(!changes.some((c) => c.type === "allowance_changed" && c.plans.some((p) => p.plan === "pro")));
-  // Deal-Änderungen ohne Preisänderung erzeugen kein eigenes Event
-  assert.ok(!changes.some((c) => c.type === "deal_changed"));
+  // Deal-Änderungen ohne Preisänderung erzeugen KEIN separates Event (es gibt keinen deal_changed-Typ)
   assert.ok(!changes.some((c) => c.model === "minimax-m3"));
 });
 
