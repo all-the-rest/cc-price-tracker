@@ -140,6 +140,8 @@ export type Change =
   | { type: "api_access_changed"; plan: string; from: boolean; to: boolean };
 
 export interface ChangelogEntry {
+  /** Run-id (z. B. `2026-08-28T09-46-46Z`); Altschema-Einträge fallen auf `date` zurück. */
+  id: string;
   date: string;
   changes: Change[];
 }

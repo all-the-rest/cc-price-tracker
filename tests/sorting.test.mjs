@@ -77,6 +77,36 @@ test("Tab-IDs aus ssr-entry entsprechen den erwarteten Tabs", () => {
   assert.deepEqual(ssr.TAB_PLAN_IDS, TAB_IDS);
 });
 
+test("Changelog: Run-id rendert die Uhrzeit (MEZ/MESZ), Anker = entry.id, mehrere Einträge/Tag", () => {
+  const html = ssr.renderChangelog([
+    {
+      id: "2026-08-28T09-46-46Z",
+      date: "2026-08-28",
+      changes: [{ type: "text", lang: { en: "Morning run", de: "Morgenlauf" } }],
+    },
+    {
+      id: "2026-08-28T06-08-51Z",
+      date: "2026-08-28",
+      changes: [{ type: "text", lang: { en: "Early run", de: "Frühlauf" } }],
+    },
+    // Altschema-Eintrag: id = date → keine Uhrzeit
+    { id: "2026-08-26", date: "2026-08-26", changes: [{ type: "free_added", model: "ox-alpha" }] },
+  ]);
+  const $ = cheerio.load(html);
+
+  // Beide Einträge desselben Tages werden mit eigenem id-Anker gerendert.
+  assert.equal($("#2026-08-28T09-46-46Z").length, 1);
+  assert.equal($("#2026-08-28T06-08-51Z").length, 1);
+
+  // 2026-08-28T09:46:46Z → 11:46 in Europa/Wien (MESZ, UTC+2).
+  assert.match($("#2026-08-28T09-46-46Z h3").text(), /11:46/);
+  // 2026-08-28T06:08:51Z → 08:08 in Europa/Wien (MESZ, UTC+2).
+  assert.match($("#2026-08-28T06-08-51Z h3").text(), /08:08/);
+
+  // Altschema (id = Datum): Datum ohne Uhrzeit.
+  assert.doesNotMatch($("#2026-08-26 h3").text(), /\d{1,2}:\d{2}/);
+});
+
 for (const planId of TAB_IDS) {
   for (const basis of BASES) {
     for (const field of FIELDS) {

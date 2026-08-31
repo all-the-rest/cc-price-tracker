@@ -56,7 +56,7 @@ function main() {
   if (all) {
     targets = entries;
   } else if (date) {
-    const entry = entries.find((e) => e.date === date);
+    const entry = entries.find((e) => e.id === date || e.date === date);
     if (!entry) {
       console.error(`no changelog entry for date ${date}`);
       process.exit(1);

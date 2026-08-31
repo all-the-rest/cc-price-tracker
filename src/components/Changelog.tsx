@@ -17,6 +17,20 @@ interface ChangelogProps {
 // Einträge pro Changelog-Seite (Pagination).
 const PAGE_SIZE = 20;
 
+// Leitet aus einem Run-`id` (z. B. 2026-08-28T09-46-46Z) die Uhrzeit ab (MEZ/MESZ);
+// für Altschema-Einträge (id = Datum) wird null geliefert (keine Zeitangabe).
+function entryTime(id: string): string | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2})-(\d{2})-(\d{2})Z$/.exec(id);
+  if (!m) return null;
+  const date = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]));
+  return date.toLocaleTimeString([], {
+    timeZone: "Europe/Vienna",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short",
+  });
+}
+
 const BASE_FIELDS: PriceField[] = ["input", "output", "cachedRead"];
 const ALL_FIELDS: PriceField[] = ["input", "output", "cachedRead", "cachedWrite"];
 
@@ -32,10 +46,11 @@ export default function Changelog(props: ChangelogProps) {
   const totalPages = () => Math.max(1, Math.ceil(props.entries.length / PAGE_SIZE));
   const [page, setPage] = createSignal(1);
 
-  // Deep-Link auf einen Eintrag (#<entry-date>): direkt auf die passende Seite.
+  // Deep-Link auf einen Eintrag (#<entry-id>): direkt auf die passende Seite.
+  // Altschema-Links (#<date>) werden weiterhin auf den ersten Eintrag des Tages aufgelöst.
   onMount(() => {
     const hash = window.location.hash.slice(1);
-    const idx = props.entries.findIndex((e) => e.date === hash);
+    const idx = props.entries.findIndex((e) => e.id === hash || e.date === hash);
     if (idx >= 0) setPage(Math.floor(idx / PAGE_SIZE) + 1);
   });
 
@@ -258,10 +273,13 @@ export default function Changelog(props: ChangelogProps) {
       <div class="mt-2 max-w-3xl text-sm leading-relaxed text-base-content/80">
         <For each={visibleEntries()}>
           {(entry) => (
-            <div id={entry.date} class="mt-4 scroll-mt-24">
+            <div id={entry.id} class="mt-4 scroll-mt-24">
               <h3 class="text-sm font-semibold text-base-content/70">
                 {fmtDateOnly(`${entry.date}T00:00:00.000Z`, props.lang)}
-                <AnchorLink id={entry.date} label="Direktlink zu diesem Changelog-Eintrag" />
+                <Show when={entryTime(entry.id) !== null}>
+                  <span class="ml-2 font-normal text-base-content/50">{entryTime(entry.id)}</span>
+                </Show>
+                <AnchorLink id={entry.id} label="Direktlink zu diesem Changelog-Eintrag" />
               </h3>
               <Show when={entry.changes.length > 0} fallback={<p class="mt-1">{t().chgNone}</p>}>
                 <ul class="mt-1 space-y-1">

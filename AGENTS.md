@@ -126,7 +126,9 @@ pnpm typecheck        # nur tsc --noEmit
 - **PlanComparison:** alle Pläne nebeneinander — Preis, Credits, ~Requests, 5h/Weekly/Monthly, API-Zugang (mit Link auf
   `apiAccessSourceUrl`), Modell-Scope, aktive Deals.
 - **ZDR-Info-Karte** (ersetzt die OCG-Datenschutz-Tabelle): „Command Code trainiert nicht auf deinem Code", `CMD_ZDR=1`.
-- **Free-Models-Tabelle** mit „Verfügbar seit/bis". **Changelog** rendert plan-aware Events mit Richtungs-Badges.
+- **Free-Models-Tabelle** mit „Verfügbar seit/bis". **Changelog** rendert plan-aware Events mit Richtungs-Badges; jeder
+  Run-Eintrag zeigt die Uhrzeit (MEZ/MESZ, aus `entry.id`) und ist per `#<entry.id>` direkt verlinkbar (mehrere
+  Einträge/Tag, Altschema-Links `#<date>` weiterhin gültig).
 - Quellen-Links (pricing-limits, models.dev), RSS (`releases.atom`) und Watch-Hinweis im Footer.
 
 ## CI/CD (`.github/workflows/price-tracker.yml`)
@@ -137,7 +139,9 @@ pnpm typecheck        # nur tsc --noEmit
   (`node scripts/ensure-release.mjs --all`, Tag = Eintrags-id, RSS via `releases.atom`) →
   Sync-Check (`node scripts/check-release-sync.mjs` bricht rot ab, wenn Changelog-Einträge und GitHub-Releases
   divergieren) → `upload-pages-artifact` (dist) + `upload-artifact` → `deploy-pages`.
-- `scripts/release-notes.mjs` rendert plan-aware, rein englische Notizen. Fehlgeschlagenes `pnpm scrape` bricht ab.
+- `scripts/release-notes.mjs` rendert plan-aware, rein englische Notizen — exakt der Changelog-Eintrag inkl. Usage-Limit
+  (Allowances) je Modell-Pricing, Plan-Labels und Tagen bei entfernten Modellen (Tests: `tests/release-notes.test.mjs`).
+  Fehlgeschlagenes `pnpm scrape` bricht ab.
 - Nach einem Daten-Commit (`changed=true`) benachrichtigt der Deploy-Job das Vergleichs-Projekt `all-the-rest/ai-10-usd` per `repository_dispatch` (`event_type=source-updated`, POST auf `/repos/all-the-rest/ai-10-usd/dispatches`). Secret: `AI10USD_DISPATCH_TOKEN` (PAT mit `repo`-Scope bzw. fine-grained mit Contents read/write auf `ai-10-usd`). Fehlt das Secret → Step übersprungen (grün); vorhanden → der Step prüft den HTTP-Status und bricht bei ≠ 2xx **rot** ab (kein stiller Verlust wie beim alten `curl -sS` ohne `-f`).
 - **Lokale Daten-Commits (Push statt CI-Commit):** Wird eine Datenänderung lokal committet und per Push auf `main` gebracht — statt vom CI-Job (der `changed=true` erzeugt und committet) —, feuert der automatische Dispatch **nicht**: Der Scrape im CI findet dann keine Diffs (`changed=false`), der Notify-Step wird übersprungen. Das Vergleichs-Projekt dann manuell triggern:
   ```bash
