@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-08-31T23:58:07.565Z",
+  "fetchedAt": "2026-09-01T22:42:41.687Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -1859,6 +1859,54 @@
       "capabilities": {
         "input": [
           "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "claude-fable-5-1",
+      "name": "Claude Fable 5.1",
+      "provider": "Anthropic",
+      "category": "premium",
+      "tier": null,
+      "contextWindow": 1000000,
+      "input": 10,
+      "output": 50,
+      "cachedRead": 0.25,
+      "cachedWrite": 12.5,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": false,
+        "pro": false,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 20
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "pdf"
         ],
         "output": [
           "text"
