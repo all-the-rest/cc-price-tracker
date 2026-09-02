@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-02T18:03:42.202Z",
+  "fetchedAt": "2026-09-02T21:30:48.615Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -2726,6 +2726,56 @@
         "input": [
           "text",
           "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "gemini-3.8-flash",
+      "name": "Gemini 3.8 Flash",
+      "provider": "Google",
+      "category": "premium",
+      "tier": null,
+      "contextWindow": 1000000,
+      "input": 1.5,
+      "output": 7.5,
+      "cachedRead": 0.15,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 40,
+        "pro": 50
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "video",
+          "audio",
           "pdf"
         ],
         "output": [
