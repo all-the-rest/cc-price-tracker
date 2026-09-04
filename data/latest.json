@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-04T04:10:43.932Z",
+  "fetchedAt": "2026-09-04T22:26:32.649Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -2406,6 +2406,54 @@
         "output": 162
       },
       "tip": null
+    },
+    {
+      "id": "gpt-6-astra",
+      "name": "GPT-6 Astra",
+      "provider": "OpenAI",
+      "category": "premium",
+      "tier": "Standard / Long context",
+      "contextWindow": 1050000,
+      "input": 10,
+      "output": 50,
+      "cachedRead": 1,
+      "cachedWrite": 12.5,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": false,
+        "pro": false,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 20
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Rates shown are the ≤ 272K tokens band; > 272K tokens bills $20.00 input / $75.00 output / $2.00 cache read / $25.00 cache write (per 1M tokens)."
     },
     {
       "id": "gpt-5.6-sol",
