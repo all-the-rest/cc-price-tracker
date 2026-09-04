@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-02T22:44:37.866Z",
+  "fetchedAt": "2026-09-04T04:10:43.932Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -1328,13 +1328,15 @@
       "capabilities": {
         "input": [
           "text",
-          "image"
+          "image",
+          "video",
+          "pdf"
         ],
         "output": [
           "text"
         ],
         "reasoning": true,
-        "toolCall": false
+        "toolCall": true
       },
       "pattern": {
         "input": 800,
@@ -3120,13 +3122,16 @@
       "capabilities": {
         "input": [
           "text",
-          "image"
+          "image",
+          "video",
+          "pdf",
+          "audio"
         ],
         "output": [
           "text"
         ],
         "reasoning": true,
-        "toolCall": false
+        "toolCall": true
       },
       "pattern": {
         "input": 800,
