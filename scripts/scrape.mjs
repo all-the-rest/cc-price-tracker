@@ -736,15 +736,15 @@ export function computeModelChanges(prevModels, nextModels, firstSeen = new Map(
     }
 
     // Fähigkeiten-Änderung eines Modells, das selbst erst innerhalb der letzten
-    // 24h hinzugefügt wurde (model_added), ist keine echte Quelländerung —
+    // 72h hinzugefügt wurde (model_added), ist keine echte Quelländerung —
     // die Fähigkeiten werden bei neuen Modellen oft verzögert (models.dev)
-    // nachgeliefert. Solche capabilities_changed-Events werden unterdrückt
-    // (analog zur stillen privacy-Erstbefüllung).
+    // nachgeliefert (teils erst ~30h später). Solche capabilities_changed-Events
+    // werden unterdrückt (analog zur stillen privacy-Erstbefüllung).
     if (!capabilitiesEqual(before.capabilities, after.capabilities)) {
       const todayMs = Number.isNaN(Date.parse(today)) ? null : Date.parse(today);
       const fs = firstSeen.get(key);
       const recentlyAdded =
-        todayMs != null && fs != null && Math.round((todayMs - Date.parse(fs)) / 86_400_000) <= 1;
+        todayMs != null && fs != null && Math.round((todayMs - Date.parse(fs)) / 86_400_000) <= 3;
       if (!recentlyAdded) {
         changes.push({
           type: "capabilities_changed",
@@ -1154,7 +1154,7 @@ async function main() {
         const key = modelKey(m);
         if (!firstSeen.has(key)) firstSeen.set(key, day);
       }
-      // Auch kostenlose Modelle erfassen (für die 24h-Unterdrückung der
+      // Auch kostenlose Modelle erfassen (für die 72h-Unterdrückung der
       // capabilities_changed-Events, falls künftig Free-Modell-Fähigkeiten
       // getrackt werden).
       for (const f of snap.freeModels ?? []) {

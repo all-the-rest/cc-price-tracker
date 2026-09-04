@@ -413,6 +413,27 @@ test("computeModelChanges: model_removed mit days aus firstSeen", () => {
   assert.deepEqual(changes, [{ type: "model_removed", model: "glm-5.2", days: 14 }]);
 });
 
+test("computeModelChanges: capabilities_changed innerhalb von 72h nach model_added unterdrückt", () => {
+  const glm = models.find((m) => m.id === "glm-5.2");
+  const next = {
+    ...glm,
+    capabilities: { input: ["text", "image"], output: ["text"], reasoning: true, toolCall: true },
+  };
+  // 2 Tage nach model_added → models.dev-Nachlieferung, kein Event
+  const recent = new Map([["glm-5.2", "2026-09-01"]]);
+  assert.deepEqual(computeModelChanges([glm], [next], recent, "2026-09-03"), []);
+  // 5 Tage nach model_added → echte Quelländerung, Event bleibt
+  const older = new Map([["glm-5.2", "2026-08-29"]]);
+  assert.deepEqual(computeModelChanges([glm], [next], older, "2026-09-03"), [
+    {
+      type: "capabilities_changed",
+      model: "glm-5.2",
+      from: glm.capabilities,
+      to: next.capabilities,
+    },
+  ]);
+});
+
 test("computePlanChanges: plan_added / plan_pricing_changed / api_access_changed", () => {
   const goat = { ...plans.find((p) => p.id === "goat"), apiAccess: true, apiAccessSourceUrl: "https://x" };
   const nextGoat = { ...goat, priceMonthly: 12 };

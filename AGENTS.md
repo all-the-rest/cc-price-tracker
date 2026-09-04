@@ -105,6 +105,9 @@ pnpm typecheck        # nur tsc --noEmit
   ohne Now-Änderung erzeugen kein separates Event (kein `deal_changed`-Typ). Float-Toleranz 1e-9. `expires` auf
   `YYYY-MM-DD` normalisieren.
 - **Allowances:** `allowance_changed` je Plan (goat/pro) mit from/to; `planAllowanceUsd` ist maßgeblich.
+- **Capabilities-Erstbefüllung:** `capabilities_changed` wird unterdrückt, solange das Modell erst innerhalb
+  der letzten **72h** hinzugefügt wurde (`firstSeen` aus `data/history.json`) — models.dev liefert Fähigkeiten
+  bei neuen Modellen verzögert nach (teils erst ~30h später).
 - **Deprecated/unverfügbar:** Modelle ohne availability-Key auf mindestens einem Plan → `model_removed` (wenn vorher da),
   sonst aus dem Snapshot ausgeschlossen (z. B. `ling-3.0-flash-free`).
 - **Free-Models:** `availableFrom` aus vorherigem Lauf übernehmen; Modell nicht mehr free → `free_removed` (until = heute).
