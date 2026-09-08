@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-08T18:06:19.224Z",
+  "fetchedAt": "2026-09-08T22:50:16.646Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -1295,99 +1295,6 @@
         "output": 162
       },
       "tip": null
-    },
-    {
-      "id": "deepseek-v4.1-flash-beta",
-      "name": "DeepSeek V4.1 Flash (beta)",
-      "provider": "DeepSeek",
-      "category": "opensource",
-      "tier": "off-peak",
-      "contextWindow": 1000000,
-      "input": 0.22,
-      "output": 0.66,
-      "cachedRead": 0.007,
-      "cachedWrite": null,
-      "listInput": null,
-      "listOutput": null,
-      "listCachedRead": null,
-      "listCachedWrite": null,
-      "deal": null,
-      "deprecated": false,
-      "availability": {
-        "go": true,
-        "goat": true,
-        "pro": true,
-        "provider": true,
-        "max": true,
-        "team": true
-      },
-      "allowances": {
-        "goat": 20,
-        "pro": 30
-      },
-      "capabilities": {
-        "input": [
-          "text",
-          "image"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": true,
-        "toolCall": false
-      },
-      "pattern": {
-        "input": 800,
-        "cachedRead": 50000,
-        "output": 162
-      },
-      "tip": "Beta — DeepSeek retires it on September 10, 2026."
-    },
-    {
-      "id": "deepseek-v4.1-flash-beta-peak",
-      "name": "DeepSeek V4.1 Flash (beta)",
-      "provider": "DeepSeek",
-      "category": "opensource",
-      "tier": "peak",
-      "contextWindow": 1000000,
-      "input": 0.44,
-      "output": 1.32,
-      "cachedRead": 0.014,
-      "cachedWrite": null,
-      "listInput": null,
-      "listOutput": null,
-      "listCachedRead": null,
-      "listCachedWrite": null,
-      "deal": null,
-      "deprecated": false,
-      "availability": {
-        "go": true,
-        "goat": true,
-        "pro": true,
-        "provider": true,
-        "max": true,
-        "team": true
-      },
-      "allowances": {
-        "goat": 20,
-        "pro": 30
-      },
-      "capabilities": {
-        "input": [
-          "text"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": false,
-        "toolCall": false
-      },
-      "pattern": {
-        "input": 800,
-        "cachedRead": 50000,
-        "output": 162
-      },
-      "tip": "Beta — DeepSeek retires it on September 10, 2026."
     },
     {
       "id": "qwen-3.8-max-0902",
@@ -3726,16 +3633,6 @@
       ]
     ],
     "deepseekv4flashvision(exp)": [
-      [
-        1,
-        4
-      ],
-      [
-        6,
-        10
-      ]
-    ],
-    "deepseekv4.1flash(beta)": [
       [
         1,
         4
