@@ -33,7 +33,24 @@ function ensureRelease(tag, notes, { latest }) {
   }
   const args = ["release", "create", tag, "--title", title, "--notes", notes];
   if (latest === false) args.push("--latest=false");
-  gh(args);
+  try {
+    gh(args);
+  } catch (err) {
+    const stderr = err?.stderr ?? String(err ?? "");
+    if (/already exists/i.test(stderr)) {
+      const retry = releaseInfo(tag);
+      if (retry) {
+        if (retry.name === title && retry.body.trimEnd() === notes.trimEnd()) {
+          console.log(`release ${tag} is up to date, nothing to do`);
+          return;
+        }
+        gh(["release", "edit", tag, "--title", title, "--notes", notes]);
+        console.log(`updated release ${tag} (recovered from create conflict)`);
+        return;
+      }
+    }
+    throw err;
+  }
   console.log(`created release ${tag}${latest === false ? " (not latest)" : ""}`);
 }
 
