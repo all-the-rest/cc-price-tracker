@@ -160,6 +160,10 @@ pnpm typecheck        # nur tsc --noEmit
 - `pnpm test` = `tests/scrape.test.mjs` (Parser/Deals/Allowances/deprecated/Free/Pläne/API-Access gegen Fixtures)
   + `tests/sorting.test.mjs` (echte `PriceTable`-Komponente per SolidJS-SSR, `tests/.ssr/` gitignored).
 - Fixtures in `tests/fixtures/` sind fixiert — Tests müssen deterministisch gegen sie laufen.
+- **Screenshot-Tests sind permanent:** neue UI-Features (insb. Share-Cards) bekommen Playwright-Tests in
+  `tests/screenshots/` (Suite `playwright.screenshots.config.ts`, `pnpm test:screenshots`) — alle Size-Varianten
+  + Mobile + beide Sprachen (de/en). Keine Einmal-Screenshots: die Tests bleiben im Repo und müssen bei jeder
+  Umsetzung grün laufen.
 
 ## Verifikation
 

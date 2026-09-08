@@ -12,6 +12,7 @@ import PriceTable from "./components/PriceTable";
 import PlanComparison from "./components/PlanComparison";
 import ZdrNote from "./components/ZdrNote";
 import Changelog from "./components/Changelog";
+import ShareDialog from "./components/ShareDialog";
 import Legal from "./components/Legal";
 import Footer from "./components/Footer";
 import { modelOnPlan } from "./util";
@@ -200,6 +201,7 @@ export default function App() {
           caps={caps()}
           setCaps={setCaps}
           peakHours={data.peakHours}
+          headerActions={<ShareDialog data={data} planId={planId()} basis={basis()} lang={lang()} />}
         />
         <PlanComparison
           models={data.models}

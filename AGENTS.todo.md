@@ -51,3 +51,11 @@ Status-Tracking für den Aufbau. Upstream: `all-the-rest/ocgo-price-tracker` (@ 
 - [x] all-the.rest-Eintrag committet + gepusht (live)
 - [x] Upstream-Sync-Workflow (manuell, change-by-change) in README dokumentiert
 
+## Phase 6: Share-Cards (Portrait-Regel)
+- [ ] Portrait-Karten (IG 4:5 1080×1350, Story 9:16 1080×1920) füllen die Höhe mit **Constraints statt
+  uninteressanten Modellen**: TopN bescheiden (5–8), pro Zeile max. eine Constraint-Zeile
+  (5h-/Weekly-Limit-Hinweis je Plan), kompakter Constraints-Block unter der Liste
+  (5h-/Weekly-Limits + Stand + Domain-Quelle `cc-pricing.all-the.rest`).
+- [ ] Landscape (OG 1200×630, Twitter 1200×675): Top 5, Requests + Preis, keine Constraints.
+- [ ] Zeilen-Details: Rank + Name + Requests + Preis (Breite 1080px begrenzt keine weiteren Felder).
+

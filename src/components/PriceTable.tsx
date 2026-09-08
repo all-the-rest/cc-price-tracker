@@ -1,4 +1,5 @@
 import { createMemo, For, onCleanup, onMount, Show } from "solid-js";
+import type { JSX } from "solid-js";
 import type { Lang, Translation } from "../i18n";
 import type { Basis, Model, Plan, PeakHours } from "../types";
 import Heading from "./Heading";
@@ -24,6 +25,8 @@ interface PriceTableProps {
   caps: CapId[];
   setCaps: (u: (prev: CapId[]) => CapId[]) => void;
   peakHours?: PeakHours;
+  /** Optional right-aligned content on the prices heading row (e.g. Share trigger). */
+  headerActions?: JSX.Element;
 }
 
 export default function PriceTable(props: PriceTableProps) {
@@ -186,7 +189,10 @@ export default function PriceTable(props: PriceTableProps) {
 
   return (
     <section id="prices" class="mt-10">
-      <Heading anchor="prices">{props.t.headingPrices}</Heading>
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <Heading anchor="prices">{props.t.headingPrices}</Heading>
+        {props.headerActions}
+      </div>
 
       <div class="mt-4 flex flex-wrap items-center gap-3">
         <span>{props.t.basisLabel}</span>
