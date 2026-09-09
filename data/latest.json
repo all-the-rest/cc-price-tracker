@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-08T22:50:16.646Z",
+  "fetchedAt": "2026-09-09T18:05:29.853Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -213,7 +213,60 @@
         "cachedRead": 50000,
         "output": 162
       },
-      "tip": "Free while it lasts."
+      "tip": "Free while it lasts. Up to 100 requests a day."
+    },
+    {
+      "id": "ling-3.0-flash-sante:free",
+      "name": "Ling 3.0 Flash Sante",
+      "provider": null,
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 262144,
+      "input": 0,
+      "output": 0,
+      "cachedRead": 0,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": {
+        "id": "ling-3.0-flash-sante-free",
+        "discountPercent": 100,
+        "free": true,
+        "expires": null,
+        "endsWhen": "while it lasts",
+        "revertNote": null
+      },
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": null,
+        "pro": null
+      },
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Free while it lasts. Up to 100 requests a day."
     },
     {
       "id": "tencent/hy4-preview",
@@ -3608,7 +3661,24 @@
         "reasoning": true,
         "toolCall": true
       },
-      "note": "Free while it lasts."
+      "note": "Free while it lasts. Up to 100 requests a day."
+    },
+    {
+      "id": "ling-3.0-flash-sante:free",
+      "name": "Ling 3.0 Flash Sante",
+      "availableFrom": "2026-09-09",
+      "until": null,
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": false,
+        "toolCall": false
+      },
+      "note": "Free while it lasts. Up to 100 requests a day."
     }
   ],
   "peakHours": {
