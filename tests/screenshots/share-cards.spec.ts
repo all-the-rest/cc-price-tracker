@@ -2,9 +2,10 @@
 //
 // AGENTS.md: neue UI-Features (insb. Share-Cards) bekommen Playwright-Tests —
 // alle Size-Varianten (OG/Twitter/IG-4:5/Story-9:16) + Mobile + beide Sprachen.
-// AGENTS.todo.md Phase 6 (portrait rule): landscape = Top 5 max, no
-// constraints; portraits = modest TopN (5–8) + per-row constraint line +
+// AGENTS.todo.md Phase 6 (portrait rule): landscape = Top 5, no
+// constraints; portraits = Top 8 + per-row constraint line +
 // compact constraints block (limits + stand + domain source).
+// TOP-X is automatic per preset (same as ocgo) — no manual TopN selector.
 // Runs under playwright.screenshots.config.ts (`pnpm test:screenshots`) on
 // Desktop Chrome + Mobile Chrome (no skips: mobile coverage is mandatory).
 //
@@ -26,8 +27,8 @@ const SIZES = [
 ] as const;
 type SizeKey = (typeof SIZES)[number]["key"];
 const SIZE_VALUES = SIZES.map((s) => s.key);
-// Every TopN option value that can appear (landscape 3/5, portrait 5–8).
-const ALL_TOPN_VALUES = ["3", "5", "6", "7", "8"] as const;
+// Automatic TOP-X count per preset (same as ocgo): landscape Top 5, portrait Top 8.
+const AUTO_TOPN: Record<SizeKey, number> = { og: 5, twitter: 5, portrait: 8, story: 8 };
 const PLAN_VALUES = ["go", "goat", "pro", "provider", "max10", "max20"] as const;
 
 type Lang = "en" | "de";
@@ -119,22 +120,25 @@ async function configureCard(
   dialog: Locator,
   lang: Lang,
   size: SizeKey,
-  topN: string,
   cardTheme: "dark" | "light",
   plan = "goat",
 ): Promise<Locator> {
   // Requests-only: no metric radiogroup may exist.
   await expect(dialog.locator('input[name="share-metric"]')).toHaveCount(0);
+  // TOP-X is automatic: no TopN selector — only the plan + size selects exist.
+  await expect(dialog.locator("select"), "plan + size selects only").toHaveCount(2);
   // Independent dialog language switch (DE|EN) is always present.
   await expect(dialog.getByRole("radio", { name: "DE", exact: true })).toBeVisible();
   await expect(dialog.getByRole("radio", { name: "EN", exact: true })).toBeVisible();
   await selectByOptionValue(dialog, PLAN_VALUES, plan);
-  // Size first: TopN options are size-dependent (landscape 3/5, portrait 5–8),
-  // and changing size coerces the current TopN.
   await selectByOptionValue(dialog, SIZE_VALUES, size);
-  await selectByOptionValue(dialog, ALL_TOPN_VALUES, topN);
   await dialog.getByRole("radio", { name: CARD_THEME[lang][cardTheme], exact: true }).click();
   await dialog.page().waitForTimeout(250);
+  // The rendered list follows the automatic preset count.
+  await expect(
+    dialog.locator("div[role='img'] > svg").locator(":scope > g"),
+    `automatic Top ${AUTO_TOPN[size]} for ${size}`,
+  ).toHaveCount(AUTO_TOPN[size]);
   return dialog.locator(".modal-box");
 }
 
@@ -214,21 +218,18 @@ async function expectCardContent(
   } else {
     expect(texts, `${label}: no constraints on landscape`).not.toContain("5h");
   }
-  // Rendered row count matches the requested TopN (no filler beyond the design).
+  // Rendered row count matches the automatic TopN for the preset.
   const rows = await svg.locator(":scope > g").count();
   expect(rows, `${label}: row count`).toBe(Number(topN));
   await expectNoSvgOverflow(dialog.locator(".modal-box"), label);
 }
 
-// Phase 6 matrix: landscape Top 5 max (og also Top 3 roomy + light card),
-// portraits modest TopN (5–8, densest 8) with constraints.
+// Automatic TOP-X per preset: landscape Top 5, portraits Top 8 (densest,
+// with constraints). No manual selection — the count follows the size.
 const MATRIX: Array<{ size: SizeKey; topN: string; themes: Array<"dark" | "light"> }> = [
   { size: "og", topN: "5", themes: ["dark", "light"] },
-  { size: "og", topN: "3", themes: ["dark"] },
   { size: "twitter", topN: "5", themes: ["dark"] },
-  { size: "portrait", topN: "5", themes: ["dark"] },
   { size: "portrait", topN: "8", themes: ["dark"] },
-  { size: "story", topN: "5", themes: ["dark"] },
   { size: "story", topN: "8", themes: ["dark"] },
 ];
 
@@ -244,7 +245,7 @@ for (const { size: sizeKey, topN, themes } of MATRIX) {
           await page.goto(`/?lang=${lang}`);
           await waitForApp(page);
           const dialog = await openShareDialog(page, lang);
-          const modal = await configureCard(dialog, lang, sizeKey, topN, cardTheme);
+          const modal = await configureCard(dialog, lang, sizeKey, cardTheme);
           await expectCardContent(dialog, lang, size, topN, `${sizeKey}/${lang}/${cardTheme}/top${topN}`);
           await modal.screenshot({ path: out(v, `share-${sizeKey}-${lang}-${cardTheme}-top${topN}.png`) });
         },
@@ -253,19 +254,23 @@ for (const { size: sizeKey, topN, themes } of MATRIX) {
   }
 }
 
-test("share card topN re-renders live from current data (never hardcoded)", { tag: ["@screenshot"] }, async ({ page }) => {
+test("share card topN is automatic per preset, no selector", { tag: ["@screenshot"] }, async ({ page }, testInfo) => {
+  const v = viewportOf(testInfo.project.name);
   await page.goto("/?lang=en");
   await waitForApp(page);
   const dialog = await openShareDialog(page, "en");
-  await configureCard(dialog, "en", "og", "5", "dark");
+  // No TopN control anywhere in the dialog — only plan + size selects.
+  await expect(dialog.locator("select"), "no TopN selector").toHaveCount(2);
   const svg = dialog.locator("div[role='img'] > svg");
-  await expect(svg.locator(":scope > g"), "live: 5 rows at Top 5").toHaveCount(5);
-  // Switch TopN without touching anything else: the list re-renders live.
-  await selectByOptionValue(dialog, ALL_TOPN_VALUES, "3");
+  // Default preset og → automatic Top 5; caption reflects the effective count.
+  await expect(svg.locator(":scope > g"), "og: automatic Top 5").toHaveCount(5);
+  await expect(dialog.locator("p", { hasText: "Top 5" }), "caption shows Top 5").toBeVisible();
+  // Switching preset re-renders with the automatic count: story → Top 8.
+  await selectByOptionValue(dialog, SIZE_VALUES, "story");
   await page.waitForTimeout(250);
-  await expect(svg.locator(":scope > g"), "live: 3 rows at Top 3").toHaveCount(3);
-  const first = await svg.locator(":scope > g").first().locator("text").allTextContents();
-  expect(first.join(" "), "live: top row carries rank + name + requests").toMatch(/1\s+\S+\s+\S+/);
+  await expect(svg.locator(":scope > g"), "story: automatic Top 8").toHaveCount(8);
+  await expect(dialog.locator("p", { hasText: "Top 8" }), "caption shows Top 8").toBeVisible();
+  await dialog.locator(".modal-box").screenshot({ path: out(v, "share-dialog-auto-topn.png") });
 });
 
 test("share card portrait provider (no limits branch)", { tag: ["@screenshot"] }, async ({ page }, testInfo) => {
@@ -273,7 +278,7 @@ test("share card portrait provider (no limits branch)", { tag: ["@screenshot"] }
   await page.goto("/?lang=en");
   await waitForApp(page);
   const dialog = await openShareDialog(page, "en");
-  const modal = await configureCard(dialog, "en", "portrait", "5", "dark", "provider");
+  const modal = await configureCard(dialog, "en", "portrait", "dark", "provider");
   const svg = dialog.locator("div[role='img'] > svg");
   await expect(svg).toHaveAttribute("width", "1080");
   await expect(svg).toHaveAttribute("height", "1350");
@@ -285,9 +290,9 @@ test("share card portrait provider (no limits branch)", { tag: ["@screenshot"] }
   expect(texts, "provider: no per-request cost figure").not.toContain("/req");
   expect(texts, "provider: domain source in footer").toContain(SOURCE_DOMAIN);
   expect(texts, "provider: footer stamp with intraday time").toMatch(/As of.*\d{1,2}:\d{2}/);
-  expect(await svg.locator(":scope > g").count(), "provider: row count").toBe(5);
+  expect(await svg.locator(":scope > g").count(), "provider: automatic Top 8").toBe(8);
   await expectNoSvgOverflow(modal, "portrait/provider");
-  await modal.screenshot({ path: out(v, "share-portrait-en-dark-top5-provider.png") });
+  await modal.screenshot({ path: out(v, "share-portrait-en-dark-top8-provider.png") });
 });
 
 test.describe("share trigger location", () => {
@@ -343,6 +348,76 @@ test.describe("share dialog close (X) button", () => {
   }
 });
 
+test.describe("share preview fits viewport", () => {
+  for (const { key: sizeKey } of SIZES) {
+    for (const lang of ["en", "de"] as const) {
+      test(`preview below screen height, actions without page scroll (${sizeKey}/${lang})`, { tag: ["@screenshot"] }, async ({ page }, testInfo) => {
+        const v = viewportOf(testInfo.project.name);
+        await page.goto(`/?lang=${lang}`);
+        await waitForApp(page);
+        const dialog = await openShareDialog(page, lang);
+        const modal = await configureCard(dialog, lang, sizeKey, "dark");
+        const vp = page.viewportSize()!;
+        // Core rule: the preview image box is smaller than the screen height
+        // on every preset (tall story/portrait cards scroll internally).
+        const preview = dialog.locator("div[role='img']");
+        const prevBox = await preview.boundingBox();
+        expect(prevBox, `${sizeKey}/${lang}: preview box`).not.toBeNull();
+        expect(prevBox!.height, `${sizeKey}/${lang}: preview below screen height`).toBeLessThan(vp.height);
+        const boxB = await modal.boundingBox();
+        expect(boxB, `${sizeKey}/${lang}: dialog box`).not.toBeNull();
+        expect(boxB!.height, `${sizeKey}/${lang}: dialog fits viewport`).toBeLessThanOrEqual(vp.height + 1);
+        await modal.screenshot({ path: out(v, `share-fit-${sizeKey}-${lang}.png`) });
+        // Export actions reachable via dialog-internal scroll only — never page scroll.
+        await modal.evaluate((m) => m.scrollTo(0, m.scrollHeight));
+        const actions = modal.locator(".sticky.bottom-0");
+        const actBox = await actions.boundingBox();
+        expect(actBox, `${sizeKey}/${lang}: actions box`).not.toBeNull();
+        expect(
+          actBox!.y >= 0 && actBox!.y + actBox!.height <= vp.height,
+          `${sizeKey}/${lang}: actions in viewport after dialog scroll`,
+        ).toBe(true);
+        expect(await page.evaluate(() => window.scrollY), `${sizeKey}/${lang}: no page scroll`).toBe(0);
+      });
+    }
+  }
+});
+
+test.describe("share dialog theme follows page", () => {
+  const CARD_BG = { dark: "#1d232a", light: "#ffffff" } as const;
+  for (const pageTheme of ["dark", "light"] as const) {
+    test(
+      `defaults to page theme (${pageTheme}), explicit choice sticks`,
+      { tag: ["@screenshot"] },
+      async ({ page }, testInfo) => {
+        const v = viewportOf(testInfo.project.name);
+        await page.goto(`/?lang=en&theme=${pageTheme}`);
+        await waitForApp(page);
+        const dialog = await openShareDialog(page, "en");
+        const svg = dialog.locator("div[role='img'] > svg");
+        // No explicit choice yet: card SVG + preview follow the page theme.
+        await expect(svg.locator("rect").first()).toHaveAttribute("fill", CARD_BG[pageTheme]);
+        await dialog.locator(".modal-box").screenshot({ path: out(v, `share-theme-follows-${pageTheme}.png`) });
+        // Explicit in-dialog choice applies immediately…
+        const other = pageTheme === "dark" ? "Light" : "Dark";
+        await dialog.getByRole("radio", { name: other, exact: true }).click();
+        await expect(svg.locator("rect").first()).toHaveAttribute(
+          "fill",
+          CARD_BG[pageTheme === "dark" ? "light" : "dark"],
+        );
+        // …and sticks across close + reopen (follow-until-explicit).
+        await page.keyboard.press("Escape");
+        await expect(dialog.locator(".modal-box")).toBeHidden();
+        const dialog2 = await openShareDialog(page, "en");
+        await expect(dialog2.locator("div[role='img'] > svg rect").first()).toHaveAttribute(
+          "fill",
+          CARD_BG[pageTheme === "dark" ? "light" : "dark"],
+        );
+      },
+    );
+  }
+});
+
 test.describe("share link compat", () => {
   test("old sh_size square/wide coerce to og, new sizes round-trip", async ({ page }) => {
     await page.goto("/?sh_plan=goat&sh_size=square");
@@ -364,23 +439,24 @@ test.describe("share link compat", () => {
     await expect(await findSelectByOptionValue(dialog, SIZE_VALUES)).toHaveValue("story");
   });
 
-  test("topN coerces into size options (og max 5, portrait 5-8)", async ({ page }) => {
+  test("legacy sh_n is tolerated but ignored (automatic counts win)", async ({ page }) => {
     await page.goto("/?sh_size=og&sh_n=10");
     await waitForApp(page);
     let dialog = await openShareDialog(page, "en");
-    await expect(await findSelectByOptionValue(dialog, ALL_TOPN_VALUES)).toHaveValue("5");
+    await expect(dialog.locator("select"), "no TopN selector").toHaveCount(2);
+    await expect(
+      dialog.locator("div[role='img'] > svg").locator(":scope > g"),
+      "og ignores sh_n=10 → Top 5",
+    ).toHaveCount(5);
     await page.keyboard.press("Escape");
 
-    await page.goto("/?sh_size=story&sh_n=10");
+    await page.goto("/?sh_size=story&sh_n=3");
     await waitForApp(page);
     dialog = await openShareDialog(page, "en");
-    await expect(await findSelectByOptionValue(dialog, ALL_TOPN_VALUES)).toHaveValue("8");
-    await page.keyboard.press("Escape");
-
-    await page.goto("/?sh_size=portrait&sh_n=7");
-    await waitForApp(page);
-    dialog = await openShareDialog(page, "en");
-    await expect(await findSelectByOptionValue(dialog, ALL_TOPN_VALUES)).toHaveValue("7");
+    await expect(
+      dialog.locator("div[role='img'] > svg").locator(":scope > g"),
+      "story ignores sh_n=3 → Top 8",
+    ).toHaveCount(8);
   });
 
   test("old sh_metric links still open (forced to requests)", async ({ page }) => {
@@ -388,8 +464,8 @@ test.describe("share link compat", () => {
     await waitForApp(page);
     const dialog = await openShareDialog(page, "en");
     await expect(await findSelectByOptionValue(dialog, ["pro"])).toHaveValue("pro");
-    // Landscape clamps TopN to 5 (was 7): metric forced to requests, no crash.
-    await expect(await findSelectByOptionValue(dialog, ALL_TOPN_VALUES)).toHaveValue("5");
+    // Metric forced to requests, legacy sh_n ignored (og default → Top 5), no crash.
+    await expect(dialog.locator("div[role='img'] > svg").locator(":scope > g")).toHaveCount(5);
     await expect(dialog.locator('input[name="share-metric"]')).toHaveCount(0);
     await expect(dialog.locator("div[role='img'] > svg")).toBeVisible();
   });

@@ -49,26 +49,14 @@ export const SHARE_SIZES: Record<ShareSize, { w: number; h: number; label: strin
 /** Bare custom-domain source shown in the card footer (repo's Pages domain, public/CNAME). */
 export const SHARE_SOURCE = "cc-pricing.all-the.rest";
 
-export const SHARE_TOPN_LANDSCAPE = [3, 5] as const;
-export const SHARE_TOPN_PORTRAIT = [5, 6, 7, 8] as const;
-
 /**
- * Phase 6 (portrait rule): landscape cards show Top 5 max, no constraints;
- * portraits fill height with a modest TopN (5–8) + constraint lines/block
- * instead of filler models.
+ * Automatic TOP-X count per preset (same as ocgo, no manual selection):
+ * landscape (OG/Twitter) = Top 5, no constraints; portrait (IG 4:5/Story)
+ * = Top 8 with per-row constraint lines + compact constraints block instead
+ * of filler models.
  */
-export function shareTopNOptions(size: ShareSize): readonly number[] {
-  return size === "portrait" || size === "story" ? SHARE_TOPN_PORTRAIT : SHARE_TOPN_LANDSCAPE;
-}
-
-/** Coerce a topN into the options valid for the given size (nearest wins). */
-export function coerceShareTopN(n: number, size: ShareSize): number {
-  const opts = shareTopNOptions(size);
-  let best: number = opts[0] ?? 5;
-  for (const o of opts) {
-    if (Math.abs(o - n) < Math.abs(best - n)) best = o;
-  }
-  return best;
+export function autoShareTopN(size: ShareSize): number {
+  return size === "portrait" || size === "story" ? 8 : 5;
 }
 
 export interface ShareRow {
@@ -353,11 +341,10 @@ export function shareToParams(c: ShareConfig, lang?: ShareLang): URLSearchParams
 
 const PLAN_IDS = ["go", "goat", "pro", "provider", "max10", "max20"] as const;
 
-/** Parse share-link params; returns null when no sh_* param is present. Old sh_metric values are ignored (requests only). topN is coerced into the options valid for the parsed size (landscape Top 5 max, portrait 5–8). */
+/** Parse share-link params; returns null when no sh_* param is present. Old sh_metric values are ignored (requests only). Legacy sh_n is tolerated but ignored — the TOP-X count is automatic per preset (landscape Top 5, portrait Top 8). */
 export function shareFromParams(p: URLSearchParams): ShareConfig | null {
   const has = ["sh_plan", "sh_metric", "sh_n", "sh_basis", "sh_theme", "sh_size", "sh_brand", "sh_stamp", "sh_lang"].some((k) => p.get(k) !== null);
   if (!has) return null;
-  const num = Number.parseInt(p.get("sh_n") ?? "", 10);
   const plan = p.get("sh_plan");
   const basis = p.get("sh_basis");
   const theme = p.get("sh_theme");
@@ -369,7 +356,7 @@ export function shareFromParams(p: URLSearchParams): ShareConfig | null {
   return {
     plan: (PLAN_IDS as readonly string[]).includes(plan ?? "") ? (plan as PlanId) : SHARE_DEFAULTS.plan,
     metric: "requests",
-    topN: Number.isFinite(num) ? coerceShareTopN(num, size) : SHARE_DEFAULTS.topN,
+    topN: autoShareTopN(size),
     basis: basis === "list" || basis === "full" || basis === "paid" ? basis : SHARE_DEFAULTS.basis,
     theme: theme === "light" || theme === "dark" ? theme : SHARE_DEFAULTS.theme,
     size,

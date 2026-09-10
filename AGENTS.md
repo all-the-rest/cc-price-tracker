@@ -117,6 +117,12 @@ pnpm typecheck        # nur tsc --noEmit
   Ungültig → `process.exit(1)`.
 - **Erstlauf:** ohne `data/latest.json` Daten + History schreiben und `text`-Event „Initial version" anlegen.
 - `CHANGELOG.json` minified; `mergeChanges`-Dedupe-Key `${type}:${model ?? ""}:${plan ?? ""}`.
+  **Changelog-Bremse (max. 1 Eintrag/Stunde):** ist der neueste nicht-leere Eintrag anhand
+  seines Run-Zeitstempels (`parseRunTime`, git-tag-sicheres `YYYY-MM-DDTHH-MM-SSZ`) weniger als
+  60 Minuten älter als der aktuelle Lauf, werden die Changes dort hinein gemerged (neueste
+  Version pro Dedupe-Key gewinnt, `id` des ersten Laufs bleibt); bei fehlendem/unparsebarem
+  Zeitstempel oder Alter ≥ 60 Minuten gibt es einen neuen Eintrag. Gleiche Run-ID bleibt
+  idempotent, leere Einträge werden entfernt.
 
 ## UI-Regeln (daisyUI 5 / Tailwind 4)
 
@@ -132,7 +138,7 @@ pnpm typecheck        # nur tsc --noEmit
 - **ZDR-Info-Karte** (ersetzt die OCG-Datenschutz-Tabelle): „Command Code trainiert nicht auf deinem Code", `CMD_ZDR=1`.
 - **Free-Models-Tabelle** mit „Verfügbar seit/bis". **Changelog** rendert plan-aware Events mit Richtungs-Badges; jeder
   Run-Eintrag zeigt die Uhrzeit (MEZ/MESZ, aus `entry.id`) und ist per `#<entry.id>` direkt verlinkbar (mehrere
-  Einträge/Tag, Altschema-Links `#<date>` weiterhin gültig).
+  Einträge/Tag bei ≥ 60 Minuten Abstand — Changelog-Bremse: max. 1 Eintrag/Stunde, Altschema-Links `#<date>` weiterhin gültig).
 - Quellen-Links (pricing-limits, models.dev), RSS (`releases.atom`) und Watch-Hinweis im Footer.
 
 ## CI/CD (`.github/workflows/price-tracker.yml`)

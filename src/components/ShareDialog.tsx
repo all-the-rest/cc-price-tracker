@@ -5,13 +5,12 @@ import {
   SHARE_DEFAULTS,
   SHARE_LANG_KEY,
   SHARE_SIZES,
+  autoShareTopN,
   buildShareSvg,
-  coerceShareTopN,
   downloadBlob,
   shareFromParams,
   shareLangFromParams,
   shareToParams,
-  shareTopNOptions,
   svgToPngBlob,
   topModels,
   type ShareConfig,
@@ -33,7 +32,6 @@ const STR: Record<Lang, Record<string, string>> = {
     title: "Share-Card konfigurieren",
     desc: "Top-Modelle des aktiven Plans als SVG/PNG zum Teilen.",
     plan: "Plan",
-    topN: "Anzahl (Top-N)",
     basis: "Preisbasis",
     theme: "Farbschema",
     themeDark: "Dunkel",
@@ -57,7 +55,6 @@ const STR: Record<Lang, Record<string, string>> = {
     plan: "Plan",
     themeDark: "Dark",
     themeLight: "Light",
-    topN: "Count (top-N)",
     basis: "Price basis",
     theme: "Theme",
     size: "Size",
@@ -119,6 +116,14 @@ export default function ShareDialog(props: ShareDialogProps) {
   });
   const [flash, setFlash] = createSignal<string | null>(null);
   const [fromLink, setFromLink] = createSignal(false);
+  // Dialog theme follows the main page theme (theme-controller data-theme)
+  // until the user makes an explicit choice in the dialog — same
+  // follow-until-explicit pattern as shareLang.
+  const [themeExplicit, setThemeExplicit] = createSignal(false);
+  const pageTheme = (): ShareTheme =>
+    typeof document !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark"
+      ? "dark"
+      : "light";
 
   onMount(() => {
     try {
@@ -128,6 +133,8 @@ export default function ShareDialog(props: ShareDialogProps) {
         setConfig(fromUrl);
         setFromLink(true);
       }
+      const urlTheme = q.get("sh_theme");
+      if (urlTheme === "dark" || urlTheme === "light") setThemeExplicit(true);
       const urlLang = shareLangFromParams(q);
       if (urlLang) {
         setShareLang(urlLang);
@@ -164,8 +171,10 @@ export default function ShareDialog(props: ShareDialogProps) {
     // Sync with the currently selected plan/basis — unless the config
     // came from a share link (then keep the linked config).
     if (!fromLink()) patch({ plan: props.planId, basis: props.basis });
-    // First open without an explicitly chosen value: follow the main UI lang.
+    // First open without an explicitly chosen value: follow the main UI lang
+    // and the main page theme.
     if (!shareExplicit()) setShareLangState(props.lang);
+    if (!themeExplicit()) patch({ theme: pageTheme() });
     dialog?.showModal();
   };
 
@@ -229,19 +238,9 @@ export default function ShareDialog(props: ShareDialogProps) {
                 </select>
               </label>
 
+              {/* TOP-X is automatic per preset (landscape Top 5, portrait Top 8):
+                  no manual selector, only the size (format) choice remains. */}
               <div class="flex flex-wrap gap-4">
-                <label class="form-control">
-                  <span class="label label-text">{t().topN}</span>
-                  <select
-                    class="select select-bordered select-sm"
-                    value={String(config().topN)}
-                    onChange={(e) => patch({ topN: coerceShareTopN(Number(e.currentTarget.value), config().size) })}
-                  >
-                    {shareTopNOptions(config().size).map((n) => (
-                      <option value={String(n)}>Top {n}</option>
-                    ))}
-                  </select>
-                </label>
                 <label class="form-control">
                   <span class="label label-text">{t().size}</span>
                   <select
@@ -249,8 +248,7 @@ export default function ShareDialog(props: ShareDialogProps) {
                     value={config().size}
                     onChange={(e) => {
                       const size = e.currentTarget.value as ShareSize;
-                      // Phase 6: TopN options depend on size (landscape ≤5, portrait 5–8).
-                      patch({ size, topN: coerceShareTopN(config().topN, size) });
+                      patch({ size, topN: autoShareTopN(size) });
                     }}
                   >
                     {(Object.keys(SHARE_SIZES) as ShareSize[]).map((s) => (
@@ -288,7 +286,10 @@ export default function ShareDialog(props: ShareDialogProps) {
                         aria-checked={config().theme === th}
                         class="join-item btn btn-xs"
                         classList={{ "btn-active btn-primary": config().theme === th }}
-                        onClick={() => patch({ theme: th })}
+                        onClick={() => {
+                          patch({ theme: th });
+                          setThemeExplicit(true);
+                        }}
                       >
                         {th === "dark" ? t().themeDark : t().themeLight}
                       </button>
@@ -321,9 +322,24 @@ export default function ShareDialog(props: ShareDialogProps) {
 
             <div class="min-w-0">
               <p class="label label-text" aria-hidden="true">
-                {t().preview} · {size().label} · {config().basis}
+                {t().preview} · {size().label} · Top {config().topN} · {config().basis}
               </p>
-              <div class="overflow-hidden rounded-lg border border-base-300 [&>svg]:h-auto [&>svg]:max-w-full" innerHTML={svg()} role="img" aria-label={t().preview} />
+              {/* Scaled fit: the image scales down to the 55vh bound instead of
+                  overflowing (portrait: height-bound with auto width, landscape:
+                  width-bound with auto height); exports use the full native
+                  size untouched. */}
+              <div
+                class="flex max-h-[55vh] justify-center overflow-hidden rounded-lg border border-base-300"
+                classList={{
+                  "[&>svg]:max-h-[55vh] [&>svg]:w-auto [&>svg]:max-w-full [&>svg]:h-auto":
+                    config().size === "portrait" || config().size === "story",
+                  "[&>svg]:w-full [&>svg]:h-auto [&>svg]:max-w-full":
+                    config().size !== "portrait" && config().size !== "story",
+                }}
+                innerHTML={svg()}
+                role="img"
+                aria-label={t().preview}
+              />
               {/* Sticky so export actions stay reachable when tall cards (portrait/story) overflow on small screens. */}
               <div class="sticky bottom-0 z-10 mt-3 flex flex-wrap gap-2 bg-base-100 py-2">
                 <button

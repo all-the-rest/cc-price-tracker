@@ -546,6 +546,64 @@ test("upsertChangelogJson: Eintrag derselben id wird gemerged, leere entfernt", 
   );
 });
 
+test("upsertChangelogJson: Merge auch über Stundengrenze (< 60 Min), Dedup neueste gewinnt", () => {
+  const existing = {
+    entries: [
+      { id: "2026-08-15T10-55-00Z", date: "2026-08-15", changes: [{ type: "allowance_changed", model: "glm-5.2", plans: [{ plan: "goat", from: 70, to: 55 }] }] },
+    ],
+  };
+  const incoming = { type: "allowance_changed", model: "glm-5.2", plans: [{ plan: "goat", from: 55, to: 60 }] };
+  const result = upsertChangelogJson(existing, "2026-08-15T11-05-00Z", "2026-08-15", [incoming]);
+  assert.equal(result.entries.length, 1);
+  assert.equal(result.entries[0].id, "2026-08-15T10-55-00Z");
+  assert.deepEqual(result.entries[0].changes, [incoming]);
+});
+
+test("upsertChangelogJson: neuer Eintrag nach >= 60 Minuten", () => {
+  const oldChange = { type: "allowance_changed", model: "glm-5.2", plans: [{ plan: "goat", from: 70, to: 55 }] };
+  const existing = {
+    entries: [{ id: "2026-08-15T10-00-00Z", date: "2026-08-15", changes: [oldChange] }],
+  };
+  const fresh = [{ type: "model_added", model: "tencent/hy4-preview" }];
+  const result = upsertChangelogJson(existing, "2026-08-15T11-01-00Z", "2026-08-15", fresh);
+  assert.equal(result.entries.length, 2);
+  assert.equal(result.entries[0].id, "2026-08-15T11-01-00Z");
+  assert.deepEqual(result.entries[0].changes, fresh);
+  assert.deepEqual(result.entries[1].changes, [oldChange]);
+});
+
+test("upsertChangelogJson: gleiche Run-ID ist idempotent", () => {
+  const existing = {
+    entries: [
+      { id: "2026-08-15T10-00-00Z", date: "2026-08-15", changes: [{ type: "free_added", model: "laguna-s-2.1-free" }] },
+    ],
+  };
+  const incoming = [{ type: "free_added", model: "laguna-s-2.1-free" }];
+  const once = upsertChangelogJson(existing, "2026-08-15T10-00-00Z", "2026-08-15", incoming);
+  const twice = upsertChangelogJson(once, "2026-08-15T10-00-00Z", "2026-08-15", incoming);
+  assert.deepEqual(twice, once);
+  assert.equal(twice.entries.length, 1);
+});
+
+test("upsertChangelogJson: keine leeren Einträge, unparsebare Zeitstempel mergen nicht", () => {
+  // Leere eingehende Changes: kein neuer Eintrag, leere vorhandene fliegen raus.
+  const withEmpty = {
+    entries: [
+      { id: "2026-08-15T10-00-00Z", date: "2026-08-15", changes: [{ type: "free_added", model: "x" }] },
+      { id: "2026-08-10", date: "2026-08-10", changes: [] },
+    ],
+  };
+  const noChange = upsertChangelogJson(withEmpty, "2026-08-15T10-30-00Z", "2026-08-15", []);
+  assert.equal(noChange.entries.length, 1);
+  // Altschema-ID (nur Datum, unparsebar als Run-Zeitstempel) → neuer Eintrag.
+  const legacy = { entries: [{ id: "2026-08-15", date: "2026-08-15", changes: [{ type: "free_added", model: "x" }] }] };
+  const result = upsertChangelogJson(legacy, "2026-08-15T10-30-00Z", "2026-08-15", [
+    { type: "model_added", model: "tencent/hy4-preview" },
+  ]);
+  assert.equal(result.entries.length, 2);
+  assert.equal(result.entries[0].id, "2026-08-15T10-30-00Z");
+});
+
 test("normalizeChangelogIds: weist fehlendes id = date zu", () => {
   const out = normalizeChangelogIds({ entries: [{ date: "2026-08-15", changes: [{ type: "text", lang: { en: "x" } }] }] });
   assert.equal(out.entries[0].id, "2026-08-15");

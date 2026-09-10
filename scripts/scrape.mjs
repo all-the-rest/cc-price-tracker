@@ -851,9 +851,10 @@ export function buildChanges(prev, next, today = "", firstSeen = new Map()) {
 }
 
 /**
- * Mergt Events desselben Tages (2 Läufe/Tag): neu hinzukommende Events werden
- * angehängt, Events mit gleichem Dedupe-Key `${type}:${model}:${plan}` werden
- * durch das neueste ersetzt (neuestes gewinnt). Für `text`-Events gilt `type`.
+ * Mergt Events bei eng aufeinanderfolgenden Läufen (Changelog-Bremse):
+ * neu hinzukommende Events werden angehängt, Events mit gleichem Dedupe-Key
+ * `${type}:${model}:${plan}` werden durch das neueste ersetzt (neuestes
+ * gewinnt). Für `text`-Events gilt `type`.
  */
 export function mergeChanges(existing, incoming) {
   const key = (c) => `${c.type}:${c.model ?? ""}:${c.plan ?? ""}`;
@@ -865,28 +866,53 @@ export function mergeChanges(existing, incoming) {
 }
 
 /**
- * Stunden-Schlüssel eines Changelog-`id` für „max. 1 Eintrag pro Stunde":
- * `2026-08-28T09-46-46Z` → `2026-08-28T09`. Altschema-IDs ohne Stunde
- * (nur `YYYY-MM-DD`) bleiben unverändert.
+ * Parst einen git-tag-sicheren Run-Zeitstempel (`2026-08-28T09-46-46Z`,
+ * Doppelpunkte als `-`) zu Millisekunden seit Epoch. Altschema-IDs
+ * (nur `YYYY-MM-DD`) und unparsebare Werte → null.
  */
-export function hourKey(id) {
-  return id && id.length >= 13 ? id.slice(0, 13) : id;
+export function parseRunTime(id) {
+  if (typeof id !== "string") return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2})-(\d{2})-(\d{2})Z$/.exec(id);
+  if (!m) return null;
+  const ms = Date.parse(`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}Z`);
+  return Number.isNaN(ms) ? null : ms;
 }
+
+/** Changelog-Bremse: maximal 1 Eintrag pro Stunde (60 Minuten). */
+export const CHANGELOG_BRAKE_MS = 60 * 60 * 1000;
 
 export function upsertChangelogJson(existing, id, date, changes) {
   const entries = Array.isArray(existing?.entries) ? existing.entries : [];
   const keep = entries.filter((e) => Array.isArray(e.changes) && e.changes.length > 0);
   const hasChanges = Array.isArray(changes) && changes.length > 0;
   if (!hasChanges) return { entries: keep };
-  // Mehrere Läufe derselben Stunde werden zu EINEM Eintrag gemerged (das `id`
-  // bleibt wie bei ocgo ein git-tag-sicherer Run-Zeitstempel, hier nach Stunde
-  // gebucketet). So entstehen keine doppelten Einträge mehr, wenn der Scraper
-  // innerhalb derselben Stunde mehrfach läuft.
-  const rest = keep.filter((e) => hourKey(e.id) !== hourKey(id));
-  const sameHour = keep.find((e) => hourKey(e.id) === hourKey(id));
-  const merged = sameHour ? mergeChanges(sameHour.changes, changes) : changes;
-  rest.unshift({ id: sameHour ? sameHour.id : id, date, changes: merged });
-  return { entries: rest };
+  // Idempotenz: gleiche Run-ID → in den bestehenden Eintrag mergen
+  // (gilt auch für unparsebare/Altschema-IDs).
+  const sameId = keep.find((e) => e.id === id);
+  if (sameId) {
+    const rest = keep.filter((e) => e.id !== id);
+    rest.unshift({ id, date, changes: mergeChanges(sameId.changes, changes) });
+    return { entries: rest };
+  }
+  // Changelog-Bremse: ist der neueste vorhandene, nicht-leere Eintrag
+  // anhand seines Run-Zeitstempels weniger als 60 Minuten älter als dieser
+  // Lauf, werden die Changes dort hinein gemerged (Dedup: gleicher
+  // Typ+Modell(+Plan) → neueste Version gewinnt), statt einen neuen Eintrag
+  // anzulegen. Das `id` des ersten Laufs bleibt erhalten (git-tag-sicher).
+  // Bei fehlendem/unparsebarem Zeitstempel oder Alter >= 60 Minuten wird
+  // wie bisher ein neuer Eintrag angelegt.
+  const newest = keep[0];
+  const newestTime = newest ? parseRunTime(newest.id) : null;
+  const runTime = parseRunTime(id);
+  if (newest && newestTime !== null && runTime !== null) {
+    const diff = runTime - newestTime;
+    if (diff >= 0 && diff < CHANGELOG_BRAKE_MS) {
+      const rest = keep.slice(1);
+      rest.unshift({ id: newest.id, date, changes: mergeChanges(newest.changes, changes) });
+      return { entries: rest };
+    }
+  }
+  return { entries: [{ id, date, changes }, ...keep] };
 }
 
 /**
