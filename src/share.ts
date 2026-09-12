@@ -140,7 +140,7 @@ export function formatShareStamp(fetchedAt: string, lang: "de" | "en"): string {
 }
 
 export function metricLabel(lang: "de" | "en"): string {
-  return lang === "de" ? "Top Requests/Monat" : "Top requests/mo";
+  return lang === "de" ? "Top Modelle/Monat" : "Top models/mo";
 }
 
 /** Per-row constraint hint for portrait cards (max one line per row). Nulls (provider plan) → no-limits note. */

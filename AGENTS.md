@@ -178,6 +178,28 @@ verpflichtend), `pnpm test` grün, `pnpm build` grün, `dist/` enthält `data/la
 valide, `pnpm preview` liefert 200 und `/data/latest.json` antwortet. Aktuelle Tool-Versionen (`pnpm outdated`),
 Node ≥22, pnpm aus `packageManager`. Nach Push CI bis zum grünen Lauf beobachten.
 
+## Schwester-Projekte (Git-Remotes)
+
+| Remote | Repo |
+|---|---|
+| `origin` | `all-the-rest/cc-price-tracker` (dieses Repo) |
+| `ai-10-usd` | `all-the-rest/ai-10-usd` (Vergleichs-Projekt, wird per `repository_dispatch` benachrichtigt) |
+| `provider-plans` | `all-the-rest/provider-plans` |
+| `ocgo-price-tracker` | `all-the-rest/ocgo-price-tracker` (Spiegel von `upstream`, historische Basis — `upstream` bleibt unverändert) |
+
+```bash
+git remote add ai-10-usd https://github.com/all-the-rest/ai-10-usd.git
+git remote add provider-plans https://github.com/all-the-rest/provider-plans.git
+git remote add ocgo-price-tracker https://github.com/all-the-rest/ocgo-price-tracker.git
+```
+
+Vergleichsbeispiele (read-only, erst `git fetch --all`):
+
+```bash
+git log --oneline origin/main..ocgo-price-tracker/main --no-decorate | head
+git log --oneline origin/main..ai-10-usd/main --no-decorate | head
+```
+
 ## Delegation & Parallelisierung (Subagenten)
 
 - Wo möglich arbeitet OpenCode mit Subagenten statt alles selbst zu tun: `explore` für Recherche, `general` für

@@ -163,7 +163,7 @@ async function expectCardContent(
   // Unified layout: header (title + metric), top-X rows, constraints block
   // (portrait only), footer.
   expect(texts, `${label}: header title`).toContain("Command Code");
-  expect(texts, `${label}: header metric`).toContain(lang === "de" ? "Top Requests/Monat" : "Top requests/mo");
+  expect(texts, `${label}: header metric`).toContain(lang === "de" ? "Top Modelle/Monat" : "Top models/mo");
   // Footer: LEFT = domain, RIGHT = localized last-update date + intraday time.
   const stampWord = lang === "de" ? "Stand" : "As of";
   expect(texts, `${label}: footer stamp word`).toContain(stampWord);
