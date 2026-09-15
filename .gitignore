@@ -7,3 +7,4 @@ tests/.ssr/
 .run/
 test-results/
 playwright-report/
+public/share/og.png
