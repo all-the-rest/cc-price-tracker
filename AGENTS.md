@@ -29,6 +29,7 @@ pnpm scrape           # holt Daten → data/latest.json, data/history.json, CHAN
 pnpm test             # node --test tests/**/*.test.mjs (Scraper + SSR-Sortierung)
 pnpm dev              # Dev-Server
 pnpm build            # Typecheck + Vite-Build → dist/ (inkl. dist/data/latest.json)
+pnpm smoke            # Smoke-Test auf dist/: Artefakte + Assets + Preview-HTTP (/ und /data/latest.json) — ohne Browser
 pnpm preview          # dist/ lokal serven
 pnpm typecheck        # nur tsc --noEmit
 ```
@@ -144,7 +145,8 @@ pnpm typecheck        # nur tsc --noEmit
 ## CI/CD (`.github/workflows/price-tracker.yml`)
 
 - Trigger: `workflow_dispatch` (extern per Server-Cron getriggert via `scripts/install-cron.sh`: Mo–Fr alle 2h 06:00–20:00 MEZ/MESZ, Sa/So 06:00+14:00) + täglicher GitHub-Actions-Safety-Net-Lauf (`schedule: "28 20 * * *"` = 20:28 UTC), `push` auf `main`.
-- Pipeline: install (`--frozen-lockfile`) → `pnpm test` → `pnpm scrape` → `pnpm build` → Commit
+- Pipeline: install (`--frozen-lockfile`) → `pnpm test` → `pnpm scrape` → `pnpm build` → `pnpm smoke`
+  (bricht rot ab, bevor kaputte Bundles auf Pages landen) → Commit
   (CHANGELOG.json + data + src/data, `github-actions[bot]`, nur bei Änderungen) → Release
   (`node scripts/ensure-release.mjs --all`, Tag = Eintrags-id, RSS via `releases.atom`) →
   Sync-Check (`node scripts/check-release-sync.mjs` bricht rot ab, wenn Changelog-Einträge und GitHub-Releases

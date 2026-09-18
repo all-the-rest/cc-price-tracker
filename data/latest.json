@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-18T04:08:23.569Z",
+  "fetchedAt": "2026-09-18T19:29:02.643Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -641,6 +641,53 @@
         ],
         "reasoning": true,
         "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "glm-5.3-flashx",
+      "name": "GLM-5.3 FlashX",
+      "provider": "Z.ai",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1000000,
+      "input": 0.37,
+      "output": 1.25,
+      "cachedRead": 0.075,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 30
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": false
       },
       "pattern": {
         "input": 800,
