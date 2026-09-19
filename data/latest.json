@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-18T19:29:02.643Z",
+  "fetchedAt": "2026-09-19T04:04:46.177Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -161,59 +161,6 @@
         "output": 162
       },
       "tip": "Free while capacity lasts."
-    },
-    {
-      "id": "longcat-2.0:free",
-      "name": "LongCat 2.0",
-      "provider": null,
-      "category": "opensource",
-      "tier": null,
-      "contextWindow": 1048576,
-      "input": 0,
-      "output": 0,
-      "cachedRead": 0,
-      "cachedWrite": null,
-      "listInput": null,
-      "listOutput": null,
-      "listCachedRead": null,
-      "listCachedWrite": null,
-      "deal": {
-        "id": "longcat-2.0-free",
-        "discountPercent": 100,
-        "free": true,
-        "expires": null,
-        "endsWhen": "while it lasts",
-        "revertNote": null
-      },
-      "deprecated": false,
-      "availability": {
-        "go": true,
-        "goat": true,
-        "pro": true,
-        "provider": true,
-        "max": true,
-        "team": true
-      },
-      "allowances": {
-        "goat": null,
-        "pro": null
-      },
-      "capabilities": {
-        "input": [
-          "text"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": true,
-        "toolCall": true
-      },
-      "pattern": {
-        "input": 800,
-        "cachedRead": 50000,
-        "output": 162
-      },
-      "tip": "Free while it lasts. Up to 100 requests a day."
     },
     {
       "id": "ling-3.0-flash-sante:free",
@@ -1968,6 +1915,52 @@
         "output": 162
       },
       "tip": "Rates shown are the ≤ 32K tokens band; ≤ 256K tokens bills $0.10 input / $0.40 output / $0.02 cache read / $0.125 cache write; > 256K tokens bills $0.20 input / $0.80 output / $0.04 cache read / $0.25 cache write (per 1M tokens)."
+    },
+    {
+      "id": "longcat-2.0",
+      "name": "LongCat 2.0",
+      "provider": "Meituan",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1048576,
+      "input": 0.3,
+      "output": 1.2,
+      "cachedRead": 0.006,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 50,
+        "pro": 60
+      },
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
     },
     {
       "id": "step-3.7-flash",
@@ -3835,23 +3828,6 @@
         "toolCall": true
       },
       "note": "Free while capacity lasts."
-    },
-    {
-      "id": "longcat-2.0:free",
-      "name": "LongCat 2.0",
-      "availableFrom": "2026-09-02",
-      "until": null,
-      "capabilities": {
-        "input": [
-          "text"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": true,
-        "toolCall": true
-      },
-      "note": "Free while it lasts. Up to 100 requests a day."
     },
     {
       "id": "ling-3.0-flash-sante:free",
