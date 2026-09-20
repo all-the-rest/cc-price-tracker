@@ -1,5 +1,6 @@
 import type { Translation } from "../i18n";
 import Heading from "./Heading";
+import { SECTION_ANCHORS } from "../anchors";
 
 interface LegalSectionProps {
   t: Translation;
@@ -7,8 +8,8 @@ interface LegalSectionProps {
 
 export function ImpressumSection(props: LegalSectionProps) {
   return (
-    <section id="impressum" class="mt-10">
-      <Heading anchor="impressum">{props.t.impressum}</Heading>
+    <section id={SECTION_ANCHORS.impressum} class="mt-10">
+      <Heading anchor={SECTION_ANCHORS.impressum}>{props.t.impressum}</Heading>
       <div class="mt-2 text-sm leading-relaxed text-base-content/80">
         <p class="font-medium">Florian Reisinger</p>
         <p>Robert-Stolz-Straße 8</p>
@@ -27,8 +28,8 @@ export function ImpressumSection(props: LegalSectionProps) {
 
 export function DatenschutzSection(props: LegalSectionProps) {
   return (
-    <section id="datenschutz" class="mt-10">
-      <Heading anchor="datenschutz">{props.t.datenschutz}</Heading>
+    <section id={SECTION_ANCHORS.datenschutz} class="mt-10">
+      <Heading anchor={SECTION_ANCHORS.datenschutz}>{props.t.datenschutz}</Heading>
       <div class="mt-2 max-w-3xl space-y-3 text-sm leading-relaxed text-base-content/80">
         <p>{props.t.privacyRights}</p>
       </div>

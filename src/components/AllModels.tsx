@@ -4,6 +4,7 @@ import type { Model } from "../types";
 import Heading from "./Heading";
 import { fmtContextWindow } from "../util";
 import { fmtCaps } from "../capabilities";
+import { SECTION_ANCHORS } from "../anchors";
 
 interface AllModelsProps {
   models: Model[];
@@ -21,8 +22,8 @@ export default function AllModels(props: AllModelsProps) {
     );
 
   return (
-    <section id="models" class="mt-10">
-      <Heading anchor="models">{props.t.headingAllModels}</Heading>
+    <section id={SECTION_ANCHORS.models} class="mt-10">
+      <Heading anchor={SECTION_ANCHORS.models}>{props.t.headingAllModels}</Heading>
       <p class="mt-2 max-w-3xl text-sm leading-relaxed text-base-content/70">
         {props.t.allModelsIntro}{" "}
         <a href="#prices" class="link link-primary">

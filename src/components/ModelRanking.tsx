@@ -4,6 +4,7 @@ import type { Model, Plan } from "../types";
 import Heading from "./Heading";
 import { fmt, formatRequests } from "../util";
 import { requestCost, requestsPerMonth } from "../weighted";
+import { SECTION_ANCHORS } from "../anchors";
 
 interface ModelRankingProps {
   models: Model[];
@@ -47,8 +48,8 @@ export default function ModelRanking(props: ModelRankingProps) {
       .slice(0, TOP_N);
 
   return (
-    <section id="ranking" class="mt-10">
-      <Heading anchor="ranking">{props.t.headingRanking}</Heading>
+    <section id={SECTION_ANCHORS.ranking} class="mt-10">
+      <Heading anchor={SECTION_ANCHORS.ranking}>{props.t.headingRanking}</Heading>
       <p class="mt-2 max-w-3xl text-sm leading-relaxed text-base-content/70">
         {props.t.rankingIntro}
       </p>

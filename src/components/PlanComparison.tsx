@@ -7,6 +7,7 @@ import { fmt, formatMult, modelOnPlan } from "../util";
 import { TAB_PLAN_IDS, planLabel } from "../plans";
 import { CapabilityFilter, capsOf, type CapId } from "../capabilities";
 import { advertisedValue, planValue } from "../weighted";
+import { SECTION_ANCHORS } from "../anchors";
 
 interface PlanComparisonProps {
   models: Model[];
@@ -36,8 +37,8 @@ export default function PlanComparison(props: PlanComparisonProps) {
 
   return (
     <>
-      <section id="api" class="mt-10">
-        <Heading anchor="api">{props.t.headingApi}</Heading>
+      <section id={SECTION_ANCHORS.api} class="mt-10">
+        <Heading anchor={SECTION_ANCHORS.api}>{props.t.headingApi}</Heading>
         <div class="mt-4 w-full overflow-x-auto">
           <table class="table table-sm table-zebra">
             <thead>
@@ -77,8 +78,8 @@ export default function PlanComparison(props: PlanComparisonProps) {
         </div>
       </section>
 
-      <section id="value" class="mt-10">
-        <Heading anchor="value">{props.t.headingValue}</Heading>
+      <section id={SECTION_ANCHORS.value} class="mt-10">
+        <Heading anchor={SECTION_ANCHORS.value}>{props.t.headingValue}</Heading>
         <div class="mt-4 w-full overflow-x-auto">
           <table class="table table-sm table-zebra">
             <thead>
@@ -137,8 +138,8 @@ export default function PlanComparison(props: PlanComparisonProps) {
         </div>
       </section>
 
-      <section id="comparison" class="mt-10">
-        <Heading anchor="comparison">{props.t.headingComparison}</Heading>
+      <section id={SECTION_ANCHORS.comparison} class="mt-10">
+        <Heading anchor={SECTION_ANCHORS.comparison}>{props.t.headingComparison}</Heading>
         <div class="mt-4 flex flex-wrap items-center gap-3">
           <input
             type="search"

@@ -71,3 +71,28 @@ test("SEO: Sprachdateien mit html lang, Canonical und hreflang", { skip: !exists
   assert.match(imp, /<meta name="robots" content="noindex,follow" \/>/);
   assert.match(imp, /<link rel="canonical" href="https:\/\/cc-pricing\.all-the\.rest\/impressum\/" \/>/);
 });
+
+test("SEO: Heading-Anker sind sprachstabil (identische ids in EN und DE, keine Duplikate)", { skip: !existsSync(join(DIST, "de", "index.html")) && MISSING }, () => {
+  const idsOf = (html) =>
+    [...html.matchAll(/ id="([^"]+)"/g)].map((m) => m[1]).filter((id) => id !== "root");
+  for (const file of ["index.html", "impressum/index.html", "datenschutz/index.html"]) {
+    for (const lang of ["", "de/"]) {
+      const html = read(join(DIST, lang, file));
+      const ids = idsOf(html);
+      const dupes = ids.filter((id, i) => ids.indexOf(id) !== i);
+      assert.deepEqual([...new Set(dupes)], [], `${lang}${file}: doppelte ids: ${[...new Set(dupes)].join(", ")}`);
+    }
+  }
+  const en = idsOf(read(INDEX)).sort();
+  const de = idsOf(read(join(DIST, "de", "index.html"))).sort();
+  // Changelog-Eintrags-IDs (Run-Zeitstempel) sind datengetrieben und in beiden
+  // Sprachen identisch; der Vergleich läuft daher über das komplette id-Set.
+  assert.deepEqual(de, en, "DE-Startseite hat dieselben ids wie EN (sprachstabile Anker)");
+  for (const anchor of ["prices", "plans", "comparison", "value", "api", "ranking", "models", "zdr", "faq", "changelog"]) {
+    assert.ok(en.includes(anchor), `Anker #${anchor} vorhanden (EN)`);
+    assert.ok(de.includes(anchor), `Anker #${anchor} vorhanden (DE)`);
+  }
+  // FAQ-details- und Plan-Tab-Anker: aus englischem Text abgeleitet, in beiden Sprachen vorhanden.
+  assert.ok(en.some((id) => id.startsWith("faq-") && id !== "faq"), "FAQ-details-Anker vorhanden (EN)");
+  assert.ok(en.includes("plan-goat"), "Plan-Tab-Anker vorhanden (EN)");
+});

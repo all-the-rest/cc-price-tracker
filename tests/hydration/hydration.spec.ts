@@ -62,6 +62,33 @@ test("language switch navigates to the same route in the other language", async 
   await expect(page.locator("html")).toHaveAttribute("lang", "de");
 });
 
+test("DE deep link with English hash is preserved and resolves", async ({ page }) => {
+  const problems: string[] = [];
+  page.on("pageerror", (e) => problems.push(`pageerror: ${e.message}`));
+  await page.goto("/de/#faq-how-much-does-command-code-cost");
+  await expect
+    .poll(() => {
+      const u = new URL(page.url());
+      return `${u.pathname}|${u.hash}`;
+    })
+    .toBe("/de/|#faq-how-much-does-command-code-cost");
+  await expect(page.locator("html")).toHaveAttribute("lang", "de");
+  await expect(page.locator("#faq-how-much-does-command-code-cost")).toHaveCount(1);
+  expect(problems).toEqual([]);
+});
+
+test("?lang alias carries hash into path form", async ({ page }) => {
+  await page.goto("/?lang=de#prices");
+  await expect
+    .poll(() => {
+      const u = new URL(page.url());
+      return `${u.pathname}|${u.hash}`;
+    })
+    .toBe("/de/|#prices");
+  await expect(page.locator("html")).toHaveAttribute("lang", "de");
+  await expect(page.locator("#prices")).toHaveCount(1);
+});
+
 test("language switch keeps query params and hash", async ({ page }) => {
   await page.goto("/?basis=paid&plan=pro#prices");
   await expect(page.locator('[role="tab"][aria-selected="true"]')).toHaveText(/Pro/);

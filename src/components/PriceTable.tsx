@@ -12,6 +12,7 @@ import Tooltip from "./Tooltip";
 import PeakIndicator, { isPeakTier, isTierActive, peakRangesFor, usePeakClock } from "./PeakIndicator";
 import type { SortField, SortState } from "../sort";
 import { formatRequests } from "../util";
+import { SECTION_ANCHORS } from "../anchors";
 
 interface PriceTableProps {
   models: Model[];
@@ -188,9 +189,9 @@ export default function PriceTable(props: PriceTableProps) {
   };
 
   return (
-    <section id="prices" class="mt-10">
+    <section id={SECTION_ANCHORS.prices} class="mt-10">
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <Heading anchor="prices">{props.t.headingPrices}</Heading>
+        <Heading anchor={SECTION_ANCHORS.prices}>{props.t.headingPrices}</Heading>
         {props.headerActions}
       </div>
 

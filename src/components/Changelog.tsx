@@ -7,6 +7,7 @@ import { fmt, fmtDateOnly, formatModelName } from "../util";
 import { capCount, fmtCaps } from "../capabilities";
 import { planLabel } from "../plans";
 import { formatTokens } from "../weighted";
+import { SECTION_ANCHORS } from "../anchors";
 
 interface ChangelogProps {
   entries: ChangelogEntry[];
@@ -270,8 +271,8 @@ export default function Changelog(props: ChangelogProps) {
   };
 
   return (
-    <section id="changelog" class="mt-10">
-      <Heading anchor="changelog">{t().headingChangelog}</Heading>
+    <section id={SECTION_ANCHORS.changelog} class="mt-10">
+      <Heading anchor={SECTION_ANCHORS.changelog}>{t().headingChangelog}</Heading>
       <div class="mt-2 max-w-3xl text-sm leading-relaxed text-base-content/80">
         <For each={visibleEntries()}>
           {(entry) => (

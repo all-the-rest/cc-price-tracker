@@ -138,6 +138,11 @@ pnpm typecheck        # nur tsc --noEmit
 - **PlanComparison:** alle Pläne nebeneinander — Preis, Credits, ~Requests, 5h/Weekly/Monthly, API-Zugang (mit Link auf
   `apiAccessSourceUrl`), Modell-Scope, aktive Deals.
 - **ZDR-Info-Karte** (ersetzt die OCG-Datenschutz-Tabelle): „Command Code trainiert nicht auf deinem Code", `CMD_ZDR=1`.
+- **Heading-Anker (`src/anchors.ts`):** alle `id`-Attribute/URL-Hashes (`#prices`, `#comparison`,
+  Plan-Tabs `#plan-*`, FAQ-`<details>` `#faq-*`, Changelog-Einträge) kommen aus der zentralen,
+  en-basierten Anker-Quelle — identische `id` in EN und DE, stabil über Sprachwechsel. Abschnitts-Slugs
+  (`SECTION_ANCHORS`) werden nie umbenannt (Deep-Links, JSON-LD, Tests); neue Abschnitte bekommen ihren
+  Slug aus dem englischen Heading (`slugifyEn`). Keine doppelten IDs (SEO-Test prüft EN≡DE + Eindeutigkeit).
 - **Free-Models-Tabelle** mit „Verfügbar seit/bis". **Changelog** rendert plan-aware Events mit Richtungs-Badges; jeder
   Run-Eintrag zeigt die Uhrzeit (MEZ/MESZ, aus `entry.id`) und ist per `#<entry.id>` direkt verlinkbar (mehrere
   Einträge/Tag bei ≥ 60 Minuten Abstand — Changelog-Bremse: max. 1 Eintrag/Stunde, Altschema-Links `#<date>` weiterhin gültig).

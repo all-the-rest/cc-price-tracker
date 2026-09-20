@@ -1,6 +1,7 @@
 import { i18n, type Lang } from "./i18n";
 import { ROUTES, routePath, type RouteId } from "./routes";
 import { faqItems } from "./faq";
+import { SECTION_ANCHORS } from "./anchors";
 import type { PriceData } from "./types";
 
 export const SITE_URL = "https://cc-pricing.all-the.rest";
@@ -68,7 +69,7 @@ export function buildJsonLd(route: RouteId, lang: Lang, data: PriceData): unknow
       "@type": "ListItem",
       position: i + 1,
       name: m.name,
-      url: `${canonical}#prices`,
+      url: `${canonical}#${SECTION_ANCHORS.prices}`,
     })),
   });
 
