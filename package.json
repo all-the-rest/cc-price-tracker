@@ -11,10 +11,11 @@
     "scrape": "node scripts/scrape.mjs",
     "prebuild": "node scripts/build-share.mjs",
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && node scripts/prerender.mjs",
     "preview": "vite preview",
     "smoke": "node scripts/smoke.mjs",
     "test": "node --test \"tests/**/*.test.mjs\"",
+    "test:hydration": "playwright test -c playwright.hydration.config.ts",
     "test:screenshots": "playwright test -c playwright.screenshots.config.ts",
     "test:contrast": "playwright test -c playwright.contrast.config.ts",
     "typecheck": "tsc --noEmit"

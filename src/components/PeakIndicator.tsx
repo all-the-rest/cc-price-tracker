@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, onMount } from "solid-js";
+import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import type { Translation } from "../i18n";
 import type { PeakHours } from "../types";
 import { PEAK_PRICING_RULES, isBeijingWeekend } from "../config/peakPricing";
@@ -111,14 +111,22 @@ export default function PeakIndicator(props: PeakIndicatorProps) {
     <Tooltip tip={tooltip()} class="inline-flex items-center gap-1 leading-none">
       <span class="icon-[material-symbols--schedule] h-4 w-4 shrink-0 self-center" aria-hidden="true" />
       <span class="leading-none">{props.tier}</span>
-      <span class="leading-none tabular-nums text-base-content/60">· {countdown()}</span>
+      <Show when={props.now > 0}>
+        <span class="leading-none tabular-nums text-base-content/60">· {countdown()}</span>
+      </Show>
     </Tooltip>
   );
 }
 
+/**
+ * Live-Uhr für Peak/Off-Peak. Startet mit 0 (Server-Render + erster
+ * Client-Render stimmen dadurch überein) und liefert die echte Zeit erst nach
+ * dem Mount — so gibt es keinen Hydration-Mismatch durch die Uhrzeit.
+ */
 export function usePeakClock() {
-  const [now, setNow] = createSignal(Date.now());
+  const [now, setNow] = createSignal(0);
   onMount(() => {
+    setNow(Date.now());
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
     onCleanup(() => window.clearInterval(timer));
   });

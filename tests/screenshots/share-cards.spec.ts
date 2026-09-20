@@ -52,7 +52,8 @@ async function waitForApp(page: Page): Promise<void> {
   await page.waitForLoadState("networkidle");
   await expect(page.getByRole("main")).toBeVisible();
   // Guard: capture the real app, not a foreign dev server on the port.
-  await expect(page).toHaveTitle("Price Tracking for Command Code");
+  // (Titel enthält je nach Sprache „Command Code …“.)
+  await expect(page).toHaveTitle(/Command Code/);
   await page.waitForTimeout(300);
 }
 

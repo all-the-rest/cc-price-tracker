@@ -3,7 +3,12 @@ import type { Lang, Translation } from "../i18n";
 
 interface HeaderProps {
   lang: Lang;
-  setLang: (l: Lang) => void;
+  /** Kanonischer Pfad zur selben Route in der gewünschten Sprache (echter Link → SEO + Reload). */
+  langHref: (l: Lang) => string;
+  /** Sprachwechsel; übernimmt Query-Parameter + Hash in die andere Sprache. */
+  switchLang: (l: Lang, e: MouseEvent) => void;
+  /** Kanonischer Home-Pfad der aktiven Sprache. */
+  homeHref: string;
   dark: boolean;
   setDark: (v: boolean) => void;
   onReset: () => void;
@@ -54,7 +59,7 @@ export default function Header(props: HeaderProps) {
           </ul>
         </div>
         <a
-          href={window.location.pathname}
+          href={props.homeHref}
           class="inline-flex items-center"
           aria-label="Price Tracking for Command Code — Home"
           onClick={(e) => {
@@ -98,22 +103,29 @@ export default function Header(props: HeaderProps) {
             )}
           </For>
         </div>
-        {/* …existing DE/EN join + theme swap stay here, unchanged… */}
-        <div class="join">
-          <button
+        {/* Sprachumschalter: echte Links auf dieselbe Route in der anderen
+            Sprache (EN präfixlos, DE unter /de) — funktioniert ohne JS. */}
+        <div class="join" role="group" aria-label={props.t.languageSwitch}>
+          <a
+            href={props.langHref("de")}
+            hreflang="de"
             class="join-item btn btn-sm"
             classList={{ "btn-active": props.lang === "de" }}
-            onClick={() => props.setLang("de")}
+            aria-current={props.lang === "de" ? "true" : undefined}
+            onClick={(e) => props.switchLang("de", e)}
           >
             DE
-          </button>
-          <button
+          </a>
+          <a
+            href={props.langHref("en")}
+            hreflang="en"
             class="join-item btn btn-sm"
             classList={{ "btn-active": props.lang === "en" }}
-            onClick={() => props.setLang("en")}
+            aria-current={props.lang === "en" ? "true" : undefined}
+            onClick={(e) => props.switchLang("en", e)}
           >
             EN
-          </button>
+          </a>
         </div>
         <label class="swap swap-rotate">
           <input

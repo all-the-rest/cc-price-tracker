@@ -10,7 +10,7 @@ const out = (viewport: string, file: string) =>
   path.resolve(process.cwd(), uiReviewConfig.outputDir, "filled", viewport, file);
 
 const THEME_TOGGLE = "input.theme-controller";
-const EXPECTED_TITLE = "Price Tracking for Command Code";
+const EXPECTED_TITLE = "Command Code Pricing & Plans — Per-Model Credits & Deals (2026)";
 
 async function loadWithEmptyStorage(
   page: import("@playwright/test").Page,

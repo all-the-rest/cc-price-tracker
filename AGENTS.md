@@ -26,10 +26,11 @@ statische SolidJS-Seite unter `https://cc-pricing.all-the.rest` mit Plan-Tabs
 ```bash
 pnpm install          # Lockfile versioniert (lockfileVersion 9)
 pnpm scrape           # holt Daten → data/latest.json, data/history.json, CHANGELOG.json, src/data/changelog.json
-pnpm test             # node --test tests/**/*.test.mjs (Scraper + SSR-Sortierung)
+pnpm test             # node --test tests/**/*.test.mjs (Scraper + SSR-Sortierung + SEO-/Prerender-Vertrag; SEO-Test skippt ohne dist/)
 pnpm dev              # Dev-Server
-pnpm build            # Typecheck + Vite-Build → dist/ (inkl. dist/data/latest.json)
-pnpm smoke            # Smoke-Test auf dist/: Artefakte + Assets + Preview-HTTP (/ und /data/latest.json) — ohne Browser
+pnpm build            # Typecheck + Prerender (scripts/prerender.mjs) → dist/ (HTML je Route×Sprache, robots.txt, sitemap.xml, dist/data/latest.json)
+pnpm smoke            # Smoke-Test auf dist/: Artefakte + Assets + Preview-HTTP (/ , /de/ , robots.txt, sitemap.xml, /data/latest.json) — ohne Browser
+pnpm test:hydration   # Playwright gegen dist/ (vite preview): Hydration, Interaktivität, Sprachwechsel (baut zuerst)
 pnpm preview          # dist/ lokal serven
 pnpm typecheck        # nur tsc --noEmit
 ```
@@ -162,6 +163,46 @@ pnpm typecheck        # nur tsc --noEmit
   EOF
   ```
   `<SHA>` = committeter Datenstand (z. B. `git rev-parse HEAD`). Verifikation: `gh run list -R all-the-rest/ai-10-usd` → neuer `repository_dispatch`-Lauf (`source-updated`) wird grün.
+
+## SEO / Prerender & Sprachen
+
+- **Statisches Pre-Rendering:** `pnpm build` = `tsc --noEmit && node scripts/prerender.mjs`. Das Skript
+  baut zuerst den Client (Repo-Config), dann die App als SSR-Bundle (`.ssr-build/`, gitignored,
+  `src/ssr-entry.tsx`, Solid `renderToString`) und ersetzt den leeren `<div id="root"></div>` in
+  `dist/index.html` durch das vorgerenderte Markup. Crawler/AI-Bots ohne JS sehen damit Preise,
+  Ranking, Modell-Übersicht und FAQ.
+- **Hydration:** `src/index.tsx` ruft `hydrate()` (Fallback `render`, z. B. im Dev-Server). Der
+  `generateHydrationScript()` (Solid, `window._$HY`) wird pro HTML-Datei in den `<head>` injiziert.
+  Server- und Client-Erstrender nutzen identische Defaults (helles Theme, keine Query-Parameter);
+  gespeicherte Sprache/Theme, `?lang=…` und Query-Parameter wendet der Client erst nach der
+  Hydration an (kein Hydration-Mismatch durch Sprache/Theme/Zeitstempel).
+- **Sprach-Subrouten:** Englisch ist Default unter `/`, Deutsch als echte Subroute unter `/de/`
+  (`src/routes.ts`, `src/router.tsx`). Je Route × Sprache eine eigene vorgerenderte Datei
+  (`dist/index.html`, `dist/de/index.html`, `dist/impressum/index.html`, `dist/de/impressum/index.html`,
+  `dist/datenschutz/index.html`, `dist/de/datenschutz/index.html`); `<html lang>` und Canonical je
+  Datei. `base: "/"`, damit die Assets auch unter `/de/…` und den Rechtsseiten laden. Der Pfad ist
+  die Quelle der Wahrheit; `?lang=de|en` bleibt als Legacy-Alias erhalten und wird nach der Hydration
+  per `replaceState` auf die kanonische Pfadform gebracht. Der Sprachumschalter lädt dieselbe Route in
+  der Zielsprache und übernimmt Query-Parameter (außer `lang`) und Hash. Rechtsseiten sind
+  `noindex,follow`.
+- **Build-Stempel:** `scripts/prerender.mjs` setzt einmalig `process.env.BUILD_STAMP`; `vite.config.ts`
+  nutzt ihn für den `stamp-build-time`-Transform und `dist/data/latest.json`, der SSR-Build stempelt
+  dasselbe JSON — Client und SSR zeigen denselben Footer-„Stand“ (hydration-stabil).
+- **Head-SEO (build-generiert in `scripts/prerender.mjs`):** Title/Description/Canonical/`og:locale`
+  je Sprache, hreflang (`en`/`de`/`x-default`), RSS-Autodiscovery (`releases.atom`) und JSON-LD
+  (`WebSite` + `ItemList` aller Modelle + `FAQPage`). Zusätzlich `dist/robots.txt` (mit Sitemap-Link)
+  und `dist/sitemap.xml` (indexierbare Routen beider Sprachen, Rechtsseiten nur `noindex`). Die
+  SEO-Logik liegt in `src/seo.ts` und wird über den SSR-Entry (gleiche Daten/Sprache wie der Body)
+  aufgerufen.
+- **Inhaltsabschnitte (SSR-sichtbar):** `ModelRanking` (Top-Modelle nach `requestsPerMonth` bei vollem
+  Guthaben), `AllModels` (alle Modelle mit Anbieter/Fähigkeiten/Kontext) und `Faq` (native `<details>`,
+  Texte zweisprachig in `src/i18n.ts`, Daten in `src/faq.ts` für das FAQPage-JSON-LD). Tabellen mit
+  `<caption>` und `<th scope>`.
+- **Tests:** `tests/seo.test.mjs` prüft `dist/` (h1, gefüllter `#root`, parsebares JSON-LD, alle
+  Modellnamen, robots/sitemap, Sprachdateien) und **überspringt** ohne `dist/`. `scripts/smoke.mjs`
+  prüft zusätzlich `/`, `/de/`, `robots.txt`, `sitemap.xml`, `<h1>`, JSON-LD und vorgerendertes
+  Markup (Modellname) per HTTP. Da `pnpm test` in CI vor dem Build läuft, übernimmt der Smoke-Test
+  die Post-Build-Absicherung.
 
 ## Tests
 

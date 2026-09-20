@@ -36,15 +36,15 @@ export const uiReviewConfig: UiReviewConfig = {
       states: ["filled"],
       elements: ["#changelog", "#zdr"],
       note: "Statische Pricing-Seite (Daten beim Build importiert) — kein sinnvoller Empty-State.",
-      expectedTitle: "Price Tracking for Command Code",
+      expectedTitle: "Command Code Pricing & Plans — Per-Model Credits & Deals (2026)",
     },
     {
       name: "home-de",
       path: "/?lang=de",
       states: ["filled"],
       elements: ["#changelog", "#zdr"],
-      note: "Deutsche Variante zur i18n-Kontrolle; Default-Lang ist en (Browser-Locale).",
-      expectedTitle: "Price Tracking for Command Code",
+      note: "Deutsche Variante (Legacy-Alias ?lang=de wird auf /de/ kanonisiert).",
+      expectedTitle: "Command Code Preise & Pläne — Credits pro Modell & Deals (2026)",
     },
     {
       name: "home-dark",
@@ -52,7 +52,7 @@ export const uiReviewConfig: UiReviewConfig = {
       states: ["filled"],
       elements: ["#changelog", "#zdr"],
       note: "Dark-Mode-Variante (data-theme=dark) — prüft Farben/Kontrast im dunklen Theme.",
-      expectedTitle: "Price Tracking for Command Code",
+      expectedTitle: "Command Code Pricing & Plans — Per-Model Credits & Deals (2026)",
     },
     {
       name: "home-de-dark",
@@ -60,7 +60,7 @@ export const uiReviewConfig: UiReviewConfig = {
       states: ["filled"],
       elements: ["#changelog", "#zdr"],
       note: "Deutsche Dark-Mode-Variante — prüft i18n + dunkles Theme zusammen.",
-      expectedTitle: "Price Tracking for Command Code",
+      expectedTitle: "Command Code Preise & Pläne — Credits pro Modell & Deals (2026)",
     },
   ],
 };

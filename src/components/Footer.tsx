@@ -1,16 +1,12 @@
 import type { Lang, Translation } from "../i18n";
 import type { PriceData } from "../types";
 import { fmtDate } from "../util";
+import { routePath } from "../routes";
 
 interface FooterProps {
   t: Translation;
   data: PriceData;
   lang: Lang;
-}
-
-function scrollToSection(id: string, e: MouseEvent) {
-  e.preventDefault();
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 export default function Footer(props: FooterProps) {
@@ -49,10 +45,10 @@ export default function Footer(props: FooterProps) {
           >
             {props.t.rssFeed}
           </a>
-          <a href="#impressum" class="underline py-1" onClick={(e) => scrollToSection("impressum", e)}>
+          <a href={routePath("impressum", props.lang)} class="underline py-1">
             {props.t.impressum}
           </a>
-          <a href="#datenschutz" class="underline py-1" onClick={(e) => scrollToSection("datenschutz", e)}>
+          <a href={routePath("datenschutz", props.lang)} class="underline py-1">
             {props.t.datenschutz}
           </a>
         </div>

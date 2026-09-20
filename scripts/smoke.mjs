@@ -70,6 +70,40 @@ async function main() {
       ok("GET / → 200");
       if (!root.includes('id="root"')) fail("GET / enthält keinen App-Root (id=\"root\") — kaputtes Bundle?");
       else ok("App-Root vorhanden");
+      if (!/<h1[^>]*>/.test(root)) fail("GET / enthält kein <h1>");
+      else ok("<h1> vorhanden");
+      if (!root.includes("application/ld+json")) fail("GET / enthält kein JSON-LD");
+      else ok("JSON-LD vorhanden");
+      if (!root.includes("window._$HY")) fail("GET / enthält kein Solid-Hydration-Script (window._$HY)");
+      else ok("Hydration-Script vorhanden");
+      // Vorgerendertes Markup: mindestens ein echter Modellname aus den Daten.
+      try {
+        const distData = JSON.parse(readFileSync(join(DIST, "data", "latest.json"), "utf8"));
+        const sample = distData.models?.[0]?.name;
+        if (sample && !root.includes(sample)) fail(`GET / enthält den Modellnamen „${sample}“ nicht (Prerender?)`);
+        else if (sample) ok(`vorgerendertes Modell „${sample}“ vorhanden`);
+      } catch (e) {
+        fail(`Modellname-Prüfung: ${e instanceof Error ? e.message : String(e)}`);
+      }
+    }
+
+    for (const [path, needle, label] of [
+      ["robots.txt", "Sitemap:", "robots.txt"],
+      ["sitemap.xml", "<urlset", "sitemap.xml"],
+      ["de/", '<html lang="de"', "de/"],
+    ]) {
+      try {
+        const res = await fetch(`${BASE}/${path}`);
+        if (!res.ok) {
+          fail(`GET /${path} → HTTP ${res.status}`);
+          continue;
+        }
+        const body = await res.text();
+        if (!body.includes(needle)) fail(`/${path} enthält „${needle}“ nicht`);
+        else ok(`GET /${path} → 200 (${label})`);
+      } catch (e) {
+        fail(`/${path}: ${e instanceof Error ? e.message : String(e)}`);
+      }
     }
 
     try {

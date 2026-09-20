@@ -19,11 +19,13 @@ const PAGE_SIZE = 20;
 
 // Leitet aus einem Run-`id` (z. B. 2026-08-28T09-46-46Z) die Uhrzeit ab (MEZ/MESZ);
 // für Altschema-Einträge (id = Datum) wird null geliefert (keine Zeitangabe).
-function entryTime(id: string): string | null {
+// Explizite Locale (statt System-Locale), damit Server-Render und Client
+// dieselbe Zeichenkette erzeugen (Hydration-Stabilität).
+function entryTime(id: string, lang: Lang): string | null {
   const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2})-(\d{2})-(\d{2})Z$/.exec(id);
   if (!m) return null;
   const date = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]));
-  return date.toLocaleTimeString([], {
+  return date.toLocaleTimeString(lang === "de" ? "de-DE" : "en-US", {
     timeZone: "Europe/Vienna",
     hour: "2-digit",
     minute: "2-digit",
@@ -276,8 +278,8 @@ export default function Changelog(props: ChangelogProps) {
             <div id={entry.id} class="mt-4 scroll-mt-24">
               <h3 class="text-sm font-semibold text-base-content/70">
                 {fmtDateOnly(`${entry.date}T00:00:00.000Z`, props.lang)}
-                <Show when={entryTime(entry.id) !== null}>
-                  <span class="ml-2 font-normal text-base-content/50">{entryTime(entry.id)}</span>
+                <Show when={entryTime(entry.id, props.lang) !== null}>
+                  <span class="ml-2 font-normal text-base-content/50">{entryTime(entry.id, props.lang)}</span>
                 </Show>
                 <AnchorLink id={entry.id} label="Direktlink zu diesem Changelog-Eintrag" />
               </h3>
