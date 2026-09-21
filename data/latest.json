@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-19T04:04:46.177Z",
+  "fetchedAt": "2026-09-21T23:27:01.577Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -1963,6 +1963,54 @@
       "tip": null
     },
     {
+      "id": "step-5-preview",
+      "name": "Step 5 Preview",
+      "provider": "StepFun",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1000000,
+      "input": 1,
+      "output": 2.7,
+      "cachedRead": 0.05,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 30
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
       "id": "step-3.7-flash",
       "name": "Step 3.7 Flash",
       "provider": "StepFun",
@@ -2042,6 +2090,153 @@
       "capabilities": {
         "input": [
           "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "mimo-v2.6-pro",
+      "name": "MiMo V2.6 Pro",
+      "provider": "Xiaomi",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1048576,
+      "input": 0.435,
+      "output": 0.87,
+      "cachedRead": 0.0036,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 30
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "audio",
+          "video",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "mimo-v2.6-pro-ultraspeed",
+      "name": "MiMo V2.6 Pro UltraSpeed",
+      "provider": "Xiaomi",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1048576,
+      "input": 4.35,
+      "output": 8.7,
+      "cachedRead": 0.036,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 10,
+        "pro": 20
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": false,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "mimo-v2.6-flash",
+      "name": "MiMo V2.6 Flash",
+      "provider": "Xiaomi",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1048576,
+      "input": 0.14,
+      "output": 0.28,
+      "cachedRead": 0.0028,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 67,
+        "pro": 77
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "audio",
+          "video",
+          "pdf"
         ],
         "output": [
           "text"
@@ -3619,6 +3814,61 @@
         "output": 162
       },
       "tip": null
+    },
+    {
+      "id": "grok-4.7",
+      "name": "Grok 4.7",
+      "provider": "xAI",
+      "category": "premium",
+      "tier": "Standard / Long context",
+      "contextWindow": 500000,
+      "input": 1.2,
+      "output": 3.5999999999999996,
+      "cachedRead": 0.3,
+      "cachedWrite": null,
+      "listInput": 2,
+      "listOutput": 6,
+      "listCachedRead": 0.5,
+      "listCachedWrite": null,
+      "deal": {
+        "id": "grok-4.7-40-off",
+        "discountPercent": 40,
+        "free": false,
+        "expires": "2026-09-27",
+        "endsWhen": null,
+        "revertNote": null
+      },
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 35,
+        "pro": 45
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Rates shown are the ≤ 200K tokens band; > 200K tokens bills $1.20 input / $3.60 output / $0.30 cache read (per 1M tokens)."
     },
     {
       "id": "grok-4.6",
