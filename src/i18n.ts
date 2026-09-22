@@ -142,25 +142,6 @@ export const i18n = {
       "Alle im Tracker erfassten Modelle mit Anbieter und Fähigkeiten. Die aktuellen Preise stehen in der Preistabelle.",
     captionAllModels: "Alle verfügbaren Modelle mit Anbieter und Fähigkeiten",
     colContext: "Kontext",
-    headingFaq: "Häufige Fragen",
-    faqQ1: "Wie viel kostet Command Code?",
-    faqA1:
-      "Command Code bietet mehrere Abos: Go, GOAT, Pro, Max 10× und Max 20×. Preis, monatliches Guthaben und Anfrage-Limits stehen in der Plan-Vergleichstabelle. Der tatsächlich gezahlte Preis enthält zusätzlich eine separate Stripe-Bearbeitungsgebühr, die nicht im beworbenen Preis steckt.",
-    faqQ2: "Welche Pläne haben API-Zugang?",
-    faqA2:
-      "Go ist der einzige Plan ohne API-Zugang — die Modelle laufen dort nur in der Command-Code-CLI. Ab GOAT ist der Provider-API-Zugang enthalten.",
-    faqQ3: "Was ist Zero Data Retention (ZDR)?",
-    faqA3:
-      "Command Code verwendet Prompts und Antworten nicht für das Modelltraining. Client-seitig lässt sich Zero Data Retention mit CMD_ZDR=1 aktivieren. Einzelne Modelle können abweichende Aufbewahrungsregeln haben.",
-    faqQ4: "Welche Modelle sind in meinem Plan enthalten?",
-    faqA4:
-      "Die Matrix „Modell-Verfügbarkeit je Plan“ zeigt für jedes Modell, in welchen Plänen es verfügbar ist. Die Preistabelle ist nach dem aktiven Plan gefiltert.",
-    faqQ5: "Wie werden die Effektivpreise berechnet?",
-    faqA5:
-      "Volles Guthaben = Listenpreis × (monatliche Credits / inkl. Nutzung); was du zahlst = Listenpreis × (tatsächlich gezahlter Monatspreis / inkl. Nutzung). Die Kosten pro Anfrage nutzen das in der Doku dokumentierte Anfragemuster des jeweiligen Modells.",
-    faqQ6: "Wie oft werden die Preise aktualisiert?",
-    faqA6:
-      "Der Tracker liest die offizielle Command-Code-Dokumentation mehrmals täglich neu ein. Änderungen erscheinen im Changelog und als GitHub-Release (per RSS abonnierbar).",
     seoTitle: "Command Code Preise & Pläne — Credits pro Modell & Deals (2026)",
     seoDescription:
       "Live-Preisvergleich für Command Code: alle Pläne, Credits pro Modell, ZDR-Status und aktuelle Deals im direkten Vergleich.",
@@ -316,25 +297,6 @@ export const i18n = {
       "Every model tracked here with its provider and capabilities. Current prices are in the price table.",
     captionAllModels: "All available models with provider and capabilities",
     colContext: "Context",
-    headingFaq: "Frequently asked questions",
-    faqQ1: "How much does Command Code cost?",
-    faqA1:
-      "Command Code offers several subscriptions: Go, GOAT, Pro, Max 10× and Max 20×. Price, monthly credit and request limits are listed in the plan comparison table. The amount actually charged includes a separate Stripe processing fee that is not part of the advertised price.",
-    faqQ2: "Which plans include API access?",
-    faqA2:
-      "Go is the only plan without API access — there the models only run inside the Command Code CLI. From GOAT up, provider API access is included.",
-    faqQ3: "What is Zero Data Retention (ZDR)?",
-    faqA3:
-      "Command Code does not use prompts or responses for model training. Client-side, Zero Data Retention can be enabled with CMD_ZDR=1. Individual models may have different retention rules.",
-    faqQ4: "Which models are included in my plan?",
-    faqA4:
-      "The “Model availability per plan” matrix shows, per model, which plans include it. The price table is filtered to the active plan.",
-    faqQ5: "How are the effective prices calculated?",
-    faqA5:
-      "Full credit = list price × (monthly credits / included usage); what you pay = list price × (actually charged monthly price / included usage). Cost per request uses each model's documented request pattern.",
-    faqQ6: "How often is the data updated?",
-    faqA6:
-      "The tracker re-reads the official Command Code documentation several times a day. Changes show up in the changelog and as GitHub releases (subscribe via RSS).",
     seoTitle: "Command Code Pricing & Plans — Per-Model Credits & Deals (2026)",
     seoDescription:
       "Live price tracker for Command Code: every plan, per-model credits, ZDR status and current deals compared side by side.",

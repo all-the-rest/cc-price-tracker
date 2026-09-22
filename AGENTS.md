@@ -139,7 +139,7 @@ pnpm typecheck        # nur tsc --noEmit
   `apiAccessSourceUrl`), Modell-Scope, aktive Deals.
 - **ZDR-Info-Karte** (ersetzt die OCG-Datenschutz-Tabelle): „Command Code trainiert nicht auf deinem Code", `CMD_ZDR=1`.
 - **Heading-Anker (`src/anchors.ts`):** alle `id`-Attribute/URL-Hashes (`#prices`, `#comparison`,
-  Plan-Tabs `#plan-*`, FAQ-`<details>` `#faq-*`, Changelog-Einträge) kommen aus der zentralen,
+  Plan-Tabs `#plan-*`, Changelog-Einträge) kommen aus der zentralen,
   en-basierten Anker-Quelle — identische `id` in EN und DE, stabil über Sprachwechsel. Abschnitts-Slugs
   (`SECTION_ANCHORS`) werden nie umbenannt (Deep-Links, JSON-LD, Tests); neue Abschnitte bekommen ihren
   Slug aus dem englischen Heading (`slugifyEn`). Keine doppelten IDs (SEO-Test prüft EN≡DE + Eindeutigkeit).
@@ -175,7 +175,7 @@ pnpm typecheck        # nur tsc --noEmit
   baut zuerst den Client (Repo-Config), dann die App als SSR-Bundle (`.ssr-build/`, gitignored,
   `src/ssr-entry.tsx`, Solid `renderToString`) und ersetzt den leeren `<div id="root"></div>` in
   `dist/index.html` durch das vorgerenderte Markup. Crawler/AI-Bots ohne JS sehen damit Preise,
-  Ranking, Modell-Übersicht und FAQ.
+  Ranking und Modell-Übersicht.
 - **Hydration:** `src/index.tsx` ruft `hydrate()` (Fallback `render`, z. B. im Dev-Server). Der
   `generateHydrationScript()` (Solid, `window._$HY`) wird pro HTML-Datei in den `<head>` injiziert.
   Server- und Client-Erstrender nutzen identische Defaults (helles Theme, keine Query-Parameter);
@@ -195,13 +195,12 @@ pnpm typecheck        # nur tsc --noEmit
   dasselbe JSON — Client und SSR zeigen denselben Footer-„Stand“ (hydration-stabil).
 - **Head-SEO (build-generiert in `scripts/prerender.mjs`):** Title/Description/Canonical/`og:locale`
   je Sprache, hreflang (`en`/`de`/`x-default`), RSS-Autodiscovery (`releases.atom`) und JSON-LD
-  (`WebSite` + `ItemList` aller Modelle + `FAQPage`). Zusätzlich `dist/robots.txt` (mit Sitemap-Link)
+  (`WebSite` + `ItemList` aller Modelle). Zusätzlich `dist/robots.txt` (mit Sitemap-Link)
   und `dist/sitemap.xml` (indexierbare Routen beider Sprachen, Rechtsseiten nur `noindex`). Die
   SEO-Logik liegt in `src/seo.ts` und wird über den SSR-Entry (gleiche Daten/Sprache wie der Body)
   aufgerufen.
 - **Inhaltsabschnitte (SSR-sichtbar):** `ModelRanking` (Top-Modelle nach `requestsPerMonth` bei vollem
-  Guthaben), `AllModels` (alle Modelle mit Anbieter/Fähigkeiten/Kontext) und `Faq` (native `<details>`,
-  Texte zweisprachig in `src/i18n.ts`, Daten in `src/faq.ts` für das FAQPage-JSON-LD). Tabellen mit
+  Guthaben) und `AllModels` (alle Modelle mit Anbieter/Fähigkeiten/Kontext). Tabellen mit
   `<caption>` und `<th scope>`.
 - **Tests:** `tests/seo.test.mjs` prüft `dist/` (h1, gefüllter `#root`, parsebares JSON-LD, alle
   Modellnamen, robots/sitemap, Sprachdateien) und **überspringt** ohne `dist/`. `scripts/smoke.mjs`

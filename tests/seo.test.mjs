@@ -24,7 +24,7 @@ test("SEO: dist/index.html enthält h1 und nicht-leeren #root (Prerender)", { sk
   assert.ok(rootContent.trim().length > 500, "App-Root enthält vorgerendertes Markup");
 });
 
-test("SEO: JSON-LD ist vorhanden und parsebar (WebSite + ItemList + FAQPage)", { skip: !existsSync(INDEX) && MISSING }, () => {
+test("SEO: JSON-LD ist vorhanden und parsebar (WebSite + ItemList)", { skip: !existsSync(INDEX) && MISSING }, () => {
   const html = read(INDEX);
   const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => m[1]);
   assert.ok(blocks.length >= 1, "mindestens ein JSON-LD-Block");
@@ -32,7 +32,6 @@ test("SEO: JSON-LD ist vorhanden und parsebar (WebSite + ItemList + FAQPage)", {
   const types = parsed.map((p) => p["@type"]);
   assert.ok(types.includes("WebSite"), "WebSite-JSON-LD");
   assert.ok(types.includes("ItemList"), "ItemList-JSON-LD");
-  assert.ok(types.includes("FAQPage"), "FAQPage-JSON-LD");
 });
 
 test("SEO: vorgerenderte Startseite enthält alle Modellnamen aus data/latest.json", { skip: !existsSync(INDEX) && MISSING }, () => {
@@ -88,11 +87,10 @@ test("SEO: Heading-Anker sind sprachstabil (identische ids in EN und DE, keine D
   // Changelog-Eintrags-IDs (Run-Zeitstempel) sind datengetrieben und in beiden
   // Sprachen identisch; der Vergleich läuft daher über das komplette id-Set.
   assert.deepEqual(de, en, "DE-Startseite hat dieselben ids wie EN (sprachstabile Anker)");
-  for (const anchor of ["prices", "plans", "comparison", "value", "api", "ranking", "models", "zdr", "faq", "changelog"]) {
+  for (const anchor of ["prices", "plans", "comparison", "value", "api", "ranking", "models", "zdr", "changelog"]) {
     assert.ok(en.includes(anchor), `Anker #${anchor} vorhanden (EN)`);
     assert.ok(de.includes(anchor), `Anker #${anchor} vorhanden (DE)`);
   }
-  // FAQ-details- und Plan-Tab-Anker: aus englischem Text abgeleitet, in beiden Sprachen vorhanden.
-  assert.ok(en.some((id) => id.startsWith("faq-") && id !== "faq"), "FAQ-details-Anker vorhanden (EN)");
+  // Plan-Tab-Anker: aus sprachneutraler Plan-ID abgeleitet, in beiden Sprachen vorhanden.
   assert.ok(en.includes("plan-goat"), "Plan-Tab-Anker vorhanden (EN)");
 });

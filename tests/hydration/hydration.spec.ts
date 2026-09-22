@@ -65,15 +65,15 @@ test("language switch navigates to the same route in the other language", async 
 test("DE deep link with English hash is preserved and resolves", async ({ page }) => {
   const problems: string[] = [];
   page.on("pageerror", (e) => problems.push(`pageerror: ${e.message}`));
-  await page.goto("/de/#faq-how-much-does-command-code-cost");
+  await page.goto("/de/#comparison");
   await expect
     .poll(() => {
       const u = new URL(page.url());
       return `${u.pathname}|${u.hash}`;
     })
-    .toBe("/de/|#faq-how-much-does-command-code-cost");
+    .toBe("/de/|#comparison");
   await expect(page.locator("html")).toHaveAttribute("lang", "de");
-  await expect(page.locator("#faq-how-much-does-command-code-cost")).toHaveCount(1);
+  await expect(page.locator("#comparison")).toHaveCount(1);
   expect(problems).toEqual([]);
 });
 

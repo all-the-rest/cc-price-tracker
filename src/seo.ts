@@ -1,6 +1,5 @@
 import { i18n, type Lang } from "./i18n";
 import { ROUTES, routePath, type RouteId } from "./routes";
-import { faqItems } from "./faq";
 import { SECTION_ANCHORS } from "./anchors";
 import type { PriceData } from "./types";
 
@@ -43,7 +42,7 @@ export function seoFor(route: RouteId, lang: Lang): { title: string; description
 
 /**
  * Strukturierte Daten je Datei/Sprache: WebSite immer, zusätzlich ItemList
- * (alle Modelle) und FAQPage auf der Startseite.
+ * (alle Modelle) auf der Startseite.
  */
 export function buildJsonLd(route: RouteId, lang: Lang, data: PriceData): unknown[] {
   const t = i18n[lang];
@@ -70,17 +69,6 @@ export function buildJsonLd(route: RouteId, lang: Lang, data: PriceData): unknow
       position: i + 1,
       name: m.name,
       url: `${canonical}#${SECTION_ANCHORS.prices}`,
-    })),
-  });
-
-  out.push({
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    inLanguage: HTML_LANG[lang],
-    mainEntity: faqItems(t).map((item) => ({
-      "@type": "Question",
-      name: item.q,
-      acceptedAnswer: { "@type": "Answer", text: item.a },
     })),
   });
 

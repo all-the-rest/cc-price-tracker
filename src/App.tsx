@@ -15,7 +15,6 @@ import PriceTable from "./components/PriceTable";
 import PlanComparison from "./components/PlanComparison";
 import ModelRanking from "./components/ModelRanking";
 import AllModels from "./components/AllModels";
-import Faq from "./components/Faq";
 import ZdrNote from "./components/ZdrNote";
 import Changelog from "./components/Changelog";
 import ShareDialog from "./components/ShareDialog";
@@ -330,7 +329,6 @@ function AppShell(props: { ssrLang?: Lang }) {
             <ModelRanking models={planModels()} plan={plan()} lang={lang()} t={t()} />
             <AllModels models={data.models} t={t()} />
             <ZdrNote t={t()} />
-            <Faq t={t()} />
             <Changelog entries={changelogData.entries} t={t()} lang={lang()} />
             <Legal t={t()} />
           </Match>
