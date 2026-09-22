@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-21T23:27:01.577Z",
+  "fetchedAt": "2026-09-22T18:09:28.138Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -2186,13 +2186,15 @@
       "capabilities": {
         "input": [
           "text",
-          "image"
+          "image",
+          "video",
+          "audio"
         ],
         "output": [
           "text"
         ],
-        "reasoning": false,
-        "toolCall": false
+        "reasoning": true,
+        "toolCall": true
       },
       "pattern": {
         "input": 800,
@@ -2465,6 +2467,54 @@
       "output": 50,
       "cachedRead": 1,
       "cachedWrite": 12.5,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": false,
+        "pro": false,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 20
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "claude-opus-5-5",
+      "name": "Claude Opus 5.5",
+      "provider": "Anthropic",
+      "category": "premium",
+      "tier": null,
+      "contextWindow": 1000000,
+      "input": 4,
+      "output": 20,
+      "cachedRead": 0.2,
+      "cachedWrite": 5,
       "listInput": null,
       "listOutput": null,
       "listCachedRead": null,
@@ -4059,6 +4109,59 @@
         "output": 162
       },
       "tip": null
+    },
+    {
+      "id": "typesafe/jev",
+      "name": "Jev",
+      "provider": null,
+      "category": "premium",
+      "tier": null,
+      "contextWindow": 32000,
+      "input": 0,
+      "output": 0,
+      "cachedRead": 0,
+      "cachedWrite": null,
+      "listInput": 0.042,
+      "listOutput": 0,
+      "listCachedRead": 0,
+      "listCachedWrite": null,
+      "deal": {
+        "id": "jev-free",
+        "discountPercent": 100,
+        "free": true,
+        "expires": "2026-09-24",
+        "endsWhen": null,
+        "revertNote": null
+      },
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": null,
+        "pro": null
+      },
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": false,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
     }
   ],
   "freeModels": [
@@ -4095,6 +4198,23 @@
         "toolCall": false
       },
       "note": "Free while it lasts. Up to 100 requests a day."
+    },
+    {
+      "id": "typesafe/jev",
+      "name": "Jev",
+      "availableFrom": "2026-09-22",
+      "until": null,
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": false,
+        "toolCall": false
+      },
+      "note": null
     }
   ],
   "peakHours": {
