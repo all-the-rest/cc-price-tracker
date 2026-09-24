@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-22T23:07:12.628Z",
+  "fetchedAt": "2026-09-24T04:04:16.539Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -109,6 +109,60 @@
     }
   ],
   "models": [
+    {
+      "id": "space-bunny-alpha",
+      "name": "Space Bunny Alpha",
+      "provider": null,
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1000000,
+      "input": 0,
+      "output": 0,
+      "cachedRead": 0,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": {
+        "id": "space-bunny-alpha-free",
+        "discountPercent": 100,
+        "free": true,
+        "expires": null,
+        "endsWhen": "while the stealth preview lasts",
+        "revertNote": null
+      },
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": null,
+        "pro": null
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Free while the preview lasts. Not routed under ZDR."
+    },
     {
       "id": "laguna-s-2.1-free",
       "name": "Laguna S 2.1",
@@ -2138,8 +2192,7 @@
           "text",
           "image",
           "audio",
-          "video",
-          "pdf"
+          "video"
         ],
         "output": [
           "text"
@@ -2187,8 +2240,8 @@
         "input": [
           "text",
           "image",
-          "video",
-          "audio"
+          "audio",
+          "video"
         ],
         "output": [
           "text"
@@ -2237,8 +2290,7 @@
           "text",
           "image",
           "audio",
-          "video",
-          "pdf"
+          "video"
         ],
         "output": [
           "text"
@@ -4261,6 +4313,23 @@
     }
   ],
   "freeModels": [
+    {
+      "id": "space-bunny-alpha",
+      "name": "Space Bunny Alpha",
+      "availableFrom": "2026-09-24",
+      "until": null,
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": false,
+        "toolCall": false
+      },
+      "note": "Free while the preview lasts. Not routed under ZDR."
+    },
     {
       "id": "laguna-s-2.1-free",
       "name": "Laguna S 2.1",
