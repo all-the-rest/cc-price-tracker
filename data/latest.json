@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-24T04:04:16.539Z",
+  "fetchedAt": "2026-09-25T04:09:10.872Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -2118,8 +2118,8 @@
       "provider": "StepFun",
       "category": "opensource",
       "tier": null,
-      "contextWindow": 1000000,
-      "input": 0.1,
+      "contextWindow": 262144,
+      "input": 0.09,
       "output": 0.3,
       "cachedRead": 0.02,
       "cachedWrite": null,
@@ -2282,8 +2282,8 @@
         "team": true
       },
       "allowances": {
-        "goat": 67,
-        "pro": 77
+        "goat": 20,
+        "pro": 30
       },
       "capabilities": {
         "input": [
@@ -4265,22 +4265,15 @@
       "category": "premium",
       "tier": null,
       "contextWindow": 32000,
-      "input": 0,
+      "input": 0.042,
       "output": 0,
       "cachedRead": 0,
       "cachedWrite": null,
-      "listInput": 0.042,
-      "listOutput": 0,
-      "listCachedRead": 0,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
       "listCachedWrite": null,
-      "deal": {
-        "id": "jev-free",
-        "discountPercent": 100,
-        "free": true,
-        "expires": "2026-09-24",
-        "endsWhen": null,
-        "revertNote": null
-      },
+      "deal": null,
       "deprecated": false,
       "availability": {
         "go": false,
