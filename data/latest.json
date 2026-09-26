@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-25T12:02:44.945Z",
+  "fetchedAt": "2026-09-26T04:08:22.302Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -126,6 +126,60 @@
       "listCachedWrite": null,
       "deal": {
         "id": "space-bunny-alpha-free",
+        "discountPercent": 100,
+        "free": true,
+        "expires": null,
+        "endsWhen": "while the stealth preview lasts",
+        "revertNote": null
+      },
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": null,
+        "pro": null
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Free while the preview lasts. Not routed under ZDR."
+    },
+    {
+      "id": "pixel-canary",
+      "name": "Pixel Canary",
+      "provider": null,
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 262144,
+      "input": 0,
+      "output": 0,
+      "cachedRead": 0,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": {
+        "id": "pixel-canary-free",
         "discountPercent": 100,
         "free": true,
         "expires": null,
@@ -4259,7 +4313,7 @@
     {
       "id": "typesafe/jev",
       "name": "Jev",
-      "provider": null,
+      "provider": "TypeSafe",
       "category": "premium",
       "tier": null,
       "contextWindow": 32000,
@@ -4282,8 +4336,8 @@
         "team": true
       },
       "allowances": {
-        "goat": null,
-        "pro": null
+        "goat": 20,
+        "pro": 30
       },
       "capabilities": {
         "input": [
@@ -4308,6 +4362,23 @@
       "id": "space-bunny-alpha",
       "name": "Space Bunny Alpha",
       "availableFrom": "2026-09-24",
+      "until": null,
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": false,
+        "toolCall": false
+      },
+      "note": "Free while the preview lasts. Not routed under ZDR."
+    },
+    {
+      "id": "pixel-canary",
+      "name": "Pixel Canary",
+      "availableFrom": "2026-09-26",
       "until": null,
       "capabilities": {
         "input": [
