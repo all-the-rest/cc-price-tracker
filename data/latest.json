@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-29T00:27:44.658Z",
+  "fetchedAt": "2026-09-29T04:07:31.663Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -10,16 +10,16 @@
       "name": "Go",
       "priceMonthly": 1,
       "creditsMonthly": 10,
-      "requestEstimate": 15000,
+      "requestEstimate": 9000,
       "apiAccess": false,
       "apiAccessSourceUrl": "https://commandcode.ai/docs/plans/go",
       "limits": {
-        "h5": 3,
-        "weekly": 6,
+        "h5": 2,
+        "weekly": 5,
         "monthly": 10
       },
       "defaultAllowance": null,
-      "modelsIncluded": "Open models + some premium",
+      "modelsIncluded": "Open models + some premium, per-model allowances",
       "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits"
     },
     {
@@ -4252,7 +4252,7 @@
         "cachedRead": 50000,
         "output": 162
       },
-      "tip": "Rates shown are the ≤ 200K tokens band; > 200K tokens bills $1.20 input / $3.60 output / $0.30 cache read (per 1M tokens)."
+      "tip": "Rates shown are the ≤ 200K tokens band; > 200K tokens bills $4.00 input / $12.00 output / $1.00 cache read (per 1M tokens)."
     },
     {
       "id": "grok-4.6",
