@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-28T04:07:55.382Z",
+  "fetchedAt": "2026-09-29T00:27:44.658Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -1546,6 +1546,99 @@
       "tip": null
     },
     {
+      "id": "deepseek-v4.1-flash-fast",
+      "name": "DeepSeek V4.1 Flash Fast",
+      "provider": "DeepSeek",
+      "category": "opensource",
+      "tier": "off-peak",
+      "contextWindow": 1000000,
+      "input": 0.16,
+      "output": 0.58,
+      "cachedRead": 0.016,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 60,
+        "pro": 70
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "deepseek-v4.1-flash-fast-peak",
+      "name": "DeepSeek V4.1 Flash Fast",
+      "provider": "DeepSeek",
+      "category": "opensource",
+      "tier": "peak",
+      "contextWindow": 1000000,
+      "input": 0.32,
+      "output": 1.16,
+      "cachedRead": 0.032,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 60,
+        "pro": 70
+      },
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": false,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
       "id": "qwen-3.8-omni-flash",
       "name": "Qwen 3.8 Omni Flash",
       "provider": "Alibaba",
@@ -2849,6 +2942,54 @@
       "tip": null
     },
     {
+      "id": "claude-sonnet-5-5",
+      "name": "Claude Sonnet 5.5",
+      "provider": "Anthropic",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1000000,
+      "input": 2,
+      "output": 10,
+      "cachedRead": 0.2,
+      "cachedWrite": 2.5,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 10,
+        "pro": 20
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
       "id": "claude-sonnet-5",
       "name": "Claude Sonnet 5",
       "provider": "Anthropic",
@@ -4091,8 +4232,8 @@
         "team": true
       },
       "allowances": {
-        "goat": 35,
-        "pro": 45
+        "goat": 20,
+        "pro": 30
       },
       "capabilities": {
         "input": [
@@ -4469,6 +4610,16 @@
       ]
     ],
     "deepseekv4.1flash": [
+      [
+        1,
+        4
+      ],
+      [
+        6,
+        10
+      ]
+    ],
+    "deepseekv4.1flashfast": [
       [
         1,
         4
