@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-29T04:07:31.663Z",
+  "fetchedAt": "2026-09-29T23:51:15.802Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -315,6 +315,59 @@
         ],
         "reasoning": true,
         "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Free while it lasts. Up to 100 requests a day."
+    },
+    {
+      "id": "ling-3.1-flash:free",
+      "name": "Ling 3.1 Flash",
+      "provider": null,
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 262144,
+      "input": 0,
+      "output": 0,
+      "cachedRead": 0,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": {
+        "id": "ling-3.1-flash-free",
+        "discountPercent": 100,
+        "free": true,
+        "expires": null,
+        "endsWhen": "while it lasts",
+        "revertNote": null
+      },
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": null,
+        "pro": null
+      },
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
       },
       "pattern": {
         "input": 800,
@@ -3182,6 +3235,54 @@
       "tip": "Rates shown are the ≤ 272K tokens band; > 272K tokens bills $20.00 input / $75.00 output / $2.00 cache read / $25.00 cache write (per 1M tokens)."
     },
     {
+      "id": "gpt-6.1-sol",
+      "name": "GPT-6.1 Sol",
+      "provider": "OpenAI",
+      "category": "premium",
+      "tier": "Standard / Long context",
+      "contextWindow": 1050000,
+      "input": 2,
+      "output": 10,
+      "cachedRead": 0.1,
+      "cachedWrite": 2.5,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": false,
+        "pro": false,
+        "provider": false,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 20
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Rates shown are the ≤ 272K tokens band; > 272K tokens bills $4.00 input / $15.00 output / $0.20 cache read / $5.00 cache write (per 1M tokens)."
+    },
+    {
       "id": "gpt-6-sol",
       "name": "GPT-6 Sol",
       "provider": "OpenAI",
@@ -4557,6 +4658,23 @@
         ],
         "reasoning": false,
         "toolCall": false
+      },
+      "note": "Free while it lasts. Up to 100 requests a day."
+    },
+    {
+      "id": "ling-3.1-flash:free",
+      "name": "Ling 3.1 Flash",
+      "availableFrom": "2026-09-29",
+      "until": null,
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
       },
       "note": "Free while it lasts. Up to 100 requests a day."
     },
