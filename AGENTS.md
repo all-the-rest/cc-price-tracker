@@ -68,9 +68,41 @@ pnpm typecheck        # nur tsc --noEmit
     "allowances": { "goat": 47, "pro": 57 },
     "capabilities": { "input": ["text","image"], "output": ["text"], "reasoning": true, "toolCall": true },
     "pattern": { "input": 850, "cachedRead": 49000, "output": 180 }, "tip": "…" }],
-  "freeModels": [{ "id": "…", "name": "…", "availableFrom": "…", "until": null, "capabilities": {…}, "note": "…" }]
+  "freeModels": [{ "id": "…", "name": "…", "availableFrom": "…", "until": null, "capabilities": {…}, "note": "…" }],
+  "peakRules": { "deepseekv41flash": { "timezone": "Asia/Shanghai",
+    "effectiveFrom": "2026-08-16T16:00:00Z",
+    "peak": { "days": [1,2,3,4,5], "windowsUtc": [[1,4],[6,10]] },
+    "offPeak": { "days": [6,7], "allDay": true } } }
 }
 ```
+
+- **`peakRules` (ersetzt `peakHours`, 2026-09-30):** die hartkodierte
+  Wochenend-Annahme (`weekendOffPeakDaysBeijing: [0,6]`) ist entfernt; der **Wochentags-Scope**
+  kommt jetzt aus der Quelle (`windows`-String der `timeOfDay`-Struktur, z. B.
+  `"01–04 & 06–10 UTC, Mon–Fri"`). Schlüssel = `peakKey(name)` (Kleinschreibung, **alle**
+  Nicht-Alphanumerika entfernt) — identisch in Scraper und UI. `timezone` = `Asia/Shanghai`
+  (DeepSeek formuliert den Wochentag in Peking-Zeit); `peak.days`/`offPeak.days` sind
+  ISO-Wochentage (1=Mo … 7=So), disjunkt mit Vereinigung `{1..7}`; `windowsUtc` = `[s,e]`,
+  `0 ≤ s < e ≤ 24`, aufsteigend, nicht überlappend. `effectiveFrom` kommt aus
+  `tod.effective` (bzw. englischer Prosa); davor gilt **kein** Peak (Vorlaufzeit).
+  **Strikt quellenbindend, keine Feiertagsdaten:** die Command-Code-Doku nennt **keine**
+  Feiertage (nur das Wochenende), also schreibt der Scraper weder `holidays` noch
+  `holidayCalendars` (Spezifikation §3: „`holidays` weggelassen, wenn die Quelle keine Feiertage
+  nennt"). `holidays` und das Top-Level-`holidayCalendars` bleiben **optional** in Typ/zod, damit
+  die Datenform nicht künstlich verengt wird; `parseHolidays` bleibt als Parser (Beleg, dass die
+  Quelle geprüft wurde) und liefert im Live-Lauf `undefined`. Ein früherer
+  `PEAK_HOLIDAY_OVERRIDES`-Override wurde am 2026-09-30 **entfernt** (versteckte Annahme).
+  Alle Invarianten sind in `validateSnapshot` (zod) erzwungen. Änderungen an Peak-Daten sind
+  **stille Daten-Updates** (Spezifikation §4): `data/latest.json` und `history.json` werden
+  geschrieben, **kein** Changelog-Event, **kein** Release.
+- **Peak-Auswertung (UI, `src/config/peakPricing.ts` — eine Quelle der Wahrheit):**
+  `evaluatePeak(rule, calendars, now)`: (1) Feiertag in `rule.timezone` + `policy: "off-peak"` →
+  Off-Peak (**inert** — die Quelle nennt keine Feiertage, keine Regel trägt `holidays`); (2)
+  Wochentag (in `rule.timezone`) ∈ `peak.days` UND UTC-Stunde in `windowsUtc` → Peak; (3) sonst
+  Off-Peak. `localDateKey` (Intl, `en-CA`) und `isoWeekday` sind SSR-sicher. Kein
+  `isWorkday`/调休. Der frühere `PEAK_WINDOWS_UTC`/`effectiveFromMs`/`isBeijingWeekend`-Code ist
+  entfernt — die Anzeige (Countdown/Tooltip, Share-Coverage, Wochentags-Label) wird aus den Daten
+  generiert (`peakCoverageLabel`/`weekdayScopeLabel`), nie als Prosa gepflegt.
 
 - **Effektivpreis-Berechnung (UI, `weighted.ts`):** `usage = model.allowances[plan] ?? plan.defaultAllowance ?? plan.creditsMonthly`;
   `full = list × plan.creditsMonthly/usage`, `paid = list × plan.priceMonthly/usage`. Go/Max haben keine Allowances →
@@ -117,6 +149,14 @@ pnpm typecheck        # nur tsc --noEmit
   `plan_pricing_changed` (Preis/Credits/Requests), `api_access_changed` (boolean).
 - **zod-Validierung:** `validateSnapshot` (jedes Modell MUSS `pattern` haben), `validateChangelog` (keine leeren Einträge).
   Ungültig → `process.exit(1)`.
+- **Peak-Regeln scrapen:** `buildPeakRule` zieht `windowsUtc` (`parsePeakWindows`) + Wochentags-Scope
+  (`parsePeakDays`: `Mon–Fri`/`Monday to Friday`/`weekdays`, de `Mo–Fr`/`montags bis freitags`/`werktags`)
+  aus `tod.windows`; **fehlender Wochentags-Scope → `ScrapeError`** (lieber CI rot als geraten). Komplement
+  wird zu `offPeak.days`. `effectiveFrom` aus `tod.effective` (Fallback englische Prosa). Feiertage:
+  `parseHolidays` bleibt als Parser (chinesische Feiertage → Kalender `china`; Aussage ohne Land →
+  `ScrapeError`), liefert aber im Live-Lauf `undefined`, weil die Quelle **keine** Feiertage nennt —
+  **kein** `holidays`-Feld, **kein** Kalender, **kein** `chinese-days`, kein Override (strikt
+  quellenbindend).
 - **Erstlauf:** ohne `data/latest.json` Daten + History schreiben und `text`-Event „Initial version" anlegen.
 - `CHANGELOG.json` minified; `mergeChanges`-Dedupe-Key `${type}:${model ?? ""}:${plan ?? ""}`.
   **Changelog-Bremse (max. 1 Eintrag/Stunde):** ist der neueste nicht-leere Eintrag anhand
@@ -210,7 +250,10 @@ pnpm typecheck        # nur tsc --noEmit
 
 ## Tests
 
-- `pnpm test` = `tests/scrape.test.mjs` (Parser/Deals/Allowances/deprecated/Free/Pläne/API-Access gegen Fixtures)
+- `pnpm test` = `tests/scrape.test.mjs` (Parser/Deals/Allowances/deprecated/Free/Pläne/API-Access + Peak-Regel-Parsing/zod-Invarianten gegen Fixtures)
+  + `tests/peak.test.mjs` (Auswertungslogik `evaluatePeak`: Werktag im/außerhalb Fenster, Wochenende,
+  Feiertag nur als inerte optionale Verzweigung (01.10.2026 verhält sich wie ein normaler Werktag),
+  vor `effectiveFrom`, Zonenrand; `peakKey`; generierte Wochentags-Labels; `parseHolidays`)
   + `tests/sorting.test.mjs` (echte `PriceTable`-Komponente per SolidJS-SSR, `tests/.ssr/` gitignored).
 - Fixtures in `tests/fixtures/` sind fixiert — Tests müssen deterministisch gegen sie laufen.
 - **Screenshot-Tests sind permanent:** neue UI-Features (insb. Share-Cards) bekommen Playwright-Tests in

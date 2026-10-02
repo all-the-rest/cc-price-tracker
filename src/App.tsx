@@ -313,7 +313,8 @@ function AppShell(props: { ssrLang?: Lang }) {
               setSort={setSort}
               caps={caps()}
               setCaps={setCaps}
-              peakHours={data.peakHours}
+              peakRules={data.peakRules}
+              holidayCalendars={data.holidayCalendars}
               headerActions={<ShareDialog data={data} planId={planId()} basis={basis()} lang={lang()} />}
             />
             <PlanComparison

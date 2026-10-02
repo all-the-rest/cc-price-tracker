@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-01T16:09:35.562Z",
+  "fetchedAt": "2026-10-02T15:43:54.223Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -4625,56 +4625,156 @@
       "note": null
     }
   ],
-  "peakHours": {
-    "deepseekv4pro(latest)": [
-      [
-        1,
-        4
-      ],
-      [
-        6,
-        10
-      ]
-    ],
-    "deepseekv4flash(latest)": [
-      [
-        1,
-        4
-      ],
-      [
-        6,
-        10
-      ]
-    ],
-    "deepseekv4flashvision(exp)": [
-      [
-        1,
-        4
-      ],
-      [
-        6,
-        10
-      ]
-    ],
-    "deepseekv4.1flash": [
-      [
-        1,
-        4
-      ],
-      [
-        6,
-        10
-      ]
-    ],
-    "deepseekv4.1flashfast": [
-      [
-        1,
-        4
-      ],
-      [
-        6,
-        10
-      ]
-    ]
+  "peakRules": {
+    "deepseekv4prolatest": {
+      "timezone": "Asia/Shanghai",
+      "peak": {
+        "days": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "windowsUtc": [
+          [
+            1,
+            4
+          ],
+          [
+            6,
+            10
+          ]
+        ]
+      },
+      "offPeak": {
+        "days": [
+          6,
+          7
+        ],
+        "allDay": true
+      },
+      "effectiveFrom": "2026-08-16T16:00:00Z"
+    },
+    "deepseekv4flashlatest": {
+      "timezone": "Asia/Shanghai",
+      "peak": {
+        "days": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "windowsUtc": [
+          [
+            1,
+            4
+          ],
+          [
+            6,
+            10
+          ]
+        ]
+      },
+      "offPeak": {
+        "days": [
+          6,
+          7
+        ],
+        "allDay": true
+      },
+      "effectiveFrom": "2026-08-16T16:00:00Z"
+    },
+    "deepseekv4flashvisionexp": {
+      "timezone": "Asia/Shanghai",
+      "peak": {
+        "days": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "windowsUtc": [
+          [
+            1,
+            4
+          ],
+          [
+            6,
+            10
+          ]
+        ]
+      },
+      "offPeak": {
+        "days": [
+          6,
+          7
+        ],
+        "allDay": true
+      },
+      "effectiveFrom": "2026-08-16T16:00:00Z"
+    },
+    "deepseekv41flash": {
+      "timezone": "Asia/Shanghai",
+      "peak": {
+        "days": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "windowsUtc": [
+          [
+            1,
+            4
+          ],
+          [
+            6,
+            10
+          ]
+        ]
+      },
+      "offPeak": {
+        "days": [
+          6,
+          7
+        ],
+        "allDay": true
+      },
+      "effectiveFrom": "2026-08-16T16:00:00Z"
+    },
+    "deepseekv41flashfast": {
+      "timezone": "Asia/Shanghai",
+      "peak": {
+        "days": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "windowsUtc": [
+          [
+            1,
+            4
+          ],
+          [
+            6,
+            10
+          ]
+        ]
+      },
+      "offPeak": {
+        "days": [
+          6,
+          7
+        ],
+        "allDay": true
+      },
+      "effectiveFrom": "2026-08-16T16:00:00Z"
+    }
   }
 }

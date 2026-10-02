@@ -1,7 +1,7 @@
 import { createMemo, For, onCleanup, onMount, Show } from "solid-js";
 import type { JSX } from "solid-js";
 import type { Lang, Translation } from "../i18n";
-import type { Basis, Model, Plan, PeakHours } from "../types";
+import type { Basis, Model, Plan, PeakRules, HolidayCalendars } from "../types";
 import Heading from "./Heading";
 import { fmt, fmtContextWindow } from "../util";
 import { fieldPrice, formatTokens, planValue, requestCost, requestsPerMonth, usageOf } from "../weighted";
@@ -9,7 +9,8 @@ import { actualPaid } from "../fees";
 import { CapabilityBadges, CapabilityFilter, capsOf, type CapId } from "../capabilities";
 import { setupDragScroll } from "../dragscroll";
 import Tooltip from "./Tooltip";
-import PeakIndicator, { isPeakTier, isTierActive, peakRangesFor, usePeakClock } from "./PeakIndicator";
+import PeakIndicator, { isPeakTier, isTierActive, usePeakClock } from "./PeakIndicator";
+import { peakRuleFor } from "../config/peakPricing";
 import type { SortField, SortState } from "../sort";
 import { formatRequests } from "../util";
 import { SECTION_ANCHORS } from "../anchors";
@@ -25,7 +26,8 @@ interface PriceTableProps {
   setSort: (u: (prev: SortState) => SortState) => void;
   caps: CapId[];
   setCaps: (u: (prev: CapId[]) => CapId[]) => void;
-  peakHours?: PeakHours;
+  peakRules?: PeakRules;
+  holidayCalendars?: HolidayCalendars;
   /** Optional right-aligned content on the prices heading row (e.g. Share trigger). */
   headerActions?: JSX.Element;
 }
@@ -130,8 +132,8 @@ export default function PriceTable(props: PriceTableProps) {
   };
 
   const modelCell = (m: Model) => {
-    const ranges = peakRangesFor(props.peakHours, m.name);
-    const peak = isPeakTier(m.tier) && ranges.length > 0;
+    const rule = peakRuleFor(props.peakRules, m.name);
+    const peak = isPeakTier(m.tier) && !!rule;
     const others = [
       m.provider,
       m.contextWindow !== null && m.contextWindow !== undefined
@@ -143,7 +145,7 @@ export default function PriceTable(props: PriceTableProps) {
         <span class="block">{m.name}</span>
         <Show when={peak}>
           <span class="flex items-center text-xs font-normal text-base-content/70">
-            <PeakIndicator tier={m.tier ?? ""} ranges={ranges} now={now()} t={props.t} />
+            <PeakIndicator tier={m.tier ?? ""} rule={rule} calendars={props.holidayCalendars} now={now()} t={props.t} lang={props.lang} />
           </span>
         </Show>
         <Show when={!peak && m.tier}>
@@ -257,8 +259,8 @@ export default function PriceTable(props: PriceTableProps) {
                   classList={{
                     "opacity-70":
                       isPeakTier(m.tier) &&
-                      peakRangesFor(props.peakHours, m.name).length > 0 &&
-                      !isTierActive(m.tier, now(), peakRangesFor(props.peakHours, m.name)),
+                      !!peakRuleFor(props.peakRules, m.name) &&
+                      !isTierActive(m.tier, peakRuleFor(props.peakRules, m.name), props.holidayCalendars, now()),
                   }}
                 >
                   {modelCell(m)}

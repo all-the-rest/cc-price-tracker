@@ -1,8 +1,7 @@
-import type { Basis, Model, PeakHours, Plan, PlanId } from "./types";
+import type { Basis, Model, PeakRule, PeakRules, Plan, PlanId } from "./types";
 import { formatRequests, fmt, modelOnPlan } from "./util";
 import { fieldPrice, requestsPerMonth } from "./weighted";
-import { peakRangesFor } from "./components/PeakIndicator";
-import { PEAK_PRICING_RULES } from "./config/peakPricing";
+import { peakCoverageLabel, peakRuleFor } from "./config/peakPricing";
 
 /**
  * Share-card logic ("TOP information" assumption):
@@ -66,8 +65,8 @@ export interface ShareRow {
   inPrice: number | null;
   outPrice: number | null;
   priceDisplay: string;
-  /** UTC peak windows of this model from the source data (empty = omit, never guess). */
-  peak: [number, number][];
+  /** Peak rule of this model from the source data (null = omit, never guess). */
+  peak: PeakRule | null;
 }
 
 /** Total requests/month for ranking (the only share metric). */
@@ -96,7 +95,7 @@ export function topModels(
   plan: Plan,
   basis: Basis,
   topN: number,
-  peakHours?: PeakHours,
+  peakRules?: PeakRules,
 ): ShareRow[] {
   const rows = models
     .filter((m) => modelOnPlan(m, plan.id))
@@ -110,7 +109,7 @@ export function topModels(
         inPrice: input,
         outPrice: output,
         priceDisplay: formatSharePrice(input, output),
-        peak: peakHours ? peakRangesFor(peakHours, m.name) : [],
+        peak: peakRules ? (peakRuleFor(peakRules, m.name) ?? null) : null,
       };
     });
   rows.sort((a, b) => {
@@ -165,31 +164,23 @@ export function limitsBlock(plan: Plan, lang: "de" | "en"): string {
 /**
  * Peak/Off-Peak rule: whenever peak pricing is stated on the card, the UTC
  * window times AND the weekday coverage must be stated too — never a bare
- * "Peak"/"Off-Peak". Coverage is sourced from PEAK_PRICING_RULES (weekends
- * Sat+Sun off-peak in Beijing time, windows apply Mon–Fri); anything else
- * falls back to an explicit "per source" marker instead of guessing.
+ * "Peak"/"Off-Peak". Coverage is generated from the rule's `days`
+ * (`peakCoverageLabel`); a model without a rule falls back to an explicit
+ * "per source" marker instead of guessing.
  */
 function formatPeakWindows(windows: [number, number][]): string {
   const hh = (h: number) => `${String(h).padStart(2, "0")}:00`;
   return windows.map(([s, e]) => `${hh(s)}–${hh(e)}`).join(", ") + " UTC";
 }
 
-function peakCoverage(lang: "de" | "en"): string {
-  const w = [...PEAK_PRICING_RULES.weekendOffPeakDaysBeijing].sort((a, b) => a - b);
-  if (w.length === 2 && w[0] === 0 && w[1] === 6) {
-    return lang === "de" ? "Mo–Fr · Sa/So Off-Peak" : "Mon–Fri · Sat/Sun off-peak";
-  }
-  return lang === "de" ? "Zeiten laut Quelle" : "times per source";
+/** Full peak note for one model ("Peak <windows> · <coverage>"); empty when the source has no rule. */
+export function peakNote(rule: PeakRule | null, lang: "de" | "en"): string {
+  if (!rule) return "";
+  return `Peak ${formatPeakWindows(rule.peak.windowsUtc)} · ${peakCoverageLabel(rule, lang)}`;
 }
 
-/** Full peak note for one model ("Peak <windows> · <coverage>"); empty when the source names no windows. */
-export function peakNote(windows: [number, number][], lang: "de" | "en"): string {
-  if (windows.length === 0) return "";
-  return `Peak ${formatPeakWindows(windows)} · ${peakCoverage(lang)}`;
-}
-
-/** Per-row constraint line (max one): plan limits + the model's peak note when the source has windows. */
-export function constraintLine(plan: Plan, peak: [number, number][], lang: "de" | "en"): string {
+/** Per-row constraint line (max one): plan limits + the model's peak note when the source has a rule. */
+export function constraintLine(plan: Plan, peak: PeakRule | null, lang: "de" | "en"): string {
   const base = limitHint(plan, lang);
   const note = peakNote(peak, lang);
   return note ? `${base} · ${note}` : base;
@@ -198,12 +189,17 @@ export function constraintLine(plan: Plan, peak: [number, number][], lang: "de" 
 /** Union of peak windows across rows (deduplicated) for the footer block line; empty = omit. */
 export function peakBlockLine(rows: ShareRow[], lang: "de" | "en"): string {
   const seen = new Map<string, [number, number]>();
-  for (const r of rows) for (const w of r.peak) seen.set(`${w[0]}-${w[1]}`, w);
+  let coverage = "";
+  for (const r of rows) {
+    if (!r.peak) continue;
+    if (!coverage) coverage = peakCoverageLabel(r.peak, lang);
+    for (const w of r.peak.peak.windowsUtc) seen.set(`${w[0]}-${w[1]}`, w);
+  }
   const windows = [...seen.values()].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
   if (windows.length === 0) return "";
   return lang === "de"
-    ? `Peak-Modelle: ${formatPeakWindows(windows)} · ${peakCoverage(lang)}`
-    : `Peak models: ${formatPeakWindows(windows)} · ${peakCoverage(lang)}`;
+    ? `Peak-Modelle: ${formatPeakWindows(windows)} · ${coverage}`
+    : `Peak models: ${formatPeakWindows(windows)} · ${coverage}`;
 }
 
 function esc(s: string): string {

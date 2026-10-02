@@ -1,7 +1,7 @@
 import { renderToString } from "solid-js/web";
 import PriceTable from "../src/components/PriceTable";
 import Changelog from "../src/components/Changelog";
-import type { Basis, Model, Plan, PeakHours, ChangelogEntry } from "../src/types";
+import type { Basis, Model, Plan, PeakRules, HolidayCalendars, ChangelogEntry } from "../src/types";
 import type { SortField } from "../src/sort";
 import { i18n, type Lang } from "../src/i18n";
 
@@ -14,7 +14,8 @@ export interface RenderOptions {
   sortField: SortField;
   sortDir: 1 | -1;
   lang: Lang;
-  peakHours?: PeakHours;
+  peakRules?: PeakRules;
+  holidayCalendars?: HolidayCalendars;
 }
 
 /**
@@ -36,7 +37,8 @@ export function renderPriceTable(models: Model[], plan: Plan, opts: RenderOption
       setSort={() => {}}
       caps={[]}
       setCaps={() => {}}
-      peakHours={opts.peakHours ?? {}}
+      peakRules={opts.peakRules ?? {}}
+      holidayCalendars={opts.holidayCalendars ?? {}}
     />
   ));
 }

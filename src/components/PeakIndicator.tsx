@@ -1,64 +1,117 @@
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import type { Translation } from "../i18n";
-import type { PeakHours } from "../types";
-import { PEAK_PRICING_RULES, isBeijingWeekend } from "../config/peakPricing";
+import type { HolidayCalendars, PeakRule } from "../types";
+import { evaluatePeak, holidayCalendarFor, peakCoverageLabel } from "../config/peakPricing";
 import Tooltip from "./Tooltip";
 
-export const normalizePeakModel = (name: string) => name.toLowerCase().replace(/[\s-]+/g, "");
+export { peakKey, peakRuleFor } from "../config/peakPricing";
+
+export const normalizePeakModel = (name: string) => name.toLowerCase().replace(/[^a-z0-9]/g, "");
 
 export const isPeakTier = (tier: string | null): boolean => /^(?:off[- ]?peak|peak)$/i.test(tier ?? "");
 
 export const isPeakNamedTier = (tier: string | null): boolean => /^peak$/i.test(tier ?? "");
 
-/** Reine UTC-Fenster-Prüfung (Off-Peak-Default): ist die Stunde in einem Peak-Fenster? */
-function inUtcWindows(now: number, ranges: [number, number][]): boolean {
-  if (ranges.length === 0) return false;
-  const date = new Date(now);
-  const hour = date.getUTCHours() + date.getUTCMinutes() / 60;
-  return ranges.some(([start, end]) => hour >= start && hour < end);
-}
-
-export function isPeakActive(now: number, ranges: [number, number][]): boolean {
-  if (ranges.length === 0) return false;
-  // Wochenende (Sa/So, Peking-Zeit) → durchgehend Off-Peak, sofern die Regel bereits gilt.
-  if (now >= PEAK_PRICING_RULES.effectiveFromMs && isBeijingWeekend(now)) return false;
-  return inUtcWindows(now, ranges);
+export function isPeakActive(
+  rule: PeakRule | undefined,
+  calendars: HolidayCalendars | undefined,
+  now: number
+): boolean {
+  return evaluatePeak(rule, calendars, now).active;
 }
 
 export function isTierActive(
   tier: string | null,
-  now: number,
-  ranges: [number, number][]
+  rule: PeakRule | undefined,
+  calendars: HolidayCalendars | undefined,
+  now: number
 ): boolean {
   if (!isPeakTier(tier)) return true;
-  const inPeak = isPeakActive(now, ranges);
+  const inPeak = isPeakActive(rule, calendars, now);
   return isPeakNamedTier(tier) ? inPeak : !inPeak;
 }
 
-function nextTransition(now: number, ranges: [number, number][]): number | null {
-  if (ranges.length === 0) return null;
-  const date = new Date(now);
-  const hourMs = 60 * 60 * 1000;
-  const candidates: number[] = [];
-  // Fenster-Grenzen (start/end jeder range) + 16:00 UTC (= Peking-Mitternacht) für die nächsten ~8 Tage.
-  for (let offset = 0; offset <= 7; offset++) {
-    const base = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + offset);
-    for (const [start, end] of ranges) {
-      candidates.push(base + start * hourMs);
-      candidates.push(base + end * hourMs);
-    }
-    // 16:00 UTC = 00:00 Peking-Zeit des Folgetags → deckt beide Wochenend-Grenzen ab.
-    candidates.push(base + 16 * hourMs);
-  }
-  if (now < PEAK_PRICING_RULES.effectiveFromMs) {
-    candidates.push(PEAK_PRICING_RULES.effectiveFromMs);
-  }
-  candidates.sort((a, b) => a - b);
-  const current = isPeakActive(now, ranges);
-  const next = candidates.find(
-    (timestamp) => timestamp > now && isPeakActive(timestamp, ranges) !== current
+/** UTC-Offset (ms) der Zone zum Zeitpunkt `utcMs`. */
+function tzOffsetMs(timezone: string, utcMs: number): number {
+  const dtf = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    hourCycle: "h23",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+  const parts: Record<string, string> = {};
+  for (const { type, value } of dtf.formatToParts(new Date(utcMs))) parts[type] = value;
+  const asUtc = Date.UTC(
+    Number(parts.year),
+    Number(parts.month) - 1,
+    Number(parts.day),
+    Number(parts.hour),
+    Number(parts.minute),
+    Number(parts.second)
   );
-  return next ?? null;
+  return asUtc - utcMs;
+}
+
+/** UTC-Zeitstempel der lokalen Mitternacht eines `YYYY-MM-DD` in der Zone. */
+function zonedMidnightUtc(dateKey: string, timezone: string): number {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  const target = Date.UTC(y, m - 1, d);
+  let guess = target;
+  for (let i = 0; i < 2; i++) guess = target - tzOffsetMs(timezone, guess);
+  return guess;
+}
+
+function addDaysKey(dateKey: string, days: number): string {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
+}
+
+function nextTransition(
+  rule: PeakRule | undefined,
+  calendars: HolidayCalendars | undefined,
+  now: number
+): number | null {
+  if (!rule) return null;
+  const hourMs = 60 * 60 * 1000;
+  const dayMs = 24 * hourMs;
+  const candidates = new Set<number>();
+  if (rule.effectiveFrom) {
+    const from = Date.parse(rule.effectiveFrom);
+    if (Number.isFinite(from)) candidates.add(from);
+  }
+  const date = new Date(now);
+  const localToday = addDaysKey(new Date(now).toISOString().slice(0, 10), 0);
+  // UTC-Tagesbasis für die Fenstergrenzen + lokale Mitternachten in der Regel-Zone.
+  for (let offset = -1; offset <= 11; offset++) {
+    const base = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + offset);
+    for (const [start, end] of rule.peak.windowsUtc) {
+      candidates.add(base + start * hourMs);
+      candidates.add(base + end * hourMs);
+    }
+    candidates.add(base + dayMs);
+  }
+  // Lokale Mitternachten in der Regel-Zone (Wochentags-/Feiertagswechsel).
+  const cal = holidayCalendarFor(calendars, rule);
+  for (let offset = -1; offset <= 12; offset++) {
+    candidates.add(zonedMidnightUtc(addDaysKey(localToday, offset), rule.timezone));
+  }
+  if (cal) {
+    for (const hd of cal.dates) candidates.add(zonedMidnightUtc(hd, rule.timezone));
+  }
+  const current = evaluatePeak(rule, calendars, now);
+  const sorted = [...candidates].filter((t) => Number.isFinite(t)).sort((a, b) => a - b);
+  for (const timestamp of sorted) {
+    if (timestamp <= now) continue;
+    const next = evaluatePeak(rule, calendars, timestamp);
+    if (next.active !== current.active || next.beforeEffective !== current.beforeEffective) {
+      return timestamp;
+    }
+  }
+  return null;
 }
 
 function formatDuration(milliseconds: number): string {
@@ -86,26 +139,32 @@ function formatLocalRange(ranges: [number, number][], now: number): string {
 
 interface PeakIndicatorProps {
   tier: string;
-  ranges: [number, number][];
+  rule?: PeakRule;
+  calendars?: HolidayCalendars;
   now: number;
   t: Translation;
+  lang: "de" | "en";
 }
 
 export default function PeakIndicator(props: PeakIndicatorProps) {
-  const active = () => isPeakActive(props.now, props.ranges);
-  const transition = () => nextTransition(props.now, props.ranges);
+  const evaluation = () => evaluatePeak(props.rule, props.calendars, props.now);
+  const active = () => evaluation().active;
+  const transition = () => nextTransition(props.rule, props.calendars, props.now);
   const countdown = () => {
     const timestamp = transition();
     return timestamp === null ? "–" : formatDuration(timestamp - props.now);
   };
-  const phase = () => (active() ? props.t.peak : props.t.offPeak);
+  const phase = () => {
+    if (evaluation().beforeEffective) return props.t.peakPreEffective;
+    return active() ? props.t.peak : props.t.offPeak;
+  };
   const tooltip = () =>
     props.t.peakTooltip
       .replace("{phase}", phase())
-      .replace("{utc}", formatUtcRange(props.ranges))
-      .replace("{local}", formatLocalRange(props.ranges, props.now))
+      .replace("{utc}", formatUtcRange(props.rule?.peak.windowsUtc ?? []))
+      .replace("{local}", formatLocalRange(props.rule?.peak.windowsUtc ?? [], props.now))
       .replace("{countdown}", countdown())
-      .replace("{weekend}", props.t.peakWeekendNote);
+      .replace("{coverage}", peakCoverageLabel(props.rule, props.lang));
 
   return (
     <Tooltip tip={tooltip()} class="inline-flex items-center gap-1 leading-none">
@@ -131,8 +190,4 @@ export function usePeakClock() {
     onCleanup(() => window.clearInterval(timer));
   });
   return now;
-}
-
-export function peakRangesFor(peakHours: PeakHours | undefined, name: string): [number, number][] {
-  return peakHours?.[normalizePeakModel(name)] ?? [];
 }

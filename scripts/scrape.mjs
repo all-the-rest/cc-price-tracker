@@ -219,8 +219,124 @@ const hasAnyAvailability = (av) => Object.values(mapAvailability(av)).some(Boole
 const isPeakTier = (tier) => /^(?:off[- ]?peak|peak)$/i.test(tier ?? "");
 
 /**
+ * Peak-Regel-Schlüssel: identisch zur UI (`peakKey` in `src/config/peakPricing.ts`)
+ * — Kleinschreibung, **alle** Nicht-Alphanumerika entfernt. Der frühere
+ * `normalizeName` (nur Leerzeichen/Bindestrich) ließ `deepseekv4.1flash` mit
+ * Punkt stehen und brach damit den UI-Abgleich (Spezifikation §5).
+ */
+const peakKey = (s) => String(s).toLowerCase().replace(/[^a-z0-9]/g, "");
+
+/** IANA-Zone, in der die Wochenend-/Feiertagsregel eines Anbieters gilt. */
+const PEAK_TIMEZONE_BY_PROVIDER = { DeepSeek: "Asia/Shanghai" };
+const PEAK_TIMEZONE_DEFAULT = "Asia/Shanghai";
+
+/**
+ * Expliziter Feiertags-Override wurde **entfernt** (Nutzerentscheidung
+ * 2026-09-30): Der Tracker ist strikt quellenbindend. Die Quelle
+ * (`commandcode.ai/docs/resources/pricing-limits`) nennt **keine** Feiertage,
+ * nur das Wochenende — also werden auch keine erzeugt (Spezifikation §3:
+ * `holidays` weggelassen). Wo die Information real steht, ist DeepSeeks eigene
+ * Preisdoku („excluding Chinese public holidays"); von dort wird sie bewusst
+ * **nicht** übernommen.
+ */
+
+/** Wochentags-Scope der Peak-Regel (en zuerst, de als Robustheit). */
+const WEEKDAY_SCOPE_PATTERNS = [
+  { re: /\b(?:mon|monday)\s*(?:–|-|to|through)\s*(?:fri|friday)\b/i, days: [1, 2, 3, 4, 5] },
+  { re: /\bmo(?:n(?:tags?)?)?\s*(?:–|-|bis)\s*fr(?:eitags?)?\b/i, days: [1, 2, 3, 4, 5] },
+  { re: /\b(?:werktags|wochentags|weekdays?)\b/i, days: [1, 2, 3, 4, 5] },
+  { re: /\b(?:mon|monday)\s*(?:–|-|to)\s*(?:sat|saturday)\b/i, days: [1, 2, 3, 4, 5, 6] },
+  { re: /\b(?:mon|monday)\s*(?:–|-|to)\s*(?:sun|sunday)\b/i, days: [1, 2, 3, 4, 5, 6, 7] },
+];
+
+/** Wochenend-Phrasen (ganztägig Off-Peak) — zur Konsistenzprüfung des Komplements. */
+const WEEKEND_PATTERNS = [
+  /\bweekends?\b/i,
+  /\bsaturday\s+and\s+sunday\b/i,
+  /\bsat[\s/–-]*sun\b/i,
+  /\bsa[\s/–-]*so\b/i,
+  /\bwochenenden?\b/i,
+];
+
+const ENGLISH_MONTHS = {
+  january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
+  july: 7, august: 8, september: 9, october: 10, november: 11, december: 12,
+};
+
+const pad2 = (v) => String(v).padStart(2, "0");
+
+const complementDays = (days) => [1, 2, 3, 4, 5, 6, 7].filter((d) => !days.includes(d));
+
+/**
+ * Wochentags-Scope der Peak-Regel aus dem Notiz-/Fenstertext. Fehlt er, bricht
+ * der Lauf rot ab (Spezifikation §3) — lieber CI rot als eine geratene Regel.
+ */
+export function parsePeakDays(text) {
+  if (typeof text !== "string" || text.trim() === "") {
+    throw new ScrapeError("Peak-Notiz ohne erkennbaren Wochentags-Scope (leerer Text)");
+  }
+  for (const { re, days } of WEEKDAY_SCOPE_PATTERNS) {
+    if (re.test(text)) return days;
+  }
+  throw new ScrapeError(`Peak-Notiz ohne erkennbaren Wochentags-Scope: "${text}"`);
+}
+
+/** Parst ein effektives Datum: ISO mit Offset/Z direkt, sonst Fallback aus Prosa. */
+export function parseEffectiveFrom(value) {
+  if (typeof value !== "string") return undefined;
+  const iso = value.trim();
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(iso)) {
+    if (Number.isFinite(Date.parse(iso))) return iso;
+  }
+  return parseEffectiveFromText(value);
+}
+
+/**
+ * Effektives Datum aus englischer Prosa, z. B.
+ * „From 16:00 UTC on August 16, 2026" oder
+ * „Effective 00:00 (Beijing Time) on Sunday, August 23, 2026".
+ */
+export function parseEffectiveFromText(text) {
+  if (typeof text !== "string") return undefined;
+  let m = text.match(/(\d{1,2}):(\d{2})\s*(?:UTC|GMT)\s*on\s+([A-Za-z]+)\s+(\d{1,2}),?\s*(\d{4})/i);
+  if (m && ENGLISH_MONTHS[m[3].toLowerCase()]) {
+    const mo = ENGLISH_MONTHS[m[3].toLowerCase()];
+    return `${m[5]}-${pad2(mo)}-${pad2(m[4])}T${pad2(m[1])}:${m[2]}:00Z`;
+  }
+  m = text.match(
+    /(\d{1,2}):(\d{2})\s*\((?:Beijing|China)\s*Time\)\s*on\s+(?:[A-Za-z]+,\s*)?([A-Za-z]+)\s+(\d{1,2}),?\s*(\d{4})/i
+  );
+  if (m && ENGLISH_MONTHS[m[3].toLowerCase()]) {
+    const mo = ENGLISH_MONTHS[m[3].toLowerCase()];
+    return `${m[5]}-${pad2(mo)}-${pad2(m[4])}T${pad2(m[1])}:${m[2]}:00+08:00`;
+  }
+  return undefined;
+}
+
+/**
+ * Feiertags-Aussage aus Prosa: erkennt chinesische Feiertage → Kalender
+ * „china". Eine Feiertags-Aussage **ohne** Land bricht rot ab (Spezifikation §3).
+ * Keine Aussage → `undefined` (kein erfundenes `holidays`-Objekt).
+ *
+ * Die Command-Code-Quelle nennt **keine** Feiertage (nur das Wochenende), daher
+ * liefert dieser Parser im Live-Lauf `undefined`. Er bleibt als Beleg erhalten,
+ * dass die Quelle auf Feiertage geprüft wird, und greift, falls die Doku sie
+ * künftig nennt.
+ */
+export function parseHolidays(text) {
+  if (typeof text !== "string") return undefined;
+  if (/chinese\s+(?:public\s+)?holidays?|china\s+public\s+holidays?|chinesische\s+feiertage/i.test(text)) {
+    return { policy: "off-peak", calendar: "china" };
+  }
+  if (/public\s+holidays?|feiertage/i.test(text)) {
+    throw new ScrapeError(`Feiertags-Aussage ohne bestimmbares Land: "${text}"`);
+  }
+  return undefined;
+}
+
+/**
  * Parst die Peak-Zeitfenster aus dem `windows`-String der `timeOfDay`-Struktur
- * (z. B. "01–04 & 06–10 UTC" → [[1,4],[6,10]]). En-/Bis-Trennung per
+ * (z. B. "01–04 & 06–10 UTC, Mon–Fri" → [[1,4],[6,10]]). En-/Bis-Trennung per
  * Bindestrich („–" oder „-"); mehrere Fenster per „&"/Leerzeichen. Ein
  * unparsebares oder leeres Fenster bricht rot ab.
  */
@@ -250,13 +366,13 @@ export function parsePeakWindows(windows) {
  * (JOIN über exakte `id` für `provider` und `allowances`). Modelle mit
  * `timeOfDay` (DeepSeek V4) werden in zwei Zeilen aufgeteilt — eine
  * Off-Peak- und eine Peak-Variante (eigene `tier`-Spalte, eigene Preise) —,
- * analog zum OpenCode-Upstream. Liefert zusätzlich die `peakHours`-Map
- * (Schlüssel: normalisierter Modellname → UTC-Bereiche).
+ * analog zum OpenCode-Upstream. Liefert zusätzlich die `peakRules`-Map
+ * (Schlüssel: `peakKey` → datengetriebene Peak-Regel).
  */
 export function buildModels(rows, billingModels, today = new Date().toISOString().slice(0, 10)) {
   const billingById = new Map((billingModels ?? []).map((b) => [b.id, b]));
   const models = [];
-  const peakHours = {};
+  const peakRules = {};
   const pushModel = (row, model) => {
     const billing = billingById.get(model.id.replace(/-peak$/, ""));
     models.push({
@@ -320,7 +436,7 @@ export function buildModels(rows, billingModels, today = new Date().toISOString(
         cachedWrite: rates.cachedWrite,
         deal: null,
       });
-      peakHours[normalizeName(row.name)] = parsePeakWindows(tod.windows);
+      peakRules[peakKey(row.name)] = buildPeakRule(row, tod, billing?.provider);
       continue;
     }
 
@@ -342,7 +458,27 @@ export function buildModels(rows, billingModels, today = new Date().toISOString(
       deal: expired ? null : deal,
     });
   }
-  return { models, peakHours };
+  return { models, peakRules };
+}
+
+/**
+ * Baut eine datengetriebene Peak-Regel aus `timeOfDay`. Wochentags-Scope,
+ * effektives Datum und Feiertage kommen **ausschließlich** aus der Quelle.
+ * Fehlt der Wochentags-Scope → `ScrapeError`.
+ */
+export function buildPeakRule(row, tod, provider) {
+  const windowsUtc = parsePeakWindows(tod.windows);
+  const days = parsePeakDays(tod.windows);
+  const rule = {
+    timezone: PEAK_TIMEZONE_BY_PROVIDER[provider] ?? PEAK_TIMEZONE_DEFAULT,
+    peak: { days, windowsUtc },
+    offPeak: { days: complementDays(days), allDay: true },
+  };
+  const effectiveFrom = parseEffectiveFrom(tod.effective) ?? parseEffectiveFromText(tod.tip);
+  if (effectiveFrom) rule.effectiveFrom = effectiveFrom;
+  const holidays = parseHolidays(tod.tip ?? "");
+  if (holidays) rule.holidays = holidays;
+  return rule;
 }
 
 /**
@@ -1023,17 +1159,95 @@ const PlanSchema = z.object({
   sourceUrl: z.string().url(),
 });
 
-const SnapshotSchema = z.object({
-  fetchedAt: z.string(),
-  sourceUrl: z.string().url(),
-  plansSourceUrl: z.string().url(),
-  capabilitiesSourceUrl: z.string().url(),
-  sourceLang: z.literal("en"),
-  plans: z.array(PlanSchema).min(6),
-  models: z.array(ModelSchema).min(1),
-  freeModels: z.array(FreeModelSchema),
-  peakHours: z.record(z.string().min(1), z.array(z.tuple([z.number().int().min(0).max(23), z.number().int().min(1).max(24)]).refine(([s, e]) => s < e)).min(1)),
-});
+const IsoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: "ungültiges ISO-Datum" });
+
+const DAY_VALUES = [1, 2, 3, 4, 5, 6, 7];
+const DaysSchema = z
+  .array(z.number().int().min(1).max(7))
+  .min(1, { message: "days: leer" })
+  .refine((d) => new Set(d).size === d.length, { message: "days: Duplikate" });
+
+const WindowsSchema = z
+  .array(
+    z
+      .tuple([z.number().int().min(0).max(23), z.number().int().min(1).max(24)])
+      .refine(([s, e]) => s < e, { message: "window: start < end" })
+  )
+  .min(1, { message: "windowsUtc: leer" })
+  .refine((ws) => ws.every(([s, e], i) => i === 0 || ws[i - 1][1] <= s), {
+    message: "windowsUtc: überlappend oder nicht aufsteigend",
+  });
+
+const SUPPORTED_TIMEZONES = new Set(Intl.supportedValuesOf("timeZone"));
+const TimezoneSchema = z
+  .string()
+  .min(1)
+  .refine((tz) => SUPPORTED_TIMEZONES.has(tz) || tz === "UTC", { message: "ungültige IANA-Zeitzone" });
+
+const PeakRuleSchema = z
+  .object({
+    timezone: TimezoneSchema,
+    effectiveFrom: z
+      .string()
+      .refine((v) => Number.isFinite(Date.parse(v)), { message: "effectiveFrom unparsebar" })
+      .optional(),
+    peak: z.object({ days: DaysSchema, windowsUtc: WindowsSchema }),
+    offPeak: z.object({ days: DaysSchema, allDay: z.literal(true) }),
+    holidays: z.object({ policy: z.literal("off-peak"), calendar: z.string().min(1) }).optional(),
+  })
+  .superRefine((rule, ctx) => {
+    const peak = new Set(rule.peak.days);
+    if (rule.offPeak.days.some((d) => peak.has(d))) {
+      ctx.addIssue({ code: "custom", message: "peak.days ∩ offPeak.days ≠ ∅" });
+    }
+    const union = new Set([...rule.peak.days, ...rule.offPeak.days]);
+    if (union.size !== 7 || !DAY_VALUES.every((d) => union.has(d))) {
+      ctx.addIssue({ code: "custom", message: "peak.days ∪ offPeak.days ≠ {1..7}" });
+    }
+  });
+
+const HolidayCalendarSchema = z
+  .object({
+    dates: z
+      .array(IsoDate)
+      .refine(
+        (dates) =>
+          dates.every(
+            (d, i) => i === 0 || (dates[i - 1] < d && Number.isFinite(Date.parse(d)))
+          ),
+        { message: "dates: nicht streng aufsteigend / ungültig" }
+      ),
+    coveredThrough: IsoDate,
+  })
+  .refine((cal) => cal.dates.every((d) => d <= cal.coveredThrough), {
+    message: "dates: Termin nach coveredThrough",
+  });
+
+const SnapshotSchema = z
+  .object({
+    fetchedAt: z.string(),
+    sourceUrl: z.string().url(),
+    plansSourceUrl: z.string().url(),
+    capabilitiesSourceUrl: z.string().url(),
+    sourceLang: z.literal("en"),
+    plans: z.array(PlanSchema).min(6),
+    models: z.array(ModelSchema).min(1),
+    freeModels: z.array(FreeModelSchema),
+    peakRules: z.record(z.string().min(1), PeakRuleSchema).refine((r) => Object.keys(r).length > 0, {
+      message: "peakRules: leer",
+    }),
+    holidayCalendars: z.record(z.string().min(1), HolidayCalendarSchema).optional(),
+  })
+  .superRefine((snap, ctx) => {
+    for (const [name, rule] of Object.entries(snap.peakRules)) {
+      if (rule.holidays && !snap.holidayCalendars?.[rule.holidays.calendar]) {
+        ctx.addIssue({
+          code: "custom",
+          message: `peakRules["${name}"].holidays.calendar "${rule.holidays.calendar}" fehlt in holidayCalendars`,
+        });
+      }
+    }
+  });
 
 const PlanEventInfoSchema = z.object({
   priceMonthly: z.number(),
@@ -1140,7 +1354,7 @@ async function main() {
 
     const { rows, billingModels } = extractCatalog(html);
     const capsById = new Map(rows.map((r) => [r.id, r.caps]));
-    const { models, peakHours } = buildModels(rows, billingModels);
+    const { models, peakRules } = buildModels(rows, billingModels);
 
     const $ = cheerio.load(html);
     const plans = validatePlanBaselines(parsePlanTables($));
@@ -1197,7 +1411,7 @@ async function main() {
       plans,
       models,
       freeModels,
-      peakHours,
+      peakRules,
     };
 
     validateSnapshot(latest);
@@ -1206,6 +1420,11 @@ async function main() {
     const changes = isFirstRun
       ? [{ type: "text", lang: { en: "Initial version", de: "Initialversion" } }]
       : buildChanges(prev, latest, date, firstSeen);
+
+    // Peak-Regeln sind stille Daten-Updates (Spezifikation §4): die Quelle
+    // ändert sich nicht, nur unsere Representation — kein Event, kein Release,
+    // aber ein Daten-Commit, damit die Seite die neue Form zeigt.
+    const peakChanged = JSON.stringify(prev?.peakRules ?? null) !== JSON.stringify(peakRules);
 
     const changelogPath = join(ROOT, "CHANGELOG.json");
     const existingChangelog = existsSync(changelogPath)
@@ -1218,7 +1437,7 @@ async function main() {
     mkdirSync(join(ROOT, "src", "data"), { recursive: true });
     writeFileSync(join(ROOT, "src", "data", "changelog.json"), changelogJson);
 
-    if (changes.length > 0) {
+    if (changes.length > 0 || peakChanged) {
       history.snapshots.push(latest);
       writeFileSync(historyPath, JSON.stringify(history, null, 2) + "\n");
       writeFileSync(prevPath, JSON.stringify(latest, null, 2) + "\n");
@@ -1228,7 +1447,7 @@ async function main() {
     const goatAllow = new Set(models.map((m) => m.allowances?.goat).filter((v) => typeof v === "number")).size;
     const proAllow = new Set(models.map((m) => m.allowances?.pro).filter((v) => typeof v === "number")).size;
     console.log(
-      `Gescrapt: ${models.length} Modelle, ${plans.length} Pläne, ${freeModels.length} kostenlose Modelle, ${changes.length} Änderungen (Snapshot ${date}); Fähigkeiten (models.dev: ${mdSource}) für ${enriched}/${models.length} Modelle; Allowances (goat/pro): ${goatAllow}/${proAllow} Modelle; Quelle: ${PRICING_URL}.`
+      `Gescrapt: ${models.length} Modelle, ${plans.length} Pläne, ${freeModels.length} kostenlose Modelle, ${changes.length} Änderungen (Snapshot ${date}); ${Object.keys(peakRules).length} Peak-Regeln${peakChanged ? " (Peak-Daten aktualisiert)" : ""}; Fähigkeiten (models.dev: ${mdSource}) für ${enriched}/${models.length} Modelle; Allowances (goat/pro): ${goatAllow}/${proAllow} Modelle; Quelle: ${PRICING_URL}.`
     );
   } catch (err) {
     console.error(`[scrape] FEHLER: ${err instanceof Error ? err.message : String(err)}`);

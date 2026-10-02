@@ -11,6 +11,11 @@ import {
   normalizeDate,
   buildModels,
   parsePeakWindows,
+  parsePeakDays,
+  parseEffectiveFrom,
+  parseEffectiveFromText,
+  parseHolidays,
+  buildPeakRule,
   parsePlanTables,
   planApiAccessFromHtml,
   mapAvailability,
@@ -41,7 +46,7 @@ const goHtml = readFileSync(join(fixtures, "plans-go.html"), "utf8");
 
 const { rows, billingModels } = extractCatalog(pricingHtml);
 const today = "2026-08-15";
-const { models, peakHours } = buildModels(rows, billingModels, today);
+const { models, peakRules } = buildModels(rows, billingModels, today);
 const $ = cheerio.load(pricingHtml);
 const plans = parsePlanTables($);
 
@@ -59,9 +64,16 @@ test("parsePeakWindows: parst UTC-Bereiche", () => {
   assert.throws(() => parsePeakWindows("04-01 UTC"));
 });
 
-test("buildModels: peakHours-Map nach normalisiertem Namen", () => {
-  assert.deepEqual(peakHours["deepseekv4pro(latest)"], [[1, 4], [6, 10]]);
-  assert.deepEqual(peakHours["deepseekv4flash(latest)"], [[1, 4], [6, 10]]);
+test("buildModels: peakRules mit Wochentags-Scope und Fenstern (keine Feiertage — Quelle nennt keine)", () => {
+  const rule = peakRules["deepseekv4prolatest"];
+  assert.deepEqual(rule.peak.windowsUtc, [[1, 4], [6, 10]]);
+  assert.deepEqual(rule.peak.days, [1, 2, 3, 4, 5]);
+  assert.deepEqual(rule.offPeak.days, [6, 7]);
+  assert.equal(rule.offPeak.allDay, true);
+  assert.equal(rule.timezone, "Asia/Shanghai");
+  assert.equal(rule.effectiveFrom, "2026-08-16T16:00:00Z");
+  assert.equal(rule.holidays, undefined);
+  assert.deepEqual(peakRules["deepseekv4flashlatest"].peak.windowsUtc, [[1, 4], [6, 10]]);
 });
 
 test("extractRscPayload: leere Seite wirft", () => {
@@ -623,7 +635,7 @@ test("validateSnapshot: vollständiger Snapshot aus den Fixtures ist valide", ()
     })),
     models,
     freeModels: buildFreeModels(rows, [], today),
-    peakHours,
+    peakRules,
   };
   assert.doesNotThrow(() => validateSnapshot(snap));
   const broken = { ...snap, models: [{ ...models[0], pattern: null }] };
@@ -822,4 +834,140 @@ test("enrichFreeModels: models.dev-Treffer + text-only-Fallback", () => {
     reasoning: false,
     toolCall: false,
   });
+});
+
+/* ---------------------------------------------------------------- */
+/* Peak-Regeln (Spezifikation §1/§3/§7)                              */
+/* ---------------------------------------------------------------- */
+
+test("parsePeakDays: englischer Wochentags-Scope + Robustheit", () => {
+  assert.deepEqual(parsePeakDays("Mon–Fri (7h/day)"), [1, 2, 3, 4, 5]);
+  assert.deepEqual(parsePeakDays("Monday to Friday"), [1, 2, 3, 4, 5]);
+  assert.deepEqual(parsePeakDays("Mon-Fri"), [1, 2, 3, 4, 5]);
+  assert.deepEqual(parsePeakDays("weekdays"), [1, 2, 3, 4, 5]);
+  // deutsche Muster zusätzlich als Robustheit
+  assert.deepEqual(parsePeakDays("montags bis freitags"), [1, 2, 3, 4, 5]);
+  assert.deepEqual(parsePeakDays("Mo–Fr"), [1, 2, 3, 4, 5]);
+  assert.deepEqual(parsePeakDays("werktags"), [1, 2, 3, 4, 5]);
+});
+
+test("parsePeakDays: fehlender/unauflösbarer Wochentags-Scope → ScrapeError", () => {
+  assert.throws(() => parsePeakDays("01–04 & 06–10 UTC"), /Wochentags-Scope/);
+  assert.throws(() => parsePeakDays(""), /Wochentags-Scope/);
+  assert.throws(() => parsePeakDays("Peak an Feiertagen"), /Wochentags-Scope/);
+});
+
+test("parseEffectiveFrom: ISO mit Offset/Z und englische Prosa", () => {
+  assert.equal(parseEffectiveFrom("2026-08-16T16:00:00Z"), "2026-08-16T16:00:00Z");
+  assert.equal(parseEffectiveFrom("2026-08-23T00:00:00+08:00"), "2026-08-23T00:00:00+08:00");
+  assert.equal(parseEffectiveFrom(undefined), undefined);
+  assert.equal(
+    parseEffectiveFromText("DeepSeek now charges by the hour. From 16:00 UTC on August 16, 2026, V4 Pro and V4 Flash cost:"),
+    "2026-08-16T16:00:00Z"
+  );
+  assert.equal(
+    parseEffectiveFromText("Effective 00:00 (Beijing Time) on Sunday, August 23, 2026"),
+    "2026-08-23T00:00:00+08:00"
+  );
+  assert.equal(parseEffectiveFromText("no date here"), undefined);
+});
+
+test("parseHolidays: chinesische Feiertage, Land fehlt → ScrapeError, keine Aussage → undefined", () => {
+  assert.deepEqual(parseHolidays("excluding Chinese public holidays"), { policy: "off-peak", calendar: "china" });
+  assert.deepEqual(parseHolidays("chinesische Feiertage"), { policy: "off-peak", calendar: "china" });
+  assert.equal(parseHolidays("Weekends - off-peak all day"), undefined);
+  assert.throws(() => parseHolidays("excluding public holidays"), /Land/);
+});
+
+test("buildPeakRule: Wochentags-Scope + Fenster + Komplement (keine Feiertage aus der Quelle)", () => {
+  const rule = buildPeakRule(
+    { name: "X" },
+    { windows: "01–04 & 06–10 UTC, Mon–Fri", effective: "2026-08-16T16:00:00Z" },
+    "DeepSeek"
+  );
+  assert.deepEqual(rule.peak.days, [1, 2, 3, 4, 5]);
+  assert.deepEqual(rule.offPeak.days, [6, 7]);
+  assert.equal(rule.timezone, "Asia/Shanghai");
+  assert.equal(rule.holidays, undefined); // Quelle nennt keine Feiertage
+  // Anbieter ohne Wochentags-Scope → rot
+  assert.throws(() => buildPeakRule({ name: "X" }, { windows: "01–04 & 06–10 UTC" }, "DeepSeek"));
+  // Nennt die Notiz selbst Feiertage, wird das (weiterhin) übernommen.
+  const withHolidays = buildPeakRule(
+    { name: "X" },
+    { windows: "01–04 & 06–10 UTC, Mon–Fri", tip: "excluding Chinese public holidays" },
+    "DeepSeek"
+  );
+  assert.deepEqual(withHolidays.holidays, { policy: "off-peak", calendar: "china" });
+});
+
+test("buildHolidayCalendars: entfällt — Quelle nennt keine Feiertage (kein chinese-days im Repo)", () => {
+  // Bewusst kein Test der Kalender-Erzeugung mehr: `chinese-days` ist entfernt.
+});
+
+test("validateSnapshot: peakRules-Invarianten (Negativtests)", () => {
+  const base = {
+    fetchedAt: "2026-08-15T00:00:00.000Z",
+    sourceUrl: "https://commandcode.ai/docs/resources/pricing-limits",
+    plansSourceUrl: "https://commandcode.ai/docs/resources/pricing-limits",
+    capabilitiesSourceUrl: "https://models.dev/api.json",
+    sourceLang: "en",
+    plans: plans.map((p) => ({
+      ...p,
+      apiAccess: p.id !== "go",
+      apiAccessSourceUrl: p.id === "provider" ? "https://commandcode.ai/docs/resources/pricing-limits" : "https://commandcode.ai/docs/plans/" + p.id,
+    })),
+    models,
+    freeModels: buildFreeModels(rows, [], today),
+    peakRules,
+  };
+  const rule = {
+    timezone: "Asia/Shanghai",
+    peak: { days: [1, 2, 3, 4, 5], windowsUtc: [[1, 4], [6, 10]] },
+    offPeak: { days: [6, 7], allDay: true },
+  };
+  const withRule = (r) => ({ ...base, peakRules: { m: r } });
+
+  assert.doesNotThrow(() => validateSnapshot(withRule(rule)));
+  // 1. Überlappende Tage
+  assert.throws(() => validateSnapshot(withRule({ ...rule, offPeak: { days: [5, 6, 7], allDay: true } })));
+  // 1. Union ≠ {1..7}
+  assert.throws(() => validateSnapshot(withRule({ ...rule, offPeak: { days: [6], allDay: true } })));
+  // 2. Duplikate
+  assert.throws(() => validateSnapshot(withRule({ ...rule, peak: { days: [1, 1, 2, 3, 4], windowsUtc: [[1, 4]] } })));
+  // 2. leer
+  assert.throws(() => validateSnapshot(withRule({ ...rule, peak: { days: [], windowsUtc: [[1, 4]] } })));
+  // 3. start >= end
+  assert.throws(() => validateSnapshot(withRule({ ...rule, peak: { days: [1, 2, 3, 4, 5], windowsUtc: [[4, 1]] } })));
+  // 3. Überlappende Fenster
+  assert.throws(() => validateSnapshot(withRule({ ...rule, peak: { days: [1, 2, 3, 4, 5], windowsUtc: [[1, 6], [5, 10]] } })));
+  // 3. leere Fenster
+  assert.throws(() => validateSnapshot(withRule({ ...rule, peak: { days: [1, 2, 3, 4, 5], windowsUtc: [] } })));
+  // 4. ungültige IANA-Zone
+  assert.throws(() => validateSnapshot(withRule({ ...rule, timezone: "Mars/Olympus" })));
+  // 5. Optionale Feiertagslogik: Regel MIT holidays braucht den Kalender ...
+  const withHolidays = { ...rule, holidays: { policy: "off-peak", calendar: "china" } };
+  assert.throws(() => validateSnapshot(withRule(withHolidays)));
+  // ... liegt er vor, ist die Form valide (Datenform bleibt offen).
+  assert.doesNotThrow(() =>
+    validateSnapshot({
+      ...withRule(withHolidays),
+      holidayCalendars: { china: { dates: ["2026-10-01"], coveredThrough: "2026-12-31" } },
+    })
+  );
+  // 6. dates nicht streng aufsteigend
+  assert.throws(() =>
+    validateSnapshot({
+      ...withRule(rule),
+      holidayCalendars: { china: { dates: ["2026-02-01", "2026-01-01"], coveredThrough: "2026-12-31" } },
+    })
+  );
+  // 6. Termin nach coveredThrough
+  assert.throws(() =>
+    validateSnapshot({
+      ...withRule(rule),
+      holidayCalendars: { china: { dates: ["2027-01-01"], coveredThrough: "2026-12-31" } },
+    })
+  );
+  // peakRules leer → rot
+  assert.throws(() => validateSnapshot({ ...base, peakRules: {} }));
 });

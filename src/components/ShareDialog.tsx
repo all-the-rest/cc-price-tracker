@@ -155,7 +155,7 @@ export default function ShareDialog(props: ShareDialogProps) {
   const patch = (p: Partial<ShareConfig>) => setConfig((c) => ({ ...c, ...p }));
 
   const plan = createMemo((): Plan => props.data.plans.find((pl) => pl.id === config().plan) ?? props.data.plans[0]!);
-  const rows = createMemo(() => topModels(props.data.models, plan(), config().basis, config().topN, props.data.peakHours));
+  const rows = createMemo(() => topModels(props.data.models, plan(), config().basis, config().topN, props.data.peakRules));
   const svg = createMemo(() =>
     buildShareSvg({ rows: rows(), plan: plan(), config: config(), fetchedAt: props.data.fetchedAt, lang: shareLang() }),
   );

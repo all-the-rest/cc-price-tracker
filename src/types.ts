@@ -73,8 +73,38 @@ export interface ModelAllowances {
   pro: number | null;
 }
 
-/** UTC-Peak-Zeitfenster je Modell (Schlüssel: normalisierter Modellname). */
-export type PeakHours = Record<string, [number, number][]>;
+/**
+ * Datengetriebene Peak-Regel je Modell (Schlüssel: normalisierter Modellname,
+ * siehe `peakKey` in `config/peakPricing.ts`). Ersetzt die frühere reinen
+ * UTC-Fenster (`PeakHours`) inkl. hartkodierter Wochenend-Annahme.
+ */
+export interface PeakRule {
+  /** IANA-Zone, in der der Wochentag bewertet wird (nicht der Browser). */
+  timezone: string;
+  /** ISO 8601 mit Offset; davor gilt kein Peak (nur wenn die Quelle ein Datum nennt). */
+  effectiveFrom?: string;
+  peak: {
+    /** ISO-Wochentage 1=Montag … 7=Sonntag, an denen `windowsUtc` gilt. */
+    days: number[];
+    /** UTC-Stundenfenster [start, end], 0 ≤ start < end ≤ 24, aufsteigend, nicht überlappend. */
+    windowsUtc: [number, number][];
+  };
+  /** Ganztägig Off-Peak an diesen ISO-Wochentagen (Komplement von `peak.days`). */
+  offPeak: { days: number[]; allDay: true };
+  /** Nur setzen, wenn die Quelle Feiertage nennt. */
+  holidays?: { policy: "off-peak"; calendar: string };
+}
+
+export type PeakRules = Record<string, PeakRule>;
+
+/** Feiertagskalender: aufsteigende ISO-Datumsstrings (lokale Tage der Regel-Zone). */
+export interface HolidayCalendar {
+  dates: string[];
+  /** Letzter Kalendertag, den die Feiertagsquelle abdeckt. */
+  coveredThrough: string;
+}
+
+export type HolidayCalendars = Record<string, HolidayCalendar>;
 
 export interface Model {
   id: string;
@@ -118,7 +148,14 @@ export interface PriceData {
   plans: Plan[];
   models: Model[];
   freeModels: FreeModel[];
-  peakHours: PeakHours;
+  peakRules: PeakRules;
+  /**
+   * Optional: Feiertagskalender. Die Command-Code-Quelle nennt **keine**
+   * Feiertage, daher wird das Feld nicht geschrieben (Spezifikation §3:
+   * `holidays` weggelassen). Die Datenform bleibt offen, falls die Quelle
+   * Feiertage künftig nennt.
+   */
+  holidayCalendars?: HolidayCalendars;
 }
 
 export type SupportedLocale = "en" | "de";
