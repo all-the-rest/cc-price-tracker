@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-06T01:22:10.553Z",
+  "fetchedAt": "2026-10-06T18:08:35.179Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -4340,6 +4340,53 @@
         "output": 162
       },
       "tip": "Available on every plan, including Go. Unlike the other models in this table, it isn't gated."
+    },
+    {
+      "id": "mistral-large-4",
+      "name": "Mistral Large 4",
+      "provider": "Mistral AI",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 524288,
+      "input": 1.36,
+      "output": 4.18,
+      "cachedRead": 0.14,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 40,
+        "pro": 50
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
     },
     {
       "id": "inkling",
