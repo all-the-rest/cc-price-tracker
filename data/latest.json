@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-02T15:43:54.223Z",
+  "fetchedAt": "2026-10-06T01:22:10.553Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -109,60 +109,6 @@
     }
   ],
   "models": [
-    {
-      "id": "space-bunny-alpha",
-      "name": "Space Bunny Alpha",
-      "provider": null,
-      "category": "opensource",
-      "tier": null,
-      "contextWindow": 1000000,
-      "input": 0,
-      "output": 0,
-      "cachedRead": 0,
-      "cachedWrite": null,
-      "listInput": null,
-      "listOutput": null,
-      "listCachedRead": null,
-      "listCachedWrite": null,
-      "deal": {
-        "id": "space-bunny-alpha-free",
-        "discountPercent": 100,
-        "free": true,
-        "expires": null,
-        "endsWhen": "while the stealth preview lasts",
-        "revertNote": null
-      },
-      "deprecated": false,
-      "availability": {
-        "go": true,
-        "goat": true,
-        "pro": true,
-        "provider": true,
-        "max": true,
-        "team": true
-      },
-      "allowances": {
-        "goat": null,
-        "pro": null
-      },
-      "capabilities": {
-        "input": [
-          "text",
-          "image"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": true,
-        "toolCall": false
-      },
-      "pattern": {
-        "input": 800,
-        "cachedRead": 50000,
-        "output": 162
-      },
-      "tip": "Free while the preview lasts. Not routed under ZDR."
-    },
     {
       "id": "laguna-s-2.1-free",
       "name": "Laguna S 2.1",
@@ -320,7 +266,7 @@
         "cachedRead": 50000,
         "output": 162
       },
-      "tip": "Free while it lasts. Up to 300 requests a day."
+      "tip": "Free while it lasts. No daily request limit."
     },
     {
       "id": "tencent/hy4-preview",
@@ -4540,23 +4486,6 @@
   ],
   "freeModels": [
     {
-      "id": "space-bunny-alpha",
-      "name": "Space Bunny Alpha",
-      "availableFrom": "2026-09-24",
-      "until": null,
-      "capabilities": {
-        "input": [
-          "text"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": false,
-        "toolCall": false
-      },
-      "note": "Free while the preview lasts. Not routed under ZDR."
-    },
-    {
       "id": "laguna-s-2.1-free",
       "name": "Laguna S 2.1",
       "availableFrom": "2026-08-15",
@@ -4605,7 +4534,7 @@
         "reasoning": true,
         "toolCall": true
       },
-      "note": "Free while it lasts. Up to 300 requests a day."
+      "note": "Free while it lasts. No daily request limit."
     },
     {
       "id": "typesafe/jev",
