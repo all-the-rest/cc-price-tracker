@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-06T18:08:35.179Z",
+  "fetchedAt": "2026-10-08T00:17:26.652Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -267,6 +267,59 @@
         "output": 162
       },
       "tip": "Free while it lasts. No daily request limit."
+    },
+    {
+      "id": "glyph-cluster:free",
+      "name": "Glyph Cluster",
+      "provider": null,
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 256000,
+      "input": 0,
+      "output": 0,
+      "cachedRead": 0,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": {
+        "id": "glyph-cluster-free",
+        "discountPercent": 100,
+        "free": true,
+        "expires": null,
+        "endsWhen": "while the stealth preview lasts",
+        "revertNote": null
+      },
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": null,
+        "pro": null
+      },
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Free while the preview lasts. Up to 100 requests a day. Not routed under ZDR."
     },
     {
       "id": "tencent/hy4-preview",
@@ -3031,6 +3084,54 @@
       "tip": null
     },
     {
+      "id": "claude-haiku-5-5",
+      "name": "Claude Haiku 5.5",
+      "provider": "Anthropic",
+      "category": "premium",
+      "tier": "Standard / Long context",
+      "contextWindow": 1000000,
+      "input": 0.1,
+      "output": 0.5,
+      "cachedRead": 0.01,
+      "cachedWrite": 0.125,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": false,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 20
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Rates shown are the ≤ 100K tokens band; > 100K tokens bills $0.50 input / $2.50 output / $0.05 cache read / $0.625 cache write (per 1M tokens)."
+    },
+    {
       "id": "claude-haiku-4-5",
       "name": "Claude Haiku 4.5",
       "provider": "Anthropic",
@@ -4582,6 +4683,23 @@
         "toolCall": true
       },
       "note": "Free while it lasts. No daily request limit."
+    },
+    {
+      "id": "glyph-cluster:free",
+      "name": "Glyph Cluster",
+      "availableFrom": "2026-10-08",
+      "until": null,
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": false,
+        "toolCall": false
+      },
+      "note": "Free while the preview lasts. Up to 100 requests a day. Not routed under ZDR."
     },
     {
       "id": "typesafe/jev",
