@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-08T00:17:26.652Z",
+  "fetchedAt": "2026-10-09T00:31:12.236Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -439,8 +439,8 @@
         "team": true
       },
       "allowances": {
-        "goat": 60,
-        "pro": 70
+        "goat": 20,
+        "pro": 30
       },
       "capabilities": {
         "input": [
@@ -2948,7 +2948,7 @@
       "contextWindow": 1000000,
       "input": 2,
       "output": 10,
-      "cachedRead": 0.2,
+      "cachedRead": 0.1,
       "cachedWrite": 2.5,
       "listInput": null,
       "listOutput": null,
@@ -3102,7 +3102,7 @@
       "deprecated": false,
       "availability": {
         "go": false,
-        "goat": false,
+        "goat": true,
         "pro": true,
         "provider": true,
         "max": true,
@@ -3110,7 +3110,7 @@
       },
       "allowances": {
         "goat": 20,
-        "pro": 20
+        "pro": 30
       },
       "capabilities": {
         "input": [
