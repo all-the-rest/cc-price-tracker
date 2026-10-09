@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-09T00:31:12.236Z",
+  "fetchedAt": "2026-10-09T18:04:13.334Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -206,7 +206,7 @@
           "text"
         ],
         "reasoning": true,
-        "toolCall": false
+        "toolCall": true
       },
       "pattern": {
         "input": 800,
@@ -4662,8 +4662,8 @@
         "output": [
           "text"
         ],
-        "reasoning": false,
-        "toolCall": false
+        "reasoning": true,
+        "toolCall": true
       },
       "note": "Free while it lasts. Up to 100 requests a day."
     },
