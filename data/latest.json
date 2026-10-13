@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-13T16:07:34.529Z",
+  "fetchedAt": "2026-10-13T23:47:32.144Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -3692,6 +3692,56 @@
         "input": [
           "text",
           "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "gemini-4-argon",
+      "name": "Gemini 4 Argon",
+      "provider": "Google",
+      "category": "premium",
+      "tier": null,
+      "contextWindow": 1000000,
+      "input": 2,
+      "output": 10,
+      "cachedRead": 0.1,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": false,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 20
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "video",
+          "audio",
           "pdf"
         ],
         "output": [
