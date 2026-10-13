@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-09T18:04:13.334Z",
+  "fetchedAt": "2026-10-13T02:09:46.486Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -4040,6 +4040,56 @@
         "input": [
           "text",
           "image"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "muse-wonder-1.0",
+      "name": "Muse Wonder",
+      "provider": "Meta",
+      "category": "premium",
+      "tier": null,
+      "contextWindow": 1048576,
+      "input": 4,
+      "output": 20,
+      "cachedRead": 0.2,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": false,
+        "pro": false,
+        "provider": false,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 20
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "video",
+          "pdf",
+          "audio"
         ],
         "output": [
           "text"
