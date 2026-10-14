@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-13T23:47:32.144Z",
+  "fetchedAt": "2026-10-14T23:20:37.195Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -214,59 +214,6 @@
         "output": 162
       },
       "tip": "Free while it lasts. Up to 100 requests a day."
-    },
-    {
-      "id": "ling-3.1-flash:free",
-      "name": "Ling 3.1 Flash",
-      "provider": null,
-      "category": "opensource",
-      "tier": null,
-      "contextWindow": 262144,
-      "input": 0,
-      "output": 0,
-      "cachedRead": 0,
-      "cachedWrite": null,
-      "listInput": null,
-      "listOutput": null,
-      "listCachedRead": null,
-      "listCachedWrite": null,
-      "deal": {
-        "id": "ling-3.1-flash-free",
-        "discountPercent": 100,
-        "free": true,
-        "expires": null,
-        "endsWhen": "while it lasts",
-        "revertNote": null
-      },
-      "deprecated": false,
-      "availability": {
-        "go": true,
-        "goat": true,
-        "pro": true,
-        "provider": true,
-        "max": true,
-        "team": true
-      },
-      "allowances": {
-        "goat": null,
-        "pro": null
-      },
-      "capabilities": {
-        "input": [
-          "text"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": true,
-        "toolCall": true
-      },
-      "pattern": {
-        "input": 800,
-        "cachedRead": 50000,
-        "output": 162
-      },
-      "tip": "Free while it lasts. No daily request limit."
     },
     {
       "id": "glyph-cluster:free",
@@ -679,8 +626,8 @@
         "team": true
       },
       "allowances": {
-        "goat": 60,
-        "pro": 70
+        "goat": 100,
+        "pro": 100
       },
       "capabilities": {
         "input": [
@@ -1686,6 +1633,54 @@
       "tip": null
     },
     {
+      "id": "qwen-3.8-max-prime",
+      "name": "Qwen 3.8 Max Prime",
+      "provider": "Alibaba",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1000000,
+      "input": 4,
+      "output": 12,
+      "cachedRead": 0.5,
+      "cachedWrite": 5,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 30
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
       "id": "qwen-3.8-max-0902",
       "name": "Qwen 3.8 Max 0902",
       "provider": "Alibaba",
@@ -2141,6 +2136,52 @@
       "allowances": {
         "goat": 50,
         "pro": 60
+      },
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "ling-3.1-flash",
+      "name": "Ling 3.1 Flash",
+      "provider": "inclusionAI",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 262144,
+      "input": 0.3,
+      "output": 0.9,
+      "cachedRead": 0.06,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 30
       },
       "capabilities": {
         "input": [
@@ -4766,23 +4807,6 @@
         "toolCall": true
       },
       "note": "Free while it lasts. Up to 100 requests a day."
-    },
-    {
-      "id": "ling-3.1-flash:free",
-      "name": "Ling 3.1 Flash",
-      "availableFrom": "2026-09-29",
-      "until": null,
-      "capabilities": {
-        "input": [
-          "text"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": true,
-        "toolCall": true
-      },
-      "note": "Free while it lasts. No daily request limit."
     },
     {
       "id": "glyph-cluster:free",
