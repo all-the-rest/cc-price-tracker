@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-14T23:20:37.195Z",
+  "fetchedAt": "2026-10-15T16:06:24.193Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -2180,8 +2180,8 @@
         "team": true
       },
       "allowances": {
-        "goat": 20,
-        "pro": 30
+        "goat": 100,
+        "pro": 110
       },
       "capabilities": {
         "input": [
