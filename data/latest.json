@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-15T16:06:24.193Z",
+  "fetchedAt": "2026-10-15T23:09:22.420Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -163,59 +163,6 @@
       "tip": "Free while capacity lasts."
     },
     {
-      "id": "ling-3.0-flash-sante:free",
-      "name": "Ling 3.0 Flash Sante",
-      "provider": null,
-      "category": "opensource",
-      "tier": null,
-      "contextWindow": 262144,
-      "input": 0,
-      "output": 0,
-      "cachedRead": 0,
-      "cachedWrite": null,
-      "listInput": null,
-      "listOutput": null,
-      "listCachedRead": null,
-      "listCachedWrite": null,
-      "deal": {
-        "id": "ling-3.0-flash-sante-free",
-        "discountPercent": 100,
-        "free": true,
-        "expires": null,
-        "endsWhen": "while it lasts",
-        "revertNote": null
-      },
-      "deprecated": false,
-      "availability": {
-        "go": true,
-        "goat": true,
-        "pro": true,
-        "provider": true,
-        "max": true,
-        "team": true
-      },
-      "allowances": {
-        "goat": null,
-        "pro": null
-      },
-      "capabilities": {
-        "input": [
-          "text"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": true,
-        "toolCall": true
-      },
-      "pattern": {
-        "input": 800,
-        "cachedRead": 50000,
-        "output": 162
-      },
-      "tip": "Free while it lasts. Up to 100 requests a day."
-    },
-    {
       "id": "glyph-cluster:free",
       "name": "Glyph Cluster",
       "provider": null,
@@ -267,6 +214,59 @@
         "output": 162
       },
       "tip": "Free while the preview lasts. Up to 100 requests a day. Not routed under ZDR."
+    },
+    {
+      "id": "cat-jam:free",
+      "name": "Cat Jam",
+      "provider": null,
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1048576,
+      "input": 0,
+      "output": 0,
+      "cachedRead": 0,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": {
+        "id": "cat-jam-free",
+        "discountPercent": 100,
+        "free": true,
+        "expires": null,
+        "endsWhen": "while the stealth preview lasts",
+        "revertNote": null
+      },
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": null,
+        "pro": null
+      },
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Free while the preview lasts. No daily request limit. Not routed under ZDR."
     },
     {
       "id": "tencent/hy4-preview",
@@ -2645,6 +2645,53 @@
       "tip": null
     },
     {
+      "id": "nemotron-3.5-super-vl",
+      "name": "Nemotron 3.5 Super VL",
+      "provider": "NVIDIA",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 262144,
+      "input": 0.2,
+      "output": 0.5,
+      "cachedRead": 0.04,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 30
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
       "id": "claude-fable-5-1",
       "name": "Claude Fable 5.1",
       "provider": "Anthropic",
@@ -3438,8 +3485,8 @@
         "team": true
       },
       "allowances": {
-        "goat": 70,
-        "pro": 80
+        "goat": 20,
+        "pro": 30
       },
       "capabilities": {
         "input": [
@@ -4293,6 +4340,55 @@
       "tip": null
     },
     {
+      "id": "muse-spark-open",
+      "name": "Muse Spark Open",
+      "provider": "Meta",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1048576,
+      "input": 1.25,
+      "output": 4.25,
+      "cachedRead": 0.15,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 30
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "video",
+          "audio"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
       "id": "muse-spark-1.2",
       "name": "Muse Spark 1.2",
       "provider": "Meta",
@@ -4771,6 +4867,52 @@
         "output": 162
       },
       "tip": null
+    },
+    {
+      "id": "typesafe/jev-1.14.0",
+      "name": "Jev 1.14.0",
+      "provider": "TypeSafe",
+      "category": "premium",
+      "tier": null,
+      "contextWindow": 32000,
+      "input": 0.042,
+      "output": 0,
+      "cachedRead": 0,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 30
+      },
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": false,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
     }
   ],
   "freeModels": [
@@ -4792,23 +4934,6 @@
       "note": "Free while capacity lasts."
     },
     {
-      "id": "ling-3.0-flash-sante:free",
-      "name": "Ling 3.0 Flash Sante",
-      "availableFrom": "2026-09-09",
-      "until": null,
-      "capabilities": {
-        "input": [
-          "text"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": true,
-        "toolCall": true
-      },
-      "note": "Free while it lasts. Up to 100 requests a day."
-    },
-    {
       "id": "glyph-cluster:free",
       "name": "Glyph Cluster",
       "availableFrom": "2026-10-08",
@@ -4824,6 +4949,23 @@
         "toolCall": false
       },
       "note": "Free while the preview lasts. Up to 100 requests a day. Not routed under ZDR."
+    },
+    {
+      "id": "cat-jam:free",
+      "name": "Cat Jam",
+      "availableFrom": "2026-10-15",
+      "until": null,
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": false,
+        "toolCall": false
+      },
+      "note": "Free while the preview lasts. No daily request limit. Not routed under ZDR."
     },
     {
       "id": "typesafe/jev",
