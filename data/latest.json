@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-16T16:04:36.591Z",
+  "fetchedAt": "2026-10-16T22:56:18.371Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -267,6 +267,59 @@
         "output": 162
       },
       "tip": "Free while the preview lasts. No daily request limit. Not routed under ZDR."
+    },
+    {
+      "id": "beam:free",
+      "name": "Beam 1.0",
+      "provider": null,
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1048576,
+      "input": 0,
+      "output": 0,
+      "cachedRead": 0,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": {
+        "id": "beam-free",
+        "discountPercent": 100,
+        "free": true,
+        "expires": null,
+        "endsWhen": "while capacity lasts",
+        "revertNote": null
+      },
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": null,
+        "pro": null
+      },
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Free while capacity lasts. No daily request limit. Not routed under ZDR."
     },
     {
       "id": "tencent/hy4-preview",
@@ -4966,6 +5019,23 @@
         "toolCall": false
       },
       "note": "Free while the preview lasts. No daily request limit. Not routed under ZDR."
+    },
+    {
+      "id": "beam:free",
+      "name": "Beam 1.0",
+      "availableFrom": "2026-10-16",
+      "until": null,
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": false,
+        "toolCall": false
+      },
+      "note": "Free while capacity lasts. No daily request limit. Not routed under ZDR."
     },
     {
       "id": "typesafe/jev",
