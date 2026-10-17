@@ -264,7 +264,7 @@ pnpm typecheck        # nur tsc --noEmit
 ## Verifikation
 
 Der Build-/Verify-Flow steht im Skill `build-verify` (`~/dev/agents-skills/.agents/skills/build-verify/SKILL.md`;
-Always-on-Kernel `~/dev/agents-skills/.agents/rules/build-verify.md`) — pullen, delegieren, unabhängiger
+Kernregel `~/dev/agents-skills/.agents/rules/build-verify.md`) — pullen, delegieren, unabhängiger
 Verify-Lauf, Commit je Runde, Push + CI beobachten. Hier steht nur, **was** in diesem Repo geprüft wird:
 
 - `pnpm scrape` (exit 0, korrekte Daten), `pnpm test` grün, `pnpm build` grün
@@ -297,6 +297,6 @@ git log --oneline origin/main..ai-10-usd/main --no-decorate | head
 ## Delegation & Parallelisierung (Subagenten)
 
 Der Flow steht im Skill `build-verify` (`~/dev/agents-skills/.agents/skills/build-verify/SKILL.md`;
-Always-on-Kernel `~/dev/agents-skills/.agents/rules/build-verify.md`): Orchestrator delegiert,
+Kernregel `~/dev/agents-skills/.agents/rules/build-verify.md`): Orchestrator delegiert,
 Implementierung und Verifikation laufen in **getrennten** Subagenten, ein Commit pro Task,
 Verifikationsläufe **sequenziell**. Rollen: `explore` (Recherche), `general` (Implementierung), `vision` (Screenshots).
