@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-19T14:08:27.463Z",
+  "fetchedAt": "2026-10-19T18:01:53.414Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -980,8 +980,8 @@
       "tip": null
     },
     {
-      "id": "minimax-m3.1-flash-preview:free",
-      "name": "MiniMax M3.1 Flash Preview",
+      "id": "minimax-m3.1-flash:free",
+      "name": "MiniMax M3.1 Flash",
       "provider": null,
       "category": "opensource",
       "tier": null,
@@ -995,11 +995,11 @@
       "listCachedRead": null,
       "listCachedWrite": null,
       "deal": {
-        "id": "minimax-m3-1-flash-preview-free",
+        "id": "minimax-m3-1-flash-free",
         "discountPercent": 100,
         "free": true,
-        "expires": "2026-10-20",
-        "endsWhen": null,
+        "expires": "2026-10-21",
+        "endsWhen": "for a limited time",
         "revertNote": null
       },
       "deprecated": false,
@@ -1032,11 +1032,11 @@
         "cachedRead": 50000,
         "output": 162
       },
-      "tip": "Free from Oct 19 at 4:00 AM PT until Oct 20 at 3:45 AM PT. No daily request limit. Not routed under ZDR."
+      "tip": "Free for a limited time. No daily request limit."
     },
     {
-      "id": "minimax-m3.1-flash-preview",
-      "name": "MiniMax M3.1 Flash Preview",
+      "id": "minimax-m3.1-flash",
+      "name": "MiniMax M3.1 Flash",
       "provider": "MiniMax",
       "category": "opensource",
       "tier": null,
@@ -5141,8 +5141,8 @@
       "note": "Free while capacity lasts. No daily request limit. Not routed under ZDR."
     },
     {
-      "id": "minimax-m3.1-flash-preview:free",
-      "name": "MiniMax M3.1 Flash Preview",
+      "id": "minimax-m3.1-flash:free",
+      "name": "MiniMax M3.1 Flash",
       "availableFrom": "2026-10-19",
       "until": null,
       "capabilities": {
@@ -5157,7 +5157,7 @@
         "reasoning": true,
         "toolCall": true
       },
-      "note": "Free from Oct 19 at 4:00 AM PT until Oct 20 at 3:45 AM PT. No daily request limit. Not routed under ZDR."
+      "note": "Free for a limited time. No daily request limit."
     },
     {
       "id": "typesafe/jev",
