@@ -56,6 +56,21 @@ Setup:
    `cc-pricing.all-the.rest` setzen.
 4. DNS: CNAME `cc-pricing.all-the.rest` → `all-the-rest.github.io`
 
+## Technische Entscheidungen
+
+Dauerhafte Design-Entscheidungen (Regeln selbst stehen in `AGENTS.md`; die Entscheidungen zur
+Peak-Spezifikation samt Verworfene-Varianten in `AGENTS.todo.md`, Phase 7):
+
+- **Effektivpreis:** Die grüne Schwelle (`planValue`) rechnet mit dem **tatsächlich gezahlten**
+  Preis inkl. Stripe-Gebühr, das daneben gezeigte „beworbene" Verhältnis (`advertisedValue`) mit
+  dem beworbenen Preis **ohne** Gebühr. Der Kontrast macht die separate Gebühr sichtbar und lässt
+  ein Modell am Credit-Baseline-Punkt exakt auf der Schwelle liegen.
+- **Peaks sind strikt quellenbindend:** Der Scraper schreibt keine Feiertagsdaten — die
+  Command-Code-Quelle nennt keine. Feiertags-/`chinese-days`-Ansätze wurden bewusst verworfen
+  (siehe `AGENTS.todo.md` › Verworfen).
+- **Statisches Prerendering mit echten Sprach-Subrouten** (EN `/`, DE `/de/`) statt Client-Routing,
+  damit Crawler/AI-Bots ohne JS Preise, Ranking und Modell-Übersicht sehen.
+
 ## Upstream (ocg-price-tracker)
 
 Dieses Projekt entstand als Fresh Copy von `all-the-rest/ocgo-price-tracker` (Basis-Revision
