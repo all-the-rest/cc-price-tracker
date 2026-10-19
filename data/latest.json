@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-17T22:29:52.478Z",
+  "fetchedAt": "2026-10-19T12:07:17.572Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -1451,7 +1451,7 @@
     },
     {
       "id": "deepseek-v4.1-flash",
-      "name": "DeepSeek V4.1 Flash",
+      "name": "DeepSeek V4.1 Flash (latest)",
       "provider": "DeepSeek",
       "category": "opensource",
       "tier": "off-peak",
@@ -1494,11 +1494,11 @@
         "cachedRead": 50000,
         "output": 162
       },
-      "tip": null
+      "tip": "The new DeepSeek V4.1 Flash 1017 is live."
     },
     {
       "id": "deepseek-v4.1-flash-peak",
-      "name": "DeepSeek V4.1 Flash",
+      "name": "DeepSeek V4.1 Flash (latest)",
       "provider": "DeepSeek",
       "category": "opensource",
       "tier": "peak",
@@ -1541,7 +1541,7 @@
         "cachedRead": 50000,
         "output": 162
       },
-      "tip": null
+      "tip": "The new DeepSeek V4.1 Flash 1017 is live."
     },
     {
       "id": "deepseek-v4.1-flash-fast",
@@ -5146,7 +5146,7 @@
       },
       "effectiveFrom": "2026-08-16T16:00:00Z"
     },
-    "deepseekv41flash": {
+    "deepseekv41flashlatest": {
       "timezone": "Asia/Shanghai",
       "peak": {
         "days": [
