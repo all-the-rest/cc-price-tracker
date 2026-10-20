@@ -282,4 +282,4 @@ git log --oneline origin/main..ai-10-usd/main --no-decorate | head
 
 Der Flow steht im Skill `build-verify` (Pfade siehe Verifikation): Orchestrator delegiert,
 Implementierung und Verifikation laufen in **getrennten** Subagenten, ein Commit pro Task,
-Verifikationsläufe **sequenziell**. Rollen: `explore` (Recherche), `general` (Implementierung), `vision` (Screenshots).
+Verifikationsläufe **sequenziell**. Rollen: `explore` (Recherche), `general` (Implementierung). Screenshots analysiert der Agent selbst — das konfigurierte Modell ist vision-fähig, ein Vision-Subagent existiert nicht.
