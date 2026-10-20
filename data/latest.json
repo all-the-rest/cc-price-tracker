@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-20T18:06:05.089Z",
+  "fetchedAt": "2026-10-20T23:16:25.916Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -1168,6 +1168,107 @@
         ],
         "reasoning": true,
         "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "ornith-1.5-122b:free",
+      "name": "Ornith 1.5 122B",
+      "provider": null,
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 262144,
+      "input": 0,
+      "output": 0,
+      "cachedRead": 0,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": {
+        "id": "ornith-1-5-122b-free",
+        "discountPercent": 100,
+        "free": true,
+        "expires": "2026-10-22",
+        "endsWhen": "until 11:00 PM PT on October 21",
+        "revertNote": null
+      },
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": null,
+        "pro": null
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Free until 11:00 PM PT on October 21. No daily request limit."
+    },
+    {
+      "id": "ornith-1.5-122b",
+      "name": "Ornith 1.5 122B",
+      "provider": "Ornith",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 262144,
+      "input": 0.16,
+      "output": 0.64,
+      "cachedRead": 0.02,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 30
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": false
       },
       "pattern": {
         "input": 800,
@@ -5088,6 +5189,23 @@
         "toolCall": true
       },
       "note": "Free for a limited time. No daily request limit."
+    },
+    {
+      "id": "ornith-1.5-122b:free",
+      "name": "Ornith 1.5 122B",
+      "availableFrom": "2026-10-20",
+      "until": null,
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": false,
+        "toolCall": false
+      },
+      "note": "Free until 11:00 PM PT on October 21. No daily request limit."
     },
     {
       "id": "typesafe/jev",
