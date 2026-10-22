@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-21T04:06:18.455Z",
+  "fetchedAt": "2026-10-22T23:29:14.780Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -2692,115 +2692,6 @@
         "output": 162
       },
       "tip": null
-    },
-    {
-      "id": "mimo-v2.5-pro",
-      "name": "MiMo V2.5 Pro",
-      "provider": "Xiaomi",
-      "category": "opensource",
-      "tier": null,
-      "contextWindow": 1000000,
-      "input": 0.435,
-      "output": 0.87,
-      "cachedRead": 0.0036,
-      "cachedWrite": null,
-      "listInput": 2,
-      "listOutput": 6,
-      "listCachedRead": 0.4,
-      "listCachedWrite": null,
-      "deal": {
-        "id": "mimo-v2.5-pro-99-off",
-        "discountPercent": 99,
-        "free": false,
-        "expires": null,
-        "endsWhen": null,
-        "revertNote": null
-      },
-      "deprecated": false,
-      "availability": {
-        "go": true,
-        "goat": true,
-        "pro": true,
-        "provider": true,
-        "max": true,
-        "team": true
-      },
-      "allowances": {
-        "goat": 20,
-        "pro": 30
-      },
-      "capabilities": {
-        "input": [
-          "text"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": true,
-        "toolCall": true
-      },
-      "pattern": {
-        "input": 800,
-        "cachedRead": 50000,
-        "output": 162
-      },
-      "tip": "Up to 99% off. See the deals section below for details."
-    },
-    {
-      "id": "mimo-v2.5",
-      "name": "MiMo V2.5",
-      "provider": "Xiaomi",
-      "category": "opensource",
-      "tier": null,
-      "contextWindow": 1000000,
-      "input": 0.14,
-      "output": 0.28,
-      "cachedRead": 0.0028,
-      "cachedWrite": null,
-      "listInput": 0.8,
-      "listOutput": 4,
-      "listCachedRead": 0.16,
-      "listCachedWrite": null,
-      "deal": {
-        "id": "mimo-v2.5-98-off",
-        "discountPercent": 98,
-        "free": false,
-        "expires": null,
-        "endsWhen": null,
-        "revertNote": null
-      },
-      "deprecated": false,
-      "availability": {
-        "go": true,
-        "goat": true,
-        "pro": true,
-        "provider": true,
-        "max": true,
-        "team": true
-      },
-      "allowances": {
-        "goat": 30,
-        "pro": 40
-      },
-      "capabilities": {
-        "input": [
-          "text",
-          "image",
-          "audio",
-          "video"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": true,
-        "toolCall": true
-      },
-      "pattern": {
-        "input": 800,
-        "cachedRead": 50000,
-        "output": 162
-      },
-      "tip": "Up to 98% off. See the deals section below for details."
     },
     {
       "id": "nemotron-3-ultra",
