@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-23T23:17:02.623Z",
+  "fetchedAt": "2026-10-24T22:36:49.248Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -681,8 +681,7 @@
         "input": [
           "text",
           "image",
-          "video",
-          "pdf"
+          "video"
         ],
         "output": [
           "text"
