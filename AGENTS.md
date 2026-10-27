@@ -97,10 +97,11 @@ pnpm typecheck        # nur tsc --noEmit
 - **Effektivpreis-Berechnung (UI, `weighted.ts`):** `usage = model.allowances[plan] ?? plan.defaultAllowance ?? plan.creditsMonthly`;
   `full = list × plan.creditsMonthly/usage`, `paid = list × plan.priceMonthly/usage`. Go/Max haben keine Allowances →
   `usage = creditsMonthly` (full = 1×, paid = price/credits).
-- **Plan-Wert / grüne Schwelle (`weighted.ts` `planValue`):** aus der persistierten Config `src/plan-baselines.json`
-  („credits included" ÷ **tatsächlich gezahlter Preis** `actualPaid`, inkl. Stripe-Gebühr). `null` = unbegrenzt
-  (Provider) → dunkelgrün. Fällt für nicht-configurierte Pläne auf `creditsMonthly ÷ actualPaid` zurück.
-  `defaultAllowance`/`planValue` steuern nicht die Farbklassen.
+- **Plan-Wert (`weighted.ts` `planValue`):** speist Hero „Wert" und PlanComparison „Wert"; berechnet aus
+  „credits included" ÷ tatsächlich gezahltem Preis (`actualPaid`, inkl. Stripe-Gebühr). Fallback: `creditsMonthly`.
+- **Guthaben-Farben (`PriceTable.allowanceClass`):** dunkelrot unter `actualPaid`; danach nach Anteil am Credit-Claim:
+  ≤ 25 % rot, < 100 % gelb, 100 % grün, > 100 % dunkelgrün. Claim = `creditsIncluded` aus `src/plan-baselines.json`,
+  Fallback `creditsMonthly` (`null`/0 bleibt dunkelgrün).
 - **Beworbenes Verhältnis (`weighted.ts` `advertisedValue`):** „credits included" ÷ „advertised price" (OHNE
   Stripe-Gebühr) — Kontrast zu `planValue` (Hero „Wert"-Stat + PlanComparison-Zeile „Beworben").
 - `input/output/cachedRead/cachedWrite` = **Deal-Now**-Preise (was man zahlt); `list*` = Was-Preise (nur bei Deals,

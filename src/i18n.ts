@@ -60,7 +60,7 @@ export const i18n = {
     allowanceTooltip:
       "Inkl. Nutzung: ${usage} = {mult}× vom ${paid}/Monat, den du zahlst ({pct}% vom ${credit}-Guthaben)",
     allowanceLegend:
-      "Faktor < 1× dunkelrot · < 1,5× hellrot · < {green}× gelb · ab {green}× grün · darüber dunkelgrün",
+      "Farben (Anteil am Guthaben): dunkelrot unter dem gezahlten Preis · bis 25 % rot · unter 100 % gelb · 100 % grün · über 100 % dunkelgrün",
     allowanceUnlimited: "unbegrenzt",
     allowanceFreeTip: "Kostenloses Modell: verbraucht keine Credits — Nutzung unbegrenzt.",
     contextTokens: "Tokens",
@@ -215,7 +215,7 @@ export const i18n = {
     allowanceTooltip:
       "Included usage: ${usage} = {mult}× of the ${paid}/mo you pay ({pct}% of the ${credit} credit)",
     allowanceLegend:
-      "factor < 1× dark red · < 1.5× light red · < {green}× yellow · from {green}× green · above dark green",
+      "Colors (share of the credit): dark red below what you paid · up to 25% red · below 100% yellow · 100% green · above 100% dark green",
     allowanceUnlimited: "unlimited",
     allowanceFreeTip: "Free model: consumes no credits — usage unlimited.",
     contextTokens: "tokens",

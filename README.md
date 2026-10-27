@@ -63,8 +63,9 @@ Peak-Spezifikation samt Verworfene-Varianten in `AGENTS.todo.md`, Phase 7):
 
 - **Effektivpreis:** Die grüne Schwelle (`planValue`) rechnet mit dem **tatsächlich gezahlten**
   Preis inkl. Stripe-Gebühr, das daneben gezeigte „beworbene" Verhältnis (`advertisedValue`) mit
-  dem beworbenen Preis **ohne** Gebühr. Der Kontrast macht die separate Gebühr sichtbar und lässt
-  ein Modell am Credit-Baseline-Punkt exakt auf der Schwelle liegen.
+  dem beworbenen Preis **ohne** Gebühr. Der Kontrast macht die separate Gebühr sichtbar. Die
+  Preis-Tabellenfarben hängen nicht an `planValue`: Grün liegt bei 100 % des Credit-Claims,
+  dunkelrot unter dem tatsächlich gezahlten Preis.
 - **Peaks sind strikt quellenbindend:** Der Scraper schreibt keine Feiertagsdaten — die
   Command-Code-Quelle nennt keine. Feiertags-/`chinese-days`-Ansätze wurden bewusst verworfen
   (siehe `AGENTS.todo.md` › Verworfen).

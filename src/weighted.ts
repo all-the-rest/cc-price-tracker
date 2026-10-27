@@ -22,24 +22,21 @@ export function usageOf(m: Model, plan: Plan): number {
   return plan.creditsMonthly ?? 0;
 }
 
+/** Credits claimed by the plan, or null for an unlimited plan. */
+export function creditsIncluded(plan: Plan): number | null {
+  return PLAN_BASELINES[plan.id]?.creditsIncluded ?? plan.creditsMonthly ?? null;
+}
+
 /**
- * Plan-Wert: Kredit-Baseline je Plan, gerechnet vom tatsächlich gezahlten
- * Preis („credits included" ÷ `actualPaid` inkl. Stripe-Gebühr). Null →
- * unbegrenzt (Provider, pay-as-you-go). Diese Baseline ist zugleich die grüne
- * Schwelle in PriceTable und stimmt so mit dem „paid"-Faktor
- * (`usage ÷ actualPaid`) überein: ein Modell am Credit-Baseline-Punkt liegt
- * exakt auf der grünen Schwelle.
+ * Plan-Wert für Hero „Wert" und PlanComparison, nicht die Preis-Tabellen-Farbe:
+ * Kredit-Baseline ÷ tatsächlich gezahlter Preis (`actualPaid`, inkl. Stripe-Gebühr).
  *
  * Fällt auf die gescrapten Werte (Credits ÷ tatsächlich gezahlt) zurück, wenn
  * der Plan nicht in der persistierten Config steht (neuer Plan).
  */
 export function planValue(plan: Plan): number | null {
-  const baseline = PLAN_BASELINES[plan.id];
-  if (baseline !== undefined && baseline !== null) {
-    return baseline.creditsIncluded / actualPaid(plan);
-  }
-  if (plan.creditsMonthly === null) return null;
-  return plan.creditsMonthly / actualPaid(plan);
+  const claim = creditsIncluded(plan);
+  return claim === null ? null : claim / actualPaid(plan);
 }
 
 /**
@@ -50,11 +47,9 @@ export function planValue(plan: Plan): number | null {
  */
 export function advertisedValue(plan: Plan): number | null {
   const baseline = PLAN_BASELINES[plan.id];
-  if (baseline !== undefined && baseline !== null) {
-    return baseline.creditsIncluded / baseline.advertisedPrice;
-  }
-  if (plan.creditsMonthly === null) return null;
-  return plan.creditsMonthly / (plan.priceMonthly ?? 0);
+  const claim = creditsIncluded(plan);
+  if (claim === null) return null;
+  return claim / (baseline?.advertisedPrice ?? (plan.priceMonthly ?? 0));
 }
 
 /**

@@ -6,6 +6,7 @@ import type { SortField } from "../src/sort";
 import { i18n, type Lang } from "../src/i18n";
 
 export { fieldPrice, requestCost, requestsPerMonth } from "../src/weighted";
+export { actualPaid, processingFee } from "../src/fees";
 export { modelOnPlan } from "../src/util";
 export { TAB_PLAN_IDS } from "../src/plans";
 

@@ -4,7 +4,7 @@ import type { Lang, Translation } from "../i18n";
 import type { Basis, Model, Plan, PeakRules, HolidayCalendars } from "../types";
 import Heading from "./Heading";
 import { fmt, fmtContextWindow } from "../util";
-import { fieldPrice, formatTokens, planValue, requestCost, requestsPerMonth, usageOf } from "../weighted";
+import { creditsIncluded, fieldPrice, formatTokens, requestCost, requestsPerMonth, usageOf } from "../weighted";
 import { actualPaid } from "../fees";
 import { CapabilityBadges, CapabilityFilter, capsOf, type CapId } from "../capabilities";
 import { setupDragScroll } from "../dragscroll";
@@ -163,13 +163,13 @@ export default function PriceTable(props: PriceTableProps) {
     ((m.input ?? 0) === 0 && (m.output ?? 0) === 0 && (m.cachedRead ?? 0) === 0);
 
   const allowanceClass = (usage: number): string => {
-    const mult = usage / paid();
-    const green = planValue(props.plan);
-    if (mult < 1) return "badge-error";
-    if (mult < 1.5) return "bg-error/20 text-error border border-error";
-    if (green === null) return "badge-success";
-    if (mult < green - 1e-6) return "badge-warning";
-    if (mult <= green + 1e-6) return "bg-success/20 text-success border border-success";
+    if (usage < paid()) return "badge-error";
+    const claim = creditsIncluded(props.plan);
+    if (claim === null || claim === 0) return "badge-success";
+    const share = usage / claim;
+    if (share <= 0.25 + 1e-6) return "bg-error/20 text-error border border-error";
+    if (share < 1 - 1e-6) return "badge-warning";
+    if (share <= 1 + 1e-6) return "bg-success/20 text-success border border-success";
     return "badge-success";
   };
 
@@ -177,16 +177,13 @@ export default function PriceTable(props: PriceTableProps) {
     const credits = props.plan.creditsMonthly;
     const mult = usage / paid();
     const pct = credits !== null ? Math.round((usage / credits) * 100) : null;
-    const green = planValue(props.plan);
     let tip = props.t.allowanceTooltip
       .replace("{usage}", String(usage))
       .replace("{mult}", formatMult(mult))
       .replace("{paid}", formatMult(paid()))
       .replace("{pct}", pct === null ? "–" : String(pct))
       .replace("{credit}", credits === null ? "" : String(credits));
-    if (green !== null) {
-      tip += ` · ${props.t.allowanceLegend.replace("{green}", formatMult(green))}`;
-    }
+    tip += ` · ${props.t.allowanceLegend}`;
     return tip;
   };
 
