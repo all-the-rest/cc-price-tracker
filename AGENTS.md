@@ -53,9 +53,9 @@ pnpm typecheck        # nur tsc --noEmit
 {
   "fetchedAt": "…", "sourceUrl": "…/pricing-limits", "plansSourceUrl": "…/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json", "sourceLang": "en",
-  "plans": [{ "id": "goat", "name": "GOAT", "priceMonthly": 10, "creditsMonthly": 70,
+  "plans": [{ "id": "goat", "name": "GOAT", "priceMonthly": 10, "creditsMonthly": 100,
     "requestEstimate": 75000, "apiAccess": true, "apiAccessSourceUrl": "…/docs/plans/goat",
-    "limits": { "h5": 14, "weekly": 35, "monthly": 70 }, "defaultAllowance": 20,
+    "limits": { "h5": 20, "weekly": 50, "monthly": 100 }, "defaultAllowance": 20,
     "modelsIncluded": "…", "sourceUrl": "…" }],
   "models": [{ "id": "minimax-m3", "name": "MiniMax M3", "provider": "MiniMax",
     "category": "opensource", "tier": "Standard / Long context", "contextWindow": 1000000,
