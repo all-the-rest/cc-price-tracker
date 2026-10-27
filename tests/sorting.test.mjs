@@ -129,13 +129,13 @@ for (const planId of TAB_IDS) {
   }
 }
 
-test("paid-Basis input asc (GOAT): Effektivpreis entscheidet, nicht der rohe Listenpreis (Regression MiMo vs. DeepSeek V4 Flash)", () => {
+test("paid-Basis input asc (GOAT): Effektivpreis entscheidet, nicht der rohe Listenpreis (Regression MiMo V2.6 Flash vs. DeepSeek V4 Flash)", () => {
   const plan = data.plans.find((p) => p.id === "goat");
   const models = data.models.filter((m) => ssr.modelOnPlan(m, "goat"));
-  const mimo = models.find((m) => m.id === "mimo-v2.5");
+  const mimo = models.find((m) => m.id === "mimo-v2.6-flash");
   const flash = models.find((m) => m.id === "deepseek-v4-flash");
-  assert.ok(mimo && flash, "MiMo V2.5 und DeepSeek V4 Flash sind im Datensatz");
-  assert.ok(flash.input > mimo.input, "Flash hat höheren rohen Input-Preis (0.22 > 0.14)");
+  assert.ok(mimo && flash, "MiMo V2.6 Flash und DeepSeek V4 Flash sind im Datensatz");
+  assert.ok(flash.input > mimo.input, "Flash hat höheren rohen Input-Preis (0.15 > 0.14)");
   const flashPaid = displayedValue(flash, "input", "paid", plan);
   const mimoPaid = displayedValue(mimo, "input", "paid", plan);
   assert.ok(
@@ -151,7 +151,7 @@ test("paid-Basis input asc (GOAT): Effektivpreis entscheidet, nicht der rohe Lis
     })
   );
   assert.ok(
-    names.indexOf("DeepSeek V4 Flash (latest)") < names.indexOf("MiMo V2.5"),
-    "DeepSeek V4 Flash muss vor MiMo V2.5 stehen"
+    names.indexOf("DeepSeek V4 Flash (latest)") < names.indexOf("MiMo V2.6 Flash"),
+    "DeepSeek V4 Flash muss vor MiMo V2.6 Flash stehen"
   );
 });
