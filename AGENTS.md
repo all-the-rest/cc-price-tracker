@@ -107,7 +107,7 @@ pnpm typecheck        # nur tsc --noEmit
 - `input/output/cachedRead/cachedWrite` = **Deal-Now**-Preise (was man zahlt); `list*` = Was-Preise (nur bei Deals,
   sonst null). `rates`/`listRates` aus `tiers[0]`; `listRates` kann String-Referenz sein → null.
 - `deal.expires` ist `YYYY-MM-DD` (normalisiert), `endsWhen` freier Text (z. B. „while capacity lasts").
-- `availability`: gemappt aus `individual-go/goat/pro/provider/max/ultra/teams-pro` (+`all`); `max` deckt Max 10×/20× ab.
+- `availability`: gemappt aus `individual-go/goat/pro/provider/max/ultra/teams-pro` (+`all`); `max` deckt Max 10×/20× ab. Team Pro ist ein echter Eintrag in `plans[]` (`id: "team-pro"`), aus Team-Pläne- und Usage-Limits-Tabellen; `availability.team` bleibt ausschließlich Entitlement für Modellzugang.
 - `allowances` nur GOAT/Pro (aus `planAllowanceUsd`); andere Pläne null.
 - `pattern` = globales dokumentiertes Standard-Anfragemuster (850 in / 49.000 cached / 180 out) für alle Modelle.
 - Capabilities-Fallback: wenn models.dev keinen Treffer hat, aus CC-`caps` (`text`/`vision`/`reasoning`) bauen, `toolCall: false`.
@@ -156,12 +156,13 @@ pnpm typecheck        # nur tsc --noEmit
 - Nur daisyUI-/Tailwind-Klassen; Semantic-Colors (`base-*`, `primary`, `badge-*`), kein `dark:`.
 - Kein `tailwind.config.js` — Tailwind 4: `@import "tailwindcss";` + `@plugin "daisyui";` in `src/index.css`.
 - Sprache: localStorage `lang`, sonst Browser-Locale; Default `en` (Quelle ist englisch), Theme via `theme-controller`.
-- **Query-Params:** `plan=go|goat|pro|max10|max20` (Default `goat`), `basis=list|full|paid`, `sort=…`,
+- **Query-Params:** `plan=go|goat|pro|max10|max20|team-pro` (Default `goat`), `allowancePlan` (Sortierkontext der Nutzung-je-Modell-Seite), `basis=list|full|paid`, `sort=…`,
   `fsort=…` (Free), `lang`, `cap`/`fcap` — URL > localStorage, `history.replaceState`.
-- **PlanTabs:** Go | GOAT | Pro | Max 10× | Max 20×; Tab = inkludierte Modelle mit Allowance (`usage`), Deals-Spalte
+- **PlanTabs:** Go | GOAT | Pro | Max 10× | Max 20× | Team Pro; Tab = inkludierte Modelle mit Allowance (`usage`), Deals-Spalte
   (Was/Now), Context-Window, Capability-Badges (Text/Vision/Reasoning/Tool-Call), Drag-Scroll.
 - **PlanComparison:** alle Pläne nebeneinander — Preis, Credits, ~Requests, 5h/Weekly/Monthly, API-Zugang (mit Link auf
   `apiAccessSourceUrl`), Modell-Scope, aktive Deals.
+- **Nutzung je Modell** (`/allowances/`, `/de/allowances/`): nur die gelisteten bezahlten Pläne werden verglichen; Provider/Pay-as-you-go ist ausgeschlossen. GOAT/Pro zeigen Modell-Allowances (bzw. Plan-Default); sämtliche Werte greifen auf einen gemeinsamen Monats-Pool zu. Go/Max/Team Pro zeigen Schätzungen unter der Annahme, das ganze Monatsguthaben auf ein Modell zu verwenden — kein Modell-Limit. Team Pro Planwert stammt aus der Quelle; Team-Modellzugang bleibt aus `availability.team`. Sortierkontext ist die wiederverwendete `PlanTabs`-Komponente, Auswahl teilbar via `allowancePlan`; ungültige/unbezahlte IDs werden ignoriert. Balkenlänge ist relativ zum höchsten Request-Wert des Modells; Balkenfarben und Badges teilen die Allowance-Werteskala.
 - **ZDR-Info-Karte:** „Command Code trainiert nicht auf deinem Code", `CMD_ZDR=1`.
 - **Heading-Anker (`src/anchors.ts`):** alle `id`-Attribute/URL-Hashes (`#prices`, `#comparison`,
   Plan-Tabs `#plan-*`, Changelog-Einträge) kommen aus der zentralen,
@@ -208,7 +209,7 @@ pnpm typecheck        # nur tsc --noEmit
   Hydration an (kein Hydration-Mismatch durch Sprache/Theme/Zeitstempel).
 - **Sprach-Subrouten:** Englisch ist Default unter `/`, Deutsch als echte Subroute unter `/de/`
   (`src/routes.ts`, `src/router.tsx`). Je Route × Sprache eine eigene vorgerenderte Datei
-  (`dist/index.html`, `dist/de/index.html`, `dist/impressum/index.html`, `dist/de/impressum/index.html`,
+  (`dist/index.html`, `dist/de/index.html`, `dist/allowances/index.html`, `dist/de/allowances/index.html`, `dist/impressum/index.html`, `dist/de/impressum/index.html`,
   `dist/datenschutz/index.html`, `dist/de/datenschutz/index.html`); `<html lang>` und Canonical je
   Datei. `base: "/"`, damit die Assets auch unter `/de/…` und den Rechtsseiten laden. Der Pfad ist
   die Quelle der Wahrheit; `?lang=de|en` bleibt als Legacy-Alias erhalten und wird nach der Hydration

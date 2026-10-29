@@ -39,6 +39,22 @@ export const uiReviewConfig: UiReviewConfig = {
       expectedTitle: "Command Code Pricing & Plans — Per-Model Credits & Deals (2026)",
     },
     {
+      name: "allowances",
+      path: "/allowances/",
+      states: ["filled"],
+      elements: ["#allowances"],
+      note: "Allowance comparison; each plan's bar remains visible on desktop and mobile.",
+      expectedTitle: "Command Code Usage per Model and Plan",
+    },
+    {
+      name: "allowances-de",
+      path: "/de/allowances/",
+      states: ["filled"],
+      elements: ["#allowances"],
+      note: "German localized allowance comparison.",
+      expectedTitle: "Command Code Nutzung je Modell und Plan",
+    },
+    {
       name: "home-de",
       path: "/?lang=de",
       states: ["filled"],

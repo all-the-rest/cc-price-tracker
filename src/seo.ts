@@ -37,6 +37,9 @@ export function seoFor(route: RouteId, lang: Lang): { title: string; description
   if (route === "datenschutz") {
     return { title: t.seoTitleDatenschutz, description: t.seoDescriptionDatenschutz };
   }
+  if (route === "allowances") {
+    return { title: t.seoTitleAllowances, description: t.seoDescriptionAllowances };
+  }
   return { title: t.seoTitle, description: t.seoDescription };
 }
 
@@ -57,7 +60,18 @@ export function buildJsonLd(route: RouteId, lang: Lang, data: PriceData): unknow
       description: seoFor(route, lang).description,
     },
   ];
-  if (route !== "home") return out;
+  if (route !== "home" && route !== "allowances") return out;
+
+  if (route === "allowances") {
+    out.push({
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: t.headingAllowances,
+      numberOfItems: data.models.length,
+      itemListElement: data.models.map((m, i) => ({ "@type": "ListItem", position: i + 1, name: m.name, url: canonical })),
+    });
+    return out;
+  }
 
   out.push({
     "@context": "https://schema.org",

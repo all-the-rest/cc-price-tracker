@@ -92,3 +92,106 @@ test("Guthaben-Farben folgen Anteil am Claim mit bezahltem Preis als dunkelrotem
     "Pro $20": "badge-error",
   });
 });
+
+test("Team Pro ist plan-level: 40 USD Pool, team availability, keine Modell-Allowance", () => {
+  const teamPlan = data.plans.find((plan) => plan.id === "team-pro");
+  assert.ok(teamPlan);
+  assert.equal(teamPlan.defaultAllowance, null);
+  const model = data.models.find((candidate) => candidate.availability.team);
+  assert.ok(model);
+  assert.equal(ssr.modelOnPlan(model, "team-pro"), model.availability.team);
+  assert.equal(Object.hasOwn(model.allowances, "team-pro"), false);
+  assert.equal(ssr.usageOf(model, teamPlan), teamPlan.creditsMonthly);
+});
+
+test("Allowance bar colors retain the full five-tier scale", () => {
+  const plan = data.plans.find((candidate) => candidate.id === "goat");
+  const source = data.models.find((candidate) => candidate.input > 0 && candidate.output > 0);
+  assert.ok(plan && source);
+  const claim = baselines.goat.creditsIncluded;
+  const paid = ssr.actualPaid(plan);
+  const allowanceValues = [
+    paid / 2,
+    (paid + claim * 0.25) / 2,
+    claim * 0.5,
+    claim,
+    claim * 1.25,
+  ];
+  const expectedBarClasses = [
+    "bg-error",
+    "bg-error/75",
+    "bg-warning",
+    "bg-success/60",
+    "bg-green-800",
+  ];
+  for (const [index, allowance] of allowanceValues.entries()) {
+    const model = {
+      ...structuredClone(source),
+      allowances: { ...source.allowances, goat: allowance },
+      availability: { ...source.availability, goat: true },
+    };
+    const html = ssr.renderAllowancePage("en", [model], [plan], plan.id);
+    assert.match(html, new RegExp(`h-full rounded-full ${expectedBarClasses[index].replaceAll("/", "\\/")}`));
+  }
+});
+
+test("Allowance-Seite rendert die Erklärtexte in der Sprache der Route", () => {
+  const model = data.models.find((candidate) => candidate.input > 0);
+  const plan = data.plans.find((candidate) => candidate.id === "goat");
+  assert.ok(model && plan);
+  const german = cheerio.load(ssr.renderAllowancePage("de", [model], data.plans, plan.id)).text();
+  const english = cheerio.load(ssr.renderAllowancePage("en", [model], data.plans, plan.id)).text();
+
+  assert.match(german, /Vergleich der geschätzten Requests/);
+  assert.doesNotMatch(german, /gesamten gemeinsamen Monatsguthabens/);
+  assert.match(german, /bei Go, Max und Team Pro wird das gesamte Planguthaben für ein Modell angenommen/);
+  assert.match(german, /Balkenlänge ist relativ/);
+  assert.doesNotMatch(german, /Provider|Pay-as-you-go/);
+  assert.match(german, /GOAT und Pro zeigen Modell-Allowances/);
+  assert.doesNotMatch(german, /Compare estimated requests|model-specific monthly usage|Bar length is relative/);
+
+  assert.match(english, /Compare estimated requests/);
+  assert.doesNotMatch(english, /full shared monthly pool/);
+  assert.match(english, /for Go, Max and Team Pro, estimates assume the full plan credit pool is used on one model/);
+  assert.match(english, /Bar length is relative/);
+  assert.doesNotMatch(english, /Provider|Pay-as-you-go/);
+  assert.match(english, /GOAT and Pro show model allowances/);
+  assert.doesNotMatch(english, /Vergleich der geschätzten Requests|modellbezogenen monatlichen Nutzung|Balkenlänge ist relativ/);
+
+  const invalidProviderSelection = cheerio
+    .load(ssr.renderAllowancePage("en", [model], data.plans, "provider"))
+    .text();
+  assert.doesNotMatch(invalidProviderSelection, /Provider|Pay as you go/);
+  assert.match(invalidProviderSelection, /Sorted by estimated requests on the Go plan/);
+});
+
+test("Allowance page marks free models and infinite requests dark green", () => {
+  const freeModel = data.models.find((candidate) =>
+    candidate.deal?.free === true ||
+    ((candidate.input ?? 0) === 0 && (candidate.output ?? 0) === 0 && (candidate.cachedRead ?? 0) === 0)
+  );
+  const plan = data.plans.find((candidate) => candidate.id === "go");
+  assert.ok(freeModel && plan);
+  const html = ssr.renderAllowancePage("en", [freeModel], data.plans, plan.id);
+  const text = cheerio.load(html).text();
+  assert.match(text, /free/i);
+  assert.match(text, /∞ Requests\/month/);
+  assert.doesNotMatch(text, /\$\d/);
+  assert.match(html, /bg-green-800/);
+  assert.match(html, /text-green-50/);
+});
+
+test("Team Pro share links round-trip without falling back to GOAT", () => {
+  const config = {
+    plan: "team-pro",
+    metric: "requests",
+    topN: 5,
+    basis: "full",
+    theme: "dark",
+    size: "og",
+    brand: true,
+    timestamp: true,
+  };
+  const params = ssr.shareToParams(config);
+  assert.equal(ssr.shareFromParams(params).plan, "team-pro");
+});

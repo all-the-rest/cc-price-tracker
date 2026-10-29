@@ -19,6 +19,7 @@ const PLAN_LABELS = {
   provider: "Provider",
   max10: "Max 10×",
   max20: "Max 20×",
+  "team-pro": "Team Pro",
 };
 
 export function planLabel(id) {

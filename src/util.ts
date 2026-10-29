@@ -41,6 +41,7 @@ export function formatModelName(id: string): string {
 }
 
 export function modelOnPlan(m: { availability: { go: boolean; goat: boolean; pro: boolean; provider: boolean; max: boolean; team: boolean } }, planId: string): boolean {
+  if (planId === "team-pro") return m.availability.team;
   if (planId === "max10" || planId === "max20") return m.availability.max;
   return m.availability[planId as keyof typeof m.availability];
 }

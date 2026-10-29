@@ -4,7 +4,7 @@ import type { Lang, Translation } from "../i18n";
 import type { Basis, Model, Plan, PeakRules, HolidayCalendars } from "../types";
 import Heading from "./Heading";
 import { fmt, fmtContextWindow } from "../util";
-import { creditsIncluded, fieldPrice, formatTokens, requestCost, requestsPerMonth, usageOf } from "../weighted";
+import { creditsIncluded, fieldPrice, formatTokens, requestCost, requestsPerMonth, usageColorClass, usageOf } from "../weighted";
 import { actualPaid } from "../fees";
 import { CapabilityBadges, CapabilityFilter, capsOf, type CapId } from "../capabilities";
 import { setupDragScroll } from "../dragscroll";
@@ -163,14 +163,8 @@ export default function PriceTable(props: PriceTableProps) {
     ((m.input ?? 0) === 0 && (m.output ?? 0) === 0 && (m.cachedRead ?? 0) === 0);
 
   const allowanceClass = (usage: number): string => {
-    if (usage < paid()) return "badge-error";
-    const claim = creditsIncluded(props.plan);
-    if (claim === null || claim === 0) return "badge-success";
-    const share = usage / claim;
-    if (share <= 0.25 + 1e-6) return "bg-error/20 text-error border border-error";
-    if (share < 1 - 1e-6) return "badge-warning";
-    if (share <= 1 + 1e-6) return "bg-success/20 text-success border border-success";
-    return "badge-success";
+    const color = usageColorClass(usage, props.plan);
+    return color;
   };
 
   const allowanceTip = (usage: number): string => {

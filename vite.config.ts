@@ -16,6 +16,10 @@ function stampFetchedAt(raw: string): string {
 export default defineConfig({
   // Absolute Basis: Assets funktionieren damit auch unter /de/… und /impressum/…
   base: "/",
+  server: {
+    // Tailnet-only preview hosts (e.g. code-dev.<tailnet>.ts.net).
+    allowedHosts: [".ts.net"],
+  },
   plugins: [
     // `ssr: true` → hydratationsfähiger Client-Code (`generate: "dom",
     // hydratable: true`); ohne das findet `hydrate()` die Server-Marker nicht.

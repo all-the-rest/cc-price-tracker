@@ -1,6 +1,6 @@
 import type { Lang } from "./i18n";
 
-export type RouteId = "home" | "impressum" | "datenschutz";
+export type RouteId = "home" | "allowances" | "impressum" | "datenschutz";
 
 export interface RouteDef {
   id: RouteId;
@@ -20,6 +20,13 @@ export const ROUTES: readonly RouteDef[] = [
     base: "/",
     path: (l) => (l === "de" ? "/de/" : "/"),
     outFile: (l) => (l === "de" ? "de/index.html" : "index.html"),
+    indexable: true,
+  },
+  {
+    id: "allowances",
+    base: "/allowances",
+    path: (l) => (l === "de" ? "/de/allowances/" : "/allowances/"),
+    outFile: (l) => (l === "de" ? "de/allowances/index.html" : "allowances/index.html"),
     indexable: true,
   },
   {

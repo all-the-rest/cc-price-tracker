@@ -45,6 +45,7 @@ export const SECTION_ANCHORS = {
   changelog: "changelog",
   impressum: "impressum",
   datenschutz: "datenschutz",
+  allowances: "allowances",
   apiBanner: "api-banner",
 } as const;
 
@@ -52,7 +53,7 @@ export type SectionAnchor = (typeof SECTION_ANCHORS)[keyof typeof SECTION_ANCHOR
 
 /**
  * Stabile ID eines Plan-Tabs, abgeleitet aus der sprachneutralen Plan-ID
- * (`go`, `goat`, `pro`, `max10`, `max20`) — identisch in EN und DE.
+ * (`go`, `goat`, `pro`, `max10`, `max20`, `team-pro`) — identisch in EN und DE.
  */
 export function planTabAnchor(planId: string): string {
   return `plan-${slugifyEn(planId)}`;

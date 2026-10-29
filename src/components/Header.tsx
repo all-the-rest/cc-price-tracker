@@ -9,6 +9,7 @@ interface HeaderProps {
   switchLang: (l: Lang, e: MouseEvent) => void;
   /** Kanonischer Home-Pfad der aktiven Sprache. */
   homeHref: string;
+  allowancesHref: string;
   dark: boolean;
   setDark: (v: boolean) => void;
   onReset: () => void;
@@ -16,10 +17,10 @@ interface HeaderProps {
 }
 
 export default function Header(props: HeaderProps) {
-  // Single source of truth für die Cross-Links — einmal definiert und sowohl
-  // in der Desktop-Zeile (≥ md) als auch im Mobile-Burger (< md) gerendert.
+  // Single source of truth for internal navigation and the external comparison.
   const crossLinks = () => [
-    { href: "https://ai-10-usd.all-the.rest/", label: props.t.sourceAi10, badge: "comparison" },
+    { href: props.allowancesHref, label: props.t.navAllowances, internal: true },
+    { href: "https://ai-10-usd.all-the.rest/", label: props.t.sourceAi10, internal: false },
   ];
 
   return (
@@ -46,12 +47,19 @@ export default function Header(props: HeaderProps) {
               <path d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </div>
-          <ul tabindex="0" class="menu dropdown-content z-20 mt-2 w-60 max-w-[90vw] rounded-box bg-base-100 p-2 shadow-lg">
+          <ul tabindex="0" class="menu dropdown-content z-20 mt-2 w-64 max-w-[90vw] rounded-box bg-base-100 p-2 shadow-lg">
             <For each={crossLinks()}>
               {(link) => (
                 <li>
-                  <a href={link.href} target="_blank" rel="noreferrer">
-                    {link.label} <span aria-hidden="true">↗</span>
+                  <a
+                    class={link.internal
+                      ? "btn btn-primary btn-sm w-full justify-start whitespace-nowrap text-primary-content"
+                      : "link link-hover inline-flex items-center gap-1 whitespace-nowrap"}
+                    href={link.href}
+                    target={link.internal ? undefined : "_blank"}
+                    rel={link.internal ? undefined : "noreferrer"}
+                  >
+                    {link.label} {!link.internal && <span aria-hidden="true">↗</span>}
                   </a>
                 </li>
               )}
@@ -86,19 +94,20 @@ export default function Header(props: HeaderProps) {
         </a>
       </div>
       <div class="navbar-end gap-2 sm:gap-4">
-        {/* Desktop (≥ md): Cross-Links inline */}
-        <div class="hidden items-center gap-4 md:flex">
+        {/* Desktop (≥ md): internal route as primary action, external link distinct. */}
+        <div class="hidden items-center gap-3 md:flex">
           <For each={crossLinks()}>
             {(link) => (
               <a
-                class="link link-hover inline-flex items-center gap-1"
+                class={link.internal
+                  ? "btn btn-primary btn-sm whitespace-nowrap text-primary-content"
+                  : "link link-hover inline-flex items-center gap-1 whitespace-nowrap"}
                 href={link.href}
-                target="_blank"
-                rel="noreferrer"
+                target={link.internal ? undefined : "_blank"}
+                rel={link.internal ? undefined : "noreferrer"}
               >
                 {link.label}
-                <span class="badge badge-ghost badge-xs whitespace-nowrap">{link.badge}</span>
-                <span aria-hidden="true">↗</span>
+                {!link.internal && <span aria-hidden="true">↗</span>}
               </a>
             )}
           </For>

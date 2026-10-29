@@ -11,7 +11,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_DIR = join(ROOT, "tests", ".ssr");
 const FIELDS = ["input", "output", "cachedRead", "cachedWrite", "cost", "requests"];
 const BASES = ["list", "full", "paid"];
-const TAB_IDS = ["go", "goat", "pro", "max10", "max20"];
+const TAB_IDS = ["go", "goat", "pro", "max10", "max20", "team-pro"];
 
 let ssr;
 let data;

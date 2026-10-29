@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-26T23:57:57.355Z",
+  "fetchedAt": "2026-10-29T07:58:18.283Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -102,6 +102,23 @@
         "h5": 90,
         "weekly": 180,
         "monthly": 300
+      },
+      "defaultAllowance": null,
+      "modelsIncluded": "Open-source + premium models",
+      "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits"
+    },
+    {
+      "id": "team-pro",
+      "name": "Team Pro",
+      "priceMonthly": 40,
+      "creditsMonthly": 40,
+      "requestEstimate": 35000,
+      "apiAccess": true,
+      "apiAccessSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
+      "limits": {
+        "h5": 12,
+        "weekly": 24,
+        "monthly": 40
       },
       "defaultAllowance": null,
       "modelsIncluded": "Open-source + premium models",

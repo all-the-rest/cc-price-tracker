@@ -218,9 +218,9 @@ test("planApiAccessFromHtml: nur die Go-Seite hat keinen API-Zugang", () => {
   assert.equal(planApiAccessFromHtml(""), true);
 });
 
-test("parsePlanTables: 6 Individual-Pläne mit Preisen/Credits/Requests/Limits", () => {
-  assert.equal(plans.length, 6);
-  assert.deepEqual(plans.map((p) => p.id), ["go", "goat", "pro", "provider", "max10", "max20"]);
+test("parsePlanTables: Individual-Pläne plus Team Pro mit Preisen/Credits/Requests/Limits", () => {
+  assert.equal(plans.length, 7);
+  assert.deepEqual(plans.map((p) => p.id), ["go", "goat", "pro", "provider", "max10", "max20", "team-pro"]);
 
   const go = plans.find((p) => p.id === "go");
   assert.equal(go.name, "Go");
@@ -269,6 +269,15 @@ test("parsePlanTables: 6 Individual-Pläne mit Preisen/Credits/Requests/Limits",
   assert.equal(max20.requestEstimate, 370000);
   assert.equal(max20.limits.h5, 90);
   assert.equal(max20.limits.weekly, 180);
+
+  const team = plans.find((p) => p.id === "team-pro");
+  assert.equal(team.name, "Team Pro");
+  assert.equal(team.priceMonthly, 40);
+  assert.equal(team.creditsMonthly, 40);
+  assert.equal(team.requestEstimate, 35000);
+  assert.equal(team.limits.h5, 12);
+  assert.equal(team.limits.weekly, 24);
+  assert.equal(team.defaultAllowance, null);
 });
 
 test("validatePlanBaselines: bekannte Pläne passieren, neuer Plan ohne scrapebare Baseline schlägt fehl", () => {
@@ -279,6 +288,7 @@ test("validatePlanBaselines: bekannte Pläne passieren, neuer Plan ohne scrapeba
     provider: null,
     max10: { creditsIncluded: 150, advertisedPrice: 100 },
     max20: { creditsIncluded: 300, advertisedPrice: 200 },
+    "team-pro": { creditsIncluded: 40, advertisedPrice: 40 },
   };
   assert.deepEqual(validatePlanBaselines(plans, baselines), plans);
 

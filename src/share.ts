@@ -335,7 +335,7 @@ export function shareToParams(c: ShareConfig, lang?: ShareLang): URLSearchParams
   return p;
 }
 
-const PLAN_IDS = ["go", "goat", "pro", "provider", "max10", "max20"] as const;
+const PLAN_IDS = ["go", "goat", "pro", "provider", "max10", "max20", "team-pro"] as const;
 
 /** Parse share-link params; returns null when no sh_* param is present. Old sh_metric values are ignored (requests only). Legacy sh_n is tolerated but ignored — the TOP-X count is automatic per preset (landscape Top 5, portrait Top 8). */
 export function shareFromParams(p: URLSearchParams): ShareConfig | null {

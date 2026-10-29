@@ -22,6 +22,18 @@ export function usageOf(m: Model, plan: Plan): number {
   return plan.creditsMonthly ?? 0;
 }
 
+/** Semantic value scale shared by allowance badges and comparison bars. */
+export function usageColorClass(usage: number, plan: Plan): string {
+  if (usage < actualPaid(plan)) return "badge-error";
+  const claim = creditsIncluded(plan);
+  if (claim === null || claim === 0) return "bg-success";
+  const share = usage / claim;
+  if (share <= 0.25 + 1e-6) return "bg-error/20 text-error border border-error";
+  if (share < 1 - 1e-6) return "badge-warning";
+  if (share <= 1 + 1e-6) return "bg-success/20 text-success border border-success";
+  return "badge-success";
+}
+
 /** Credits claimed by the plan, or null for an unlimited plan. */
 export function creditsIncluded(plan: Plan): number | null {
   return PLAN_BASELINES[plan.id]?.creditsIncluded ?? plan.creditsMonthly ?? null;

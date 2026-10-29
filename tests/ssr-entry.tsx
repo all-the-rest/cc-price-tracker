@@ -1,14 +1,17 @@
 import { renderToString } from "solid-js/web";
 import PriceTable from "../src/components/PriceTable";
 import Changelog from "../src/components/Changelog";
+import AllowanceComparisonPage from "../src/pages/AllowanceComparisonPage";
 import type { Basis, Model, Plan, PeakRules, HolidayCalendars, ChangelogEntry } from "../src/types";
 import type { SortField } from "../src/sort";
 import { i18n, type Lang } from "../src/i18n";
 
 export { fieldPrice, requestCost, requestsPerMonth } from "../src/weighted";
+export { usageOf } from "../src/weighted";
 export { actualPaid, processingFee } from "../src/fees";
 export { modelOnPlan } from "../src/util";
 export { TAB_PLAN_IDS } from "../src/plans";
+export { shareFromParams, shareToParams } from "../src/share";
 
 export interface RenderOptions {
   basis: Basis;
@@ -47,4 +50,15 @@ export function renderPriceTable(models: Model[], plan: Plan, opts: RenderOption
 /** Rendert die echte Changelog-Komponente serverseitig (für Zeit/Anker-Tests). */
 export function renderChangelog(entries: ChangelogEntry[], lang: Lang = "en"): string {
   return renderToString(() => <Changelog entries={entries} t={i18n[lang]} lang={lang} />);
+}
+
+export function renderAllowancePage(lang: Lang, models: Model[], plans: Plan[], planId: Plan["id"]): string {
+  return renderToString(() => <AllowanceComparisonPage
+    models={models}
+    plans={plans}
+    planId={planId}
+    setPlanId={() => {}}
+    lang={lang}
+    t={i18n[lang]}
+  />);
 }

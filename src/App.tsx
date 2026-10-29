@@ -20,6 +20,7 @@ import Changelog from "./components/Changelog";
 import ShareDialog from "./components/ShareDialog";
 import Legal from "./components/Legal";
 import LegalPage from "./pages/LegalPage";
+import AllowanceComparisonPage from "./pages/AllowanceComparisonPage";
 import Footer from "./components/Footer";
 import { modelOnPlan } from "./util";
 import dataJson from "../data/latest.json";
@@ -140,6 +141,7 @@ function AppShell(props: { ssrLang?: Lang }) {
   const [lang, setLang] = createSignal<Lang>(props.ssrLang ?? pathLang());
   const [dark, _setDark] = createSignal<boolean>(false);
   const [planId, setPlanId] = createSignal<PlanId>("goat");
+  const [allowancePlanId, setAllowancePlanId] = createSignal<PlanId>("goat");
   const [basis, setBasis] = createSignal<Basis>(defaultBasis);
   const [sort, setSort] = createSignal<SortState>({ field: "requests", dir: -1 });
   const [caps, setCaps] = createSignal<CapId[]>([]);
@@ -178,6 +180,8 @@ function AppShell(props: { ssrLang?: Lang }) {
     setLang(targetLang);
     _setDark(resolveInitialDark(p.theme, readStoredTheme()));
     if (p.plan) setPlanId(p.plan);
+    const allowancePlan = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "").get("allowancePlan");
+    if (isTabPlan(allowancePlan)) setAllowancePlanId(allowancePlan);
     if (p.basis) setBasis(p.basis);
     if (p.sort) setSort(p.sort);
     if (p.cap) setCaps(p.cap);
@@ -232,6 +236,8 @@ function AppShell(props: { ssrLang?: Lang }) {
     if (!ready() || typeof window === "undefined") return;
     void router.path(); // bei Pfadwechsel (Sprachpräfix) erneut schreiben
     const p = new URLSearchParams(window.location.search);
+    if (allowancePlanId() === "goat") p.delete("allowancePlan");
+    else p.set("allowancePlan", allowancePlanId());
     if (planId() === "goat") p.delete("plan");
     else p.set("plan", planId());
     const s = sort();
@@ -253,6 +259,7 @@ function AppShell(props: { ssrLang?: Lang }) {
 
   const resetAll = () => {
     setPlanId("goat");
+    setAllowancePlanId("goat");
     setSort({ field: "cost", dir: 1 });
     setBasis(defaultBasis);
     setCaps([]);
@@ -283,6 +290,7 @@ function AppShell(props: { ssrLang?: Lang }) {
         langHref={(l) => routePath(route(), l)}
         switchLang={switchLang}
         homeHref={routePath("home", lang())}
+        allowancesHref={routePath("allowances", lang())}
         dark={dark()}
         setDark={setDark}
         onReset={resetAll}
@@ -295,6 +303,9 @@ function AppShell(props: { ssrLang?: Lang }) {
           </Match>
           <Match when={route() === "datenschutz"}>
             <LegalPage kind="datenschutz" t={t()} />
+          </Match>
+          <Match when={route() === "allowances"}>
+            <AllowanceComparisonPage models={data.models} plans={data.plans} planId={allowancePlanId()} setPlanId={setAllowancePlanId} lang={lang()} t={t()} />
           </Match>
           <Match when={route() === "home"}>
             <Hero t={t()} plan={plan()} modelCount={planModels().length} lang={lang()} />

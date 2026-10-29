@@ -2,7 +2,7 @@ export type PriceField = "input" | "output" | "cachedRead" | "cachedWrite";
 
 export type Basis = "list" | "full" | "paid";
 
-export type PlanId = "go" | "goat" | "pro" | "provider" | "max10" | "max20";
+export type PlanId = "go" | "goat" | "pro" | "provider" | "max10" | "max20" | "team-pro";
 
 export type Modality = "text" | "audio" | "image" | "video" | "pdf";
 

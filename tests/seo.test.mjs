@@ -55,9 +55,24 @@ test("SEO: sitemap.xml ist valides XML und listet beide Sprachen", { skip: !exis
   const locs = $("url > loc").map((_, el) => $(el).text()).get();
   assert.ok(locs.includes("https://cc-pricing.all-the.rest/"), "EN-Startseite");
   assert.ok(locs.includes("https://cc-pricing.all-the.rest/de/"), "DE-Startseite");
+  assert.ok(locs.includes("https://cc-pricing.all-the.rest/allowances/"), "EN-Nutzungsvergleich");
+  assert.ok(locs.includes("https://cc-pricing.all-the.rest/de/allowances/"), "DE-Nutzungsvergleich");
   assert.match(xml, /<xhtml:link[^>]+hreflang="en"/, "hreflang en");
   assert.match(xml, /<xhtml:link[^>]+hreflang="de"/, "hreflang de");
   assert.match(xml, /<xhtml:link[^>]+hreflang="x-default"/, "hreflang x-default");
+});
+
+test("SEO: Nutzungsvergleich ist lokalisiert vorgerendert und indexierbar", { skip: !existsSync(join(DIST, "allowances", "index.html")) && MISSING }, () => {
+  for (const [file, lang, canonical] of [
+    [join(DIST, "allowances", "index.html"), "en", "https://cc-pricing.all-the.rest/allowances/"],
+    [join(DIST, "de", "allowances", "index.html"), "de", "https://cc-pricing.all-the.rest/de/allowances/"],
+  ]) {
+    const html = read(file);
+    assert.match(html, new RegExp(`<html lang="${lang}"`));
+    assert.match(html, new RegExp(`<link rel="canonical" href="${canonical.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`));
+    assert.match(html, /<meta name="robots" content="index,follow" \/>/);
+    assert.match(html, /<h1[^>]*>.*(?:Usage &amp; requests per model|Nutzung &amp; Requests je Modell)/s);
+  }
 });
 
 test("SEO: Sprachdateien mit html lang, Canonical und hreflang", { skip: !existsSync(join(DIST, "de", "index.html")) && MISSING }, () => {

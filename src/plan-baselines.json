@@ -4,5 +4,6 @@
   "pro": { "creditsIncluded": 110, "advertisedPrice": 20 },
   "provider": null,
   "max10": { "creditsIncluded": 150, "advertisedPrice": 100 },
-  "max20": { "creditsIncluded": 300, "advertisedPrice": 200 }
+  "max20": { "creditsIncluded": 300, "advertisedPrice": 200 },
+  "team-pro": { "creditsIncluded": 40, "advertisedPrice": 40 }
 }

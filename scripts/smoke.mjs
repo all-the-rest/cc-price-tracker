@@ -11,7 +11,7 @@ const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(SCRIPT_DIR, "..");
 const DIST = join(ROOT, "dist");
 const PORT = Number(process.env.SMOKE_PORT ?? 4173);
-const BASE = `http://localhost:${PORT}`;
+const BASE = `http://127.0.0.1:${PORT}`;
 
 let failures = 0;
 const fail = (msg) => {
@@ -38,7 +38,7 @@ async function main() {
   if (refs.length > 0) ok(`${new Set(refs).size} referenzierte Assets vorhanden`);
 
   // 3. Preview-Server starten und per HTTP prüfen.
-  const server = spawn(join(ROOT, "node_modules", ".bin", "vite"), ["preview", "--port", String(PORT), "--strictPort"], {
+  const server = spawn(join(ROOT, "node_modules", ".bin", "vite"), ["preview", "--host", "127.0.0.1", "--port", String(PORT), "--strictPort"], {
     cwd: ROOT,
     stdio: "ignore",
   });
@@ -91,6 +91,8 @@ async function main() {
       ["robots.txt", "Sitemap:", "robots.txt"],
       ["sitemap.xml", "<urlset", "sitemap.xml"],
       ["de/", '<html lang="de"', "de/"],
+      ["allowances/", "Usage &amp; requests per model", "allowances/"],
+      ["de/allowances/", "Nutzung &amp; Requests je Modell", "de/allowances/"],
     ]) {
       try {
         const res = await fetch(`${BASE}/${path}`);

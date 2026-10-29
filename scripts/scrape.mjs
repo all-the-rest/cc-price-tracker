@@ -38,6 +38,7 @@ const PLAN_NAMES = {
   "provider": "provider",
   "max 10×": "max10",
   "max 20×": "max20",
+  "team pro": "team-pro",
 };
 
 // Dokumentierte Regel für Modelle ohne eigenen Eintrag (pro Plan).
@@ -561,8 +562,27 @@ export function parsePlanTables($) {
   for (const cells of parseTableRows($, limitsTable)) {
     const id = PLAN_NAMES[cells[0].toLowerCase()];
     if (!id) continue;
-    limitsByPlan.set(id, { h5: parseUsd(cells[3]), weekly: parseUsd(cells[4]) });
+    const headers = $(limitsTable).find("thead th").map((_, th) => $(th).text().trim().toLowerCase()).get();
+    const at = (terms, fallback) => {
+      const i = headers.findIndex((h) => terms.some((term) => h.includes(term)));
+      return i >= 0 ? parseUsd(cells[i]) : (fallback === undefined ? null : parseUsd(cells[fallback]));
+    };
+    limitsByPlan.set(id, {
+      monthly: at(["monthly credits", "credits/mo", "credits"], -1),
+      h5: at(["5-hour limit", "5 hour limit"], 3),
+      weekly: at(["weekly limit"], 4),
+    });
   }
+
+  const teamRows = [];
+  $("main table").each((_, table) => {
+    const headers = $(table).find("thead th").map((__, th) => $(th).text().trim().toLowerCase()).get();
+    if (["price/mo", "included llm usage"].every((part) => headers.some((header) => header.includes(part)))) {
+      teamRows.push(...parseTableRows($, table));
+    }
+  });
+  const teamPro = teamRows.find((cells) => PLAN_NAMES[cells[0].toLowerCase()] === "team-pro");
+  const teamLimits = limitsByPlan.get("team-pro");
 
   const plans = [];
   for (const cells of parseTableRows($, plansTable)) {
@@ -585,9 +605,25 @@ export function parsePlanTables($) {
       sourceUrl: PRICING_URL,
     });
   }
-  if (plans.length < 6) {
+  if (teamPro) {
+    const creditsMonthly = teamLimits?.monthly ?? null;
+    plans.push({
+      id: "team-pro",
+      name: teamPro[0],
+      priceMonthly: parseUsd(teamPro[1]),
+      creditsMonthly,
+      requestEstimate: parseRequests(teamPro[2]),
+      apiAccess: null,
+      apiAccessSourceUrl: null,
+      limits: { h5: teamLimits?.h5 ?? null, weekly: teamLimits?.weekly ?? null, monthly: creditsMonthly },
+      defaultAllowance: null,
+      modelsIncluded: teamPro[3] ?? "",
+      sourceUrl: PRICING_URL,
+    });
+  }
+  if (plans.length < 7) {
     throw new ScrapeError(
-      `unerwartete Plan-Struktur: ${plans.length} Pläne statt 6 geparst (${plans.map((p) => p.id).join(", ")})`
+      `unerwartete Plan-Struktur: ${plans.length} Pläne statt 7 geparst (${plans.map((p) => p.id).join(", ")})`
     );
   }
   return plans;
@@ -660,6 +696,7 @@ async function fetchApiAccess() {
     }
   }
   result.provider = { apiAccess: true, sourceUrl: PRICING_URL };
+  result["team-pro"] = { apiAccess: true, sourceUrl: PRICING_URL };
   return result;
 }
 
@@ -1146,7 +1183,7 @@ const PlanLimitsSchema = z.object({
 });
 
 const PlanSchema = z.object({
-  id: z.enum(["go", "goat", "pro", "provider", "max10", "max20"]),
+  id: z.enum(["go", "goat", "pro", "provider", "max10", "max20", "team-pro"]),
   name: z.string().min(1),
   priceMonthly: z.number(),
   creditsMonthly: z.number().nullable(),
@@ -1230,7 +1267,7 @@ const SnapshotSchema = z
     plansSourceUrl: z.string().url(),
     capabilitiesSourceUrl: z.string().url(),
     sourceLang: z.literal("en"),
-    plans: z.array(PlanSchema).min(6),
+    plans: z.array(PlanSchema).min(7),
     models: z.array(ModelSchema).min(1),
     freeModels: z.array(FreeModelSchema),
     peakRules: z.record(z.string().min(1), PeakRuleSchema).refine((r) => Object.keys(r).length > 0, {
