@@ -285,3 +285,15 @@ git log --oneline origin/main..ai-10-usd/main --no-decorate | head
 Der Flow steht im Skill `build-verify` (Pfade siehe Verifikation): Orchestrator delegiert,
 Implementierung und Verifikation laufen in **getrennten** Subagenten, ein Commit pro Task,
 Verifikationsläufe **sequenziell**. Rollen: `explore` (Recherche), `general` (Implementierung). Screenshots analysiert der Agent selbst — das konfigurierte Modell ist vision-fähig, ein Vision-Subagent existiert nicht.
+
+## Gates
+
+Regeln dieser Ebene. Was nur ein Verzeichnis betrifft, gehört in die
+`AGENTS.md` **dieses** Verzeichnisses — sie wird geladen, wenn eine Datei
+daraus gelesen wird.
+
+Ein Plan in `docs/plans/` beginnt mit `**Status:** Plan | In Arbeit | Done |
+Empfehlung, nicht implementiert`.
+
+Die kanonischen Agent-Regeln laufen über `ratchet` (Preset `agent-rules`):
+`ratchet check` vor jedem Commit und in der CI.
