@@ -24,10 +24,10 @@
     "solid-js": "^1.9.17"
   },
   "devDependencies": {
-    "@iconify-json/material-symbols": "^1.2.95",
+    "@iconify-json/material-symbols": "^1.2.97",
     "@iconify/tailwind4": "^1.2.3",
-    "@opencode-ai/models": "^0.0.104",
-    "@playwright/test": "1.64.0",
+    "@opencode-ai/models": "^0.0.118",
+    "@playwright/test": "1.64.1",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.1.0",
     "@types/node": "^26.6.5",
@@ -35,7 +35,7 @@
     "daisyui": "^5.7.50",
     "tailwindcss": "^4.1.0",
     "typescript": "^7.0.2",
-    "vite": "^8.3.4",
+    "vite": "^8.3.5",
     "vite-plugin-solid": "^2.11.0",
     "zod": "^4.6.7"
   }
