@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-03T19:05:55.158Z",
+  "fetchedAt": "2026-11-04T00:44:28.629Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -218,6 +218,60 @@
       "capabilities": {
         "input": [
           "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Free while the preview lasts. Up to 1000 requests a day. Not routed under ZDR."
+    },
+    {
+      "id": "crouton-alpha",
+      "name": "Crouton Alpha",
+      "provider": null,
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1048576,
+      "input": 0,
+      "output": 0,
+      "cachedRead": 0,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": {
+        "id": "crouton-alpha-free",
+        "discountPercent": 100,
+        "free": true,
+        "expires": null,
+        "endsWhen": "while the stealth preview lasts",
+        "revertNote": null
+      },
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": null,
+        "pro": null
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image"
         ],
         "output": [
           "text"
@@ -5176,6 +5230,23 @@
       "id": "glyph-cluster:free",
       "name": "Glyph Cluster",
       "availableFrom": "2026-10-08",
+      "until": null,
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": false,
+        "toolCall": false
+      },
+      "note": "Free while the preview lasts. Up to 1000 requests a day. Not routed under ZDR."
+    },
+    {
+      "id": "crouton-alpha",
+      "name": "Crouton Alpha",
+      "availableFrom": "2026-11-04",
       "until": null,
       "capabilities": {
         "input": [
