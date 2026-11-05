@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-04T00:44:28.629Z",
+  "fetchedAt": "2026-11-05T00:57:57.383Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -126,59 +126,6 @@
     }
   ],
   "models": [
-    {
-      "id": "laguna-s-2.1-free",
-      "name": "Laguna S 2.1",
-      "provider": null,
-      "category": "opensource",
-      "tier": null,
-      "contextWindow": 256000,
-      "input": 0,
-      "output": 0,
-      "cachedRead": 0,
-      "cachedWrite": null,
-      "listInput": null,
-      "listOutput": null,
-      "listCachedRead": null,
-      "listCachedWrite": null,
-      "deal": {
-        "id": "laguna-s-2.1-free",
-        "discountPercent": 100,
-        "free": true,
-        "expires": null,
-        "endsWhen": "while capacity lasts",
-        "revertNote": null
-      },
-      "deprecated": false,
-      "availability": {
-        "go": true,
-        "goat": true,
-        "pro": true,
-        "provider": true,
-        "max": true,
-        "team": true
-      },
-      "allowances": {
-        "goat": null,
-        "pro": null
-      },
-      "capabilities": {
-        "input": [
-          "text"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": true,
-        "toolCall": true
-      },
-      "pattern": {
-        "input": 800,
-        "cachedRead": 50000,
-        "output": 162
-      },
-      "tip": "Free while capacity lasts. Up to 1000 requests a day."
-    },
     {
       "id": "glyph-cluster:free",
       "name": "Glyph Cluster",
@@ -5209,23 +5156,6 @@
     }
   ],
   "freeModels": [
-    {
-      "id": "laguna-s-2.1-free",
-      "name": "Laguna S 2.1",
-      "availableFrom": "2026-08-15",
-      "until": null,
-      "capabilities": {
-        "input": [
-          "text"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": true,
-        "toolCall": true
-      },
-      "note": "Free while capacity lasts. Up to 1000 requests a day."
-    },
     {
       "id": "glyph-cluster:free",
       "name": "Glyph Cluster",
