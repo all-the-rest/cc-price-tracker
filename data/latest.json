@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-09T19:05:12.265Z",
+  "fetchedAt": "2026-11-10T02:49:55.979Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -2783,6 +2783,54 @@
       "tip": null
     },
     {
+      "id": "claude-fable-5-2",
+      "name": "Claude Fable 5.2",
+      "provider": "Anthropic",
+      "category": "premium",
+      "tier": null,
+      "contextWindow": 1000000,
+      "input": 8,
+      "output": 40,
+      "cachedRead": 0.2,
+      "cachedWrite": 10,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": false,
+        "pro": false,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 20
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
       "id": "claude-fable-5-1",
       "name": "Claude Fable 5.1",
       "provider": "Anthropic",
@@ -4311,6 +4359,56 @@
       "allowances": {
         "goat": 20,
         "pro": 20
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "video",
+          "pdf",
+          "audio"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "muse-ember",
+      "name": "Muse Ember",
+      "provider": "Meta",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1048576,
+      "input": 0.1,
+      "output": 0.5,
+      "cachedRead": 0.004,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 30
       },
       "capabilities": {
         "input": [
