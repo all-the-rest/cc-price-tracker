@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-10T02:49:55.979Z",
+  "fetchedAt": "2026-11-11T00:44:56.055Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -165,60 +165,6 @@
       "capabilities": {
         "input": [
           "text"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": true,
-        "toolCall": false
-      },
-      "pattern": {
-        "input": 800,
-        "cachedRead": 50000,
-        "output": 162
-      },
-      "tip": "Free while the preview lasts. Up to 1000 requests a day. Not routed under ZDR."
-    },
-    {
-      "id": "crouton-alpha",
-      "name": "Crouton Alpha",
-      "provider": null,
-      "category": "opensource",
-      "tier": null,
-      "contextWindow": 1048576,
-      "input": 0,
-      "output": 0,
-      "cachedRead": 0,
-      "cachedWrite": null,
-      "listInput": null,
-      "listOutput": null,
-      "listCachedRead": null,
-      "listCachedWrite": null,
-      "deal": {
-        "id": "crouton-alpha-free",
-        "discountPercent": 100,
-        "free": true,
-        "expires": null,
-        "endsWhen": "while the stealth preview lasts",
-        "revertNote": null
-      },
-      "deprecated": false,
-      "availability": {
-        "go": true,
-        "goat": true,
-        "pro": true,
-        "provider": true,
-        "max": true,
-        "team": true
-      },
-      "allowances": {
-        "goat": null,
-        "pro": null
-      },
-      "capabilities": {
-        "input": [
-          "text",
-          "image"
         ],
         "output": [
           "text"
@@ -3935,6 +3881,56 @@
       "tip": null
     },
     {
+      "id": "gemini-4-carbon",
+      "name": "Gemini 4 Carbon",
+      "provider": "Google",
+      "category": "premium",
+      "tier": null,
+      "contextWindow": 1000000,
+      "input": 2,
+      "output": 10,
+      "cachedRead": 0.1,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": false,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 30
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "video",
+          "audio",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
       "id": "gemini-4-argon",
       "name": "Gemini 4 Argon",
       "provider": "Google",
@@ -5109,23 +5105,6 @@
       "id": "glyph-cluster:free",
       "name": "Glyph Cluster",
       "availableFrom": "2026-10-08",
-      "until": null,
-      "capabilities": {
-        "input": [
-          "text"
-        ],
-        "output": [
-          "text"
-        ],
-        "reasoning": false,
-        "toolCall": false
-      },
-      "note": "Free while the preview lasts. Up to 1000 requests a day. Not routed under ZDR."
-    },
-    {
-      "id": "crouton-alpha",
-      "name": "Crouton Alpha",
-      "availableFrom": "2026-11-04",
       "until": null,
       "capabilities": {
         "input": [
