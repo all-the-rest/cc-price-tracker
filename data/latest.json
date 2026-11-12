@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-11T00:44:56.055Z",
+  "fetchedAt": "2026-11-12T17:10:20.595Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -178,6 +178,60 @@
         "output": 162
       },
       "tip": "Free while the preview lasts. Up to 1000 requests a day. Not routed under ZDR."
+    },
+    {
+      "id": "inkling-2-small:free",
+      "name": "Inkling 2 Small",
+      "provider": null,
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1048576,
+      "input": 0,
+      "output": 0,
+      "cachedRead": 0,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": {
+        "id": "inkling-2-small-free",
+        "discountPercent": 100,
+        "free": true,
+        "expires": null,
+        "endsWhen": "while the free tier lasts",
+        "revertNote": null
+      },
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": null,
+        "pro": null
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Free while the free tier lasts. Up to 200 requests a day. Not routed under ZDR."
     },
     {
       "id": "tencent/hy4-preview",
@@ -5117,6 +5171,24 @@
         "toolCall": false
       },
       "note": "Free while the preview lasts. Up to 1000 requests a day. Not routed under ZDR."
+    },
+    {
+      "id": "inkling-2-small:free",
+      "name": "Inkling 2 Small",
+      "availableFrom": "2026-11-12",
+      "until": null,
+      "capabilities": {
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "note": "Free while the free tier lasts. Up to 200 requests a day. Not routed under ZDR."
     },
     {
       "id": "typesafe/jev",
