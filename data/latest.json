@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-13T01:18:05.984Z",
+  "fetchedAt": "2026-11-15T00:00:30.726Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -1171,7 +1171,7 @@
           "text"
         ],
         "reasoning": true,
-        "toolCall": false
+        "toolCall": true
       },
       "pattern": {
         "input": 800,
