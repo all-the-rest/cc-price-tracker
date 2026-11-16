@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-15T00:00:30.726Z",
+  "fetchedAt": "2026-11-16T07:09:09.851Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -1729,6 +1729,55 @@
         ],
         "reasoning": true,
         "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
+    },
+    {
+      "id": "qwen-4-max",
+      "name": "Qwen 4 Max",
+      "provider": "Alibaba",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1000000,
+      "input": 1.5,
+      "output": 4.5,
+      "cachedRead": 0.075,
+      "cachedWrite": 1.875,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 15,
+        "pro": 25
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "video",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
       },
       "pattern": {
         "input": 800,
