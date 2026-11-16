@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-16T07:09:09.851Z",
+  "fetchedAt": "2026-11-16T09:07:48.255Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -232,6 +232,53 @@
         "output": 162
       },
       "tip": "Free while the free tier lasts. Up to 200 requests a day. Not routed under ZDR."
+    },
+    {
+      "id": "tencent/hy4-flash",
+      "name": "Tencent Hy4 Flash",
+      "provider": "Tencent",
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 1024000,
+      "input": 0.07,
+      "output": 0.281,
+      "cachedRead": 0.003,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 15,
+        "pro": 25
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": false
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": null
     },
     {
       "id": "tencent/hy4-preview",
