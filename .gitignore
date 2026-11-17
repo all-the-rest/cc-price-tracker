@@ -5,7 +5,6 @@ dist/
 tests/.ssr/
 tests/.ssr-allowance/
 .ssr-build/
-.idea/
 .run/
 test-results/
 playwright-report/
