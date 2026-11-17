@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-16T09:07:48.255Z",
+  "fetchedAt": "2026-11-17T03:01:37.655Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -232,6 +232,59 @@
         "output": 162
       },
       "tip": "Free while the free tier lasts. Up to 200 requests a day. Not routed under ZDR."
+    },
+    {
+      "id": "flint-v1.0:free",
+      "name": "Flint",
+      "provider": null,
+      "category": "opensource",
+      "tier": null,
+      "contextWindow": 262144,
+      "input": 0,
+      "output": 0,
+      "cachedRead": 0,
+      "cachedWrite": null,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": {
+        "id": "flint-free",
+        "discountPercent": 100,
+        "free": true,
+        "expires": null,
+        "endsWhen": "while the free tier lasts",
+        "revertNote": null
+      },
+      "deprecated": false,
+      "availability": {
+        "go": true,
+        "goat": true,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": null,
+        "pro": null
+      },
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Free while the free tier lasts. Up to 1000 requests a day. Not routed under ZDR."
     },
     {
       "id": "tencent/hy4-flash",
@@ -5285,6 +5338,23 @@
         "toolCall": true
       },
       "note": "Free while the free tier lasts. Up to 200 requests a day. Not routed under ZDR."
+    },
+    {
+      "id": "flint-v1.0:free",
+      "name": "Flint",
+      "availableFrom": "2026-11-17",
+      "until": null,
+      "capabilities": {
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "note": "Free while the free tier lasts. Up to 1000 requests a day. Not routed under ZDR."
     },
     {
       "id": "typesafe/jev",
