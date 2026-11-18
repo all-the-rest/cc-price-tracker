@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-17T19:10:03.360Z",
+  "fetchedAt": "2026-11-18T02:29:45.056Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -3601,6 +3601,102 @@
         "output": 162
       },
       "tip": "Rates shown are the ≤ 272K tokens band; > 272K tokens bills $20.00 input / $75.00 output / $2.00 cache read / $25.00 cache write (per 1M tokens)."
+    },
+    {
+      "id": "gpt-6.2-astra",
+      "name": "GPT-6.2 Astra",
+      "provider": "OpenAI",
+      "category": "premium",
+      "tier": "Standard / Long context",
+      "contextWindow": 1050000,
+      "input": 8,
+      "output": 40,
+      "cachedRead": 0.4,
+      "cachedWrite": 10,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": false,
+        "pro": false,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 20
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Rates shown are the ≤ 272K tokens band; > 272K tokens bills $16.00 input / $60.00 output / $0.80 cache read / $20.00 cache write (per 1M tokens)."
+    },
+    {
+      "id": "gpt-6.2-sol",
+      "name": "GPT-6.2 Sol",
+      "provider": "OpenAI",
+      "category": "premium",
+      "tier": "Standard / Long context",
+      "contextWindow": 1050000,
+      "input": 2,
+      "output": 10,
+      "cachedRead": 0.1,
+      "cachedWrite": 2.5,
+      "listInput": null,
+      "listOutput": null,
+      "listCachedRead": null,
+      "listCachedWrite": null,
+      "deal": null,
+      "deprecated": false,
+      "availability": {
+        "go": false,
+        "goat": false,
+        "pro": true,
+        "provider": true,
+        "max": true,
+        "team": true
+      },
+      "allowances": {
+        "goat": 20,
+        "pro": 20
+      },
+      "capabilities": {
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ],
+        "reasoning": true,
+        "toolCall": true
+      },
+      "pattern": {
+        "input": 800,
+        "cachedRead": 50000,
+        "output": 162
+      },
+      "tip": "Rates shown are the ≤ 272K tokens band; > 272K tokens bills $4.00 input / $15.00 output / $0.20 cache read / $5.00 cache write (per 1M tokens)."
     },
     {
       "id": "gpt-6.1-sol",
