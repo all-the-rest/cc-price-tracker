@@ -13,14 +13,14 @@ importers:
         version: 1.9.19
     devDependencies:
       '@iconify-json/material-symbols':
-        specifier: ^1.2.100
-        version: 1.2.100
+        specifier: ^1.2.101
+        version: 1.2.101
       '@iconify/tailwind4':
         specifier: ^1.2.3
         version: 1.2.3(tailwindcss@4.3.5)
       '@opencode-ai/models':
-        specifier: ^0.0.137
-        version: 0.0.137
+        specifier: ^0.0.139
+        version: 0.0.139
       '@playwright/test':
         specifier: 1.65.1
         version: 1.65.1
@@ -153,8 +153,8 @@ packages:
   '@emnapi/wasi-threads@2.2.0':
     resolution: {integrity: sha512-JP7OYH38Q7+pyTAe14raZHLQIK7BDKbdwji+Xi3pcd/6QkJYQH3SX4wu6EplGrGJWRepoNzedfm0G3B9Z4e9Rw==}
 
-  '@iconify-json/material-symbols@1.2.100':
-    resolution: {integrity: sha512-lo3JulvaCnCCYVZHfld4kQ2YNkN55xCtLGplVgETx0n6nRR8IknMphknSqIpFhT/4J3upZJmLBTQT6cyQn8ThQ==}
+  '@iconify-json/material-symbols@1.2.101':
+    resolution: {integrity: sha512-k2cOWfrsLM9TpCr34UZ34toSotApzFDxh+DX7tVk4EkqO2XhoiuDPs1oAbiZSJQQ3JHjhkS9kBlMFa36yYda0Q==}
 
   '@iconify/tailwind4@1.2.3':
     resolution: {integrity: sha512-z8SKiMHRASJKF/IY//87MF88lcB7ulxh8vlhQXXLWsBkNtOh6ese9R41MyGpQeqXdRvQVt+/fX2glQtHFjQ+MA==}
@@ -193,8 +193,8 @@ packages:
       '@emnapi/core': ^1.7.1 || 2.0.0-beta.2
       '@emnapi/runtime': ^1.7.1 || 2.0.0-beta.2
 
-  '@opencode-ai/models@0.0.137':
-    resolution: {integrity: sha512-GBeTH9vQTXNK1xBC9L0zFabLFn5gPiIT1kH4mLIoneVP1ylWaNsrBd7uCvswgiaAR3+hU8No+NxPPrRSb5SySg==}
+  '@opencode-ai/models@0.0.139':
+    resolution: {integrity: sha512-iHJvaWXaSoNn08t0P9plumH9le2AvUmn9217uwiiswgXzVwiMUCWVJAPABW8sKnMvCA6Z7PU2EKs+YYYUQVdhA==}
     engines: {node: '>=18'}
     peerDependencies:
       effect: 4.0.0-beta.83
@@ -1249,7 +1249,7 @@ snapshots:
       tslib: 2.9.1
     optional: true
 
-  '@iconify-json/material-symbols@1.2.100':
+  '@iconify-json/material-symbols@1.2.101':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -1304,7 +1304,7 @@ snapshots:
       '@tybys/wasm-util': 0.10.5
     optional: true
 
-  '@opencode-ai/models@0.0.137': {}
+  '@opencode-ai/models@0.0.139': {}
 
   '@oxc-project/types@0.156.0': {}
 

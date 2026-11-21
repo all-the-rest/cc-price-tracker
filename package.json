@@ -24,9 +24,9 @@
     "solid-js": "^1.9.19"
   },
   "devDependencies": {
-    "@iconify-json/material-symbols": "^1.2.100",
+    "@iconify-json/material-symbols": "^1.2.101",
     "@iconify/tailwind4": "^1.2.3",
-    "@opencode-ai/models": "^0.0.137",
+    "@opencode-ai/models": "^0.0.139",
     "@playwright/test": "1.65.1",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.3.5",
