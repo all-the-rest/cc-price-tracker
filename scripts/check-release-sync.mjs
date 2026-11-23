@@ -1,31 +1,21 @@
 #!/usr/bin/env node
-import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { renderReleaseNotesForEntry } from "./release-notes.mjs";
+import { ApiUnavailableError, gh, releaseJson, withRetry } from "./gh-release.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-
-function gh(args) {
-  return execFileSync("gh", args, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
-}
 
 // Erkennung "unserer" Releases: Tag = Run-`id` (Zeitstempel) oder Vorschema-Datum.
 const OUR_TAG = /^(\d{4}-\d{2}-\d{2}(T\d{2}-\d{2}-\d{2}Z)?)$/;
 
-function releaseBody(tag) {
-  try {
-    return JSON.parse(gh(["release", "view", tag, "--json", "body"])).body;
-  } catch {
-    return null;
-  }
-}
-
-function main() {
+async function main() {
   const changelog = JSON.parse(readFileSync(join(ROOT, "CHANGELOG.json"), "utf8"));
   const entries = changelog?.entries ?? [];
   const errors = [];
+  let skipped = 0;
+  let apiDown = false; // erster ApiUnavailableError genügt — keine 92×3 Retry-Versuche
 
   const seenTags = new Set();
   for (const entry of entries) {
@@ -37,7 +27,26 @@ function main() {
     seenTags.add(tag);
     const notes = renderReleaseNotesForEntry(entry);
     if (notes === null) continue; // keine Änderungen → kein Release erwartet
-    const body = releaseBody(tag);
+    if (apiDown) {
+      skipped++;
+      continue;
+    }
+    let body;
+    try {
+      body = (await releaseJson(tag, "body"))?.body ?? null;
+    } catch (err) {
+      if (err instanceof ApiUnavailableError) {
+        if (!apiDown) {
+          console.warn(
+            `::warning::GitHub API unavailable for ${tag} (${err.reason}) — skipping this and all remaining entries`
+          );
+        }
+        apiDown = true;
+        skipped++;
+        continue;
+      }
+      throw err;
+    }
     if (body === null) {
       errors.push(`missing GitHub release for changelog entry ${tag}`);
       continue;
@@ -49,11 +58,26 @@ function main() {
 
   // Verwaiste Releases: Tag in unserem Format, aber kein passender Changelog-Eintrag.
   let releases = [];
-  try {
-    releases = JSON.parse(gh(["release", "list", "--json", "tagName", "--limit", "1000"]));
-  } catch {
-    console.error("could not list releases (gh auth?)");
-    process.exit(1);
+  if (apiDown) {
+    console.warn("::warning::GitHub API unavailable — skipping orphan check");
+  } else {
+    try {
+      releases = JSON.parse(
+        await withRetry("release list", () =>
+          gh(["release", "list", "--json", "tagName", "--limit", "1000"])
+        )
+      );
+    } catch (err) {
+      if (err instanceof ApiUnavailableError) {
+        console.warn(
+          `::warning::GitHub API unavailable while listing releases (${err.reason}) — skipping orphan check`
+        );
+      } else {
+        console.error("could not list releases (gh auth?)");
+        process.exitCode = 1;
+        return;
+      }
+    }
   }
   for (const r of releases) {
     const tag = r.tagName;
@@ -65,11 +89,18 @@ function main() {
   if (errors.length > 0) {
     console.error("changelog/release sync FAILED:");
     for (const e of errors) console.error(`  - ${e}`);
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
-  console.log(`changelog/release sync OK (${entries.length} entries checked)`);
+  const skippedNote = skipped > 0 ? `, ${skipped} skipped — GitHub API unavailable` : "";
+  console.log(`changelog/release sync OK (${entries.length} entries checked${skippedNote})`);
 }
 
 const isMain =
   process.argv[1] !== undefined && pathToFileURL(process.argv[1]).href === import.meta.url;
-if (isMain) main();
+if (isMain) {
+  main().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+  });
+}
