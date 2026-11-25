@@ -435760,7 +435760,7 @@
           "priceMonthly": 1,
           "creditsMonthly": 10,
           "requestEstimate": 9000,
-          "apiAccess": true,
+          "apiAccess": false,
           "apiAccessSourceUrl": "https://commandcode.ai/docs/plans/go",
           "limits": {
             "h5": 2,

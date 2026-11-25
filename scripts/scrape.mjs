@@ -722,10 +722,23 @@ export function validatePlanBaselines(plans, baselines = loadPlanBaselines()) {
 }
 
 /**
- * API-Zugang aus dem HTML einer Plan-Docs-Seite: enthält sie den Satz
- * "only plan without API access" (nur Go), gibt es keinen API-Zugang.
+ * API-Zugang aus dem HTML einer Plan-Docs-Seite: enthält sie eine Aussage,
+ * dass dieser Plan keinen Provider-API-Zugang hat (früher "only plan without
+ * API access", jetzt "Go does not include Provider API access"), gibt es
+ * keinen API-Zugang. Beide Formulierungen werden erkannt.
  */
-export const planApiAccessFromHtml = (html) => !html.includes("only plan without API access");
+const NO_API_ACCESS_PATTERNS = [
+  /only plan without API access/i,
+  /(?:does not|doesn['’]t) include (?:the )?Provider API access/i,
+];
+export const planApiAccessFromHtml = (html) => {
+  // "Provider API" ist im gerenderten HTML ein Link — die Aussage ist also
+  // über Tags hinweg getrennt. Erst Textmittelung, dann abgleichen.
+  const $ = cheerio.load(html);
+  const root = $("main").length ? $("main") : $("body");
+  const text = root.text().replace(/\s+/g, " ");
+  return !NO_API_ACCESS_PATTERNS.some((re) => re.test(text));
+};
 
 /**
  * Holt den API-Zugang je Plan von den Plan-Docs-Seiten. Ein HTTP-Fehler bricht

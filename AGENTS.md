@@ -44,7 +44,7 @@ pnpm typecheck        # nur tsc --noEmit
 |---|---|---|
 | `https://commandcode.ai/docs/resources/pricing-limits` | Model-Katalog `rows` (`rates`/`listRates`/`deal`/`availability`/`caps`/`contextWindow`/`deprecated`) + Billing-`models` (`planAllowanceUsd{goat,pro}`) | RSC-Flight-Payload (`self.__next_f.push([1,"…"])`, konkatenieren, `extractArray`) |
 | dito | Plan-Tabellen (Preis/Credits/Requests, 5h-/Weekly-Limits) | server-gerendertes HTML (cheerio), Tabellen über Header-Zeile |
-| `https://commandcode.ai/docs/plans/{go,goat,pro,max}` | API-Zugang je Plan | HTML, Regex `only plan without API access` |
+| `https://commandcode.ai/docs/plans/{go,goat,pro,max}` | API-Zugang je Plan | HTML-Text (Tags entfernt), Negativaussage `only plan without API access` oder `does not include Provider API access` |
 | `https://models.dev/api.json` | Capabilities (`modalities`, `reasoning`, `tool_call`) | `@opencode-ai/models` Client, Live→Snapshot-Fallback |
 
 ## Datenmodell (`data/latest.json`)
@@ -123,7 +123,7 @@ pnpm typecheck        # nur tsc --noEmit
 - **Baseline-Validierung:** `validatePlanBaselines` prüft je Plan, dass eine Baseline existiert (persistierte Config
   `src/plan-baselines.json` oder aus gescrapten Preisen ableitbar). Neuer Plan (nicht in Config) mit nicht scrapbarer
   Baseline (Credits oder Preis fehlen) → `process.exit(1)`.
-- **API-Zugang:** pro Plan-Seite `only plan without API access` → `apiAccess: false` (Go); sonst true. HTTP-Fehler → rot.
+- **API-Zugang:** pro Plan-Seite eine Negativaussage (`only plan without API access`, aktuell `Go does not include Provider API access`, auch mit typografischem Apostroph) → `apiAccess: false` (Go); sonst true. Da „Provider API" im HTML ein Link ist, wird erst der Textmittelung (Tags entfernt) abgeglichen. HTTP-Fehler → rot.
 - **Deals/Preise:** `rates` = Now, `listRates` = Was. `price_changed` bei Now-Änderung; Deal-/`listRates`-Änderungen
   ohne Now-Änderung erzeugen kein separates Event (kein `deal_changed`-Typ). Float-Toleranz 1e-9. `expires` auf
   `YYYY-MM-DD` normalisieren.

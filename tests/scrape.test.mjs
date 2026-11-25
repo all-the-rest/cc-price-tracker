@@ -211,6 +211,16 @@ test("buildFreeModels: übernimmt availableFrom aus dem vorherigen Lauf", () => 
 
 test("planApiAccessFromHtml: nur die Go-Seite hat keinen API-Zugang", () => {
   assert.equal(planApiAccessFromHtml(goHtml), false);
+  // Alte und neue Quellen-Formulierung (Stand 2026-11-25).
+  assert.equal(planApiAccessFromHtml("<p>Go is the only plan without API access</p>"), false);
+  assert.equal(planApiAccessFromHtml("<p>Go does not include Provider API access.</p>"), false);
+  assert.equal(planApiAccessFromHtml("<p>Go doesn't include the Provider API access.</p>"), false);
+  assert.equal(planApiAccessFromHtml("<p>Go doesn’t include Provider API access.</p>"), false);
+  // "Provider API" ist im echten HTML ein Link — der Satz ist über Tags getrennt.
+  assert.equal(
+    planApiAccessFromHtml('<main><p>Go does not include <a href="/docs/provider">Provider API</a> access.</p></main>'),
+    false
+  );
   assert.equal(
     planApiAccessFromHtml("<p>Every plan except the Go plan has API access</p>"),
     true
