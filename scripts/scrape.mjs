@@ -41,6 +41,11 @@ const PLAN_NAMES = {
   "team pro": "team-pro",
 };
 
+// Pläne mit inkludierter Nutzung — diese müssen in der Quell-Tabelle stehen.
+// Angebote ohne inkludierte Nutzung (z. B. Pay-as-you-go/Custom) werden als
+// `otherPlans` erfasst, aber nicht als Pläne getrackt.
+const TRACKED_PLAN_IDS = ["go", "goat", "pro", "max10", "max20", "team-pro"];
+
 // Dokumentierte Regel für Modelle ohne eigenen Eintrag (pro Plan).
 const DEFAULT_ALLOWANCES = { goat: 20, pro: 30 };
 
@@ -545,8 +550,9 @@ function parseTableRows($, table) {
 
 /**
  * Parst die server-gerenderten Plan-Tabellen (Preis/Credits/Requests +
- * 5h/Weekly-Limits) und liefert die 6 Individual-Pläne. `apiAccess`/`apiAccessSourceUrl`
- * werden erst später (Plan-Docs-Seiten) befüllt.
+ * 5h/Weekly-Limits) und liefert die 6 Pläne mit inkludierter Nutzung sowie
+ * `otherPlans` (Angebote ohne inkludierte Nutzung, z. B. Pay-as-you-go/Custom).
+ * `apiAccess`/`apiAccessSourceUrl` werden erst später (Plan-Docs-Seiten) befüllt.
  */
 export function parsePlanTables($) {
   const plansTable = findTable($, {
@@ -577,19 +583,40 @@ export function parsePlanTables($) {
   const teamRows = [];
   $("main table").each((_, table) => {
     const headers = $(table).find("thead th").map((__, th) => $(th).text().trim().toLowerCase()).get();
-    if (["price/mo", "included llm usage"].every((part) => headers.some((header) => header.includes(part)))) {
+    // Die Individual-Tabelle hat denselben Header plus "credits/mo" — nur die
+    // echte Team-Tabelle liefert teamRows (sonst würden Go/GOAT/... als
+    // `otherPlans` erfasst werden).
+    if (
+      ["price/mo", "included llm usage"].every((part) => headers.some((header) => header.includes(part))) &&
+      !headers.some((header) => header.includes("credits/mo"))
+    ) {
       teamRows.push(...parseTableRows($, table));
     }
   });
-  const teamPro = teamRows.find((cells) => PLAN_NAMES[cells[0].toLowerCase()] === "team-pro");
+  // Ausgeschlossene Angebote (Namen ohne inkludierte Nutzung) nach Name deduplizieren.
+  const otherByName = new Map();
+  const addOtherPlan = (name) => {
+    const trimmed = String(name).trim();
+    if (trimmed) otherByName.set(trimmed, { name: trimmed, sourceUrl: PRICING_URL });
+  };
+
   const teamLimits = limitsByPlan.get("team-pro");
 
   const plans = [];
   for (const cells of parseTableRows($, plansTable)) {
     const name = cells[0];
     const id = PLAN_NAMES[name.toLowerCase()];
-    if (!id) continue;
     const creditsMonthly = parseUsd(cells[2]);
+    // Ohne inkludierte Nutzung ist es kein Plan (z. B. Pay-as-you-go/Custom).
+    if (creditsMonthly === null) {
+      addOtherPlan(name);
+      continue;
+    }
+    // Ein neuer Plan MIT inkludierter Nutzung ist eine unbekannte Struktur —
+    // lieber rot als still im Footer versteckt.
+    if (!id) {
+      throw new ScrapeError(`neuer Plan mit inkludierter Nutzung: "${name}" — in PLAN_NAMES aufnehmen`);
+    }
     const limits = limitsByPlan.get(id) ?? { h5: null, weekly: null };
     plans.push({
       id,
@@ -605,28 +632,50 @@ export function parsePlanTables($) {
       sourceUrl: PRICING_URL,
     });
   }
+  let teamPro = null;
+  for (const cells of teamRows) {
+    const name = cells[0];
+    const id = PLAN_NAMES[name.toLowerCase()];
+    if (id === "team-pro") {
+      teamPro = cells;
+      continue;
+    }
+    // Enterprise & Konsorten: kein Track-Plan und keine Usage-Limits.
+    // Ein neuer Team-Plan MIT inkludierter Nutzung ist dagegen eine unbekannte
+    // Struktur und muss rot werden (nicht im Footer verschwinden).
+    if (id || parseRequests(cells[2]) !== null) {
+      throw new ScrapeError(`neuer Team-Plan mit inkludierter Nutzung: "${name}" — in PLAN_NAMES aufnehmen`);
+    }
+    addOtherPlan(name);
+  }
   if (teamPro) {
     const creditsMonthly = teamLimits?.monthly ?? null;
-    plans.push({
-      id: "team-pro",
-      name: teamPro[0],
-      priceMonthly: parseUsd(teamPro[1]),
-      creditsMonthly,
-      requestEstimate: parseRequests(teamPro[2]),
-      apiAccess: null,
-      apiAccessSourceUrl: null,
-      limits: { h5: teamLimits?.h5 ?? null, weekly: teamLimits?.weekly ?? null, monthly: creditsMonthly },
-      defaultAllowance: null,
-      modelsIncluded: teamPro[3] ?? "",
-      sourceUrl: PRICING_URL,
-    });
+    if (creditsMonthly === null) {
+      addOtherPlan(teamPro[0]);
+    } else {
+      plans.push({
+        id: "team-pro",
+        name: teamPro[0],
+        priceMonthly: parseUsd(teamPro[1]),
+        creditsMonthly,
+        requestEstimate: parseRequests(teamPro[2]),
+        apiAccess: null,
+        apiAccessSourceUrl: null,
+        limits: { h5: teamLimits?.h5 ?? null, weekly: teamLimits?.weekly ?? null, monthly: creditsMonthly },
+        defaultAllowance: null,
+        modelsIncluded: teamPro[3] ?? "",
+        sourceUrl: PRICING_URL,
+      });
+    }
   }
-  if (plans.length < 7) {
+  const presentIds = plans.map((p) => p.id);
+  const missing = TRACKED_PLAN_IDS.filter((id) => !presentIds.includes(id));
+  if (missing.length > 0) {
     throw new ScrapeError(
-      `unerwartete Plan-Struktur: ${plans.length} Pläne statt 7 geparst (${plans.map((p) => p.id).join(", ")})`
+      `unerwartete Plan-Struktur: fehlende Pläne: ${missing.join(", ")} (vorhanden: ${presentIds.join(", ")})`
     );
   }
-  return plans;
+  return { plans, otherPlans: [...otherByName.values()] };
 }
 
 /**
@@ -1196,6 +1245,12 @@ const PlanSchema = z.object({
   sourceUrl: z.string().url(),
 });
 
+// Ausgeschlossene Angebote ohne inkludierte Nutzung (nur Footer-Hinweis).
+const OtherPlanSchema = z.object({
+  name: z.string().min(1),
+  sourceUrl: z.string().url(),
+});
+
 const IsoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: "ungültiges ISO-Datum" });
 
 const DAY_VALUES = [1, 2, 3, 4, 5, 6, 7];
@@ -1267,7 +1322,13 @@ const SnapshotSchema = z
     plansSourceUrl: z.string().url(),
     capabilitiesSourceUrl: z.string().url(),
     sourceLang: z.literal("en"),
-    plans: z.array(PlanSchema).min(7),
+    plans: z
+      .array(PlanSchema)
+      .min(6)
+      .refine((plans) => TRACKED_PLAN_IDS.every((id) => plans.some((p) => p.id === id)), {
+        message: "plans: fehlende Track-Pläne",
+      }),
+    otherPlans: z.array(OtherPlanSchema).optional(),
     models: z.array(ModelSchema).min(1),
     freeModels: z.array(FreeModelSchema),
     peakRules: z.record(z.string().min(1), PeakRuleSchema).refine((r) => Object.keys(r).length > 0, {
@@ -1394,7 +1455,8 @@ async function main() {
     const { models, peakRules } = buildModels(rows, billingModels);
 
     const $ = cheerio.load(html);
-    const plans = validatePlanBaselines(parsePlanTables($));
+    const { plans: parsedPlans, otherPlans } = parsePlanTables($);
+    const plans = validatePlanBaselines(parsedPlans);
     const apiAccess = await fetchApiAccess();
     for (const plan of plans) {
       const acc = apiAccess[plan.id];
@@ -1446,6 +1508,7 @@ async function main() {
       capabilitiesSourceUrl: MODELS_DEV_URL,
       sourceLang: SOURCE_LANG,
       plans,
+      otherPlans,
       models,
       freeModels,
       peakRules,
@@ -1460,8 +1523,11 @@ async function main() {
 
     // Peak-Regeln sind stille Daten-Updates (Spezifikation §4): die Quelle
     // ändert sich nicht, nur unsere Representation — kein Event, kein Release,
-    // aber ein Daten-Commit, damit die Seite die neue Form zeigt.
+    // aber ein Daten-Commit, damit die Seite die neue Form zeigt. Dasselbe gilt
+    // für `otherPlans`: Pseudo-Pläne erzeugen keine Changelog-Events, ihre
+    // Namen/Links müssen aber trotzdem in `latest.json` aktualisiert werden.
     const peakChanged = JSON.stringify(prev?.peakRules ?? null) !== JSON.stringify(peakRules);
+    const otherPlansChanged = JSON.stringify(prev?.otherPlans ?? []) !== JSON.stringify(otherPlans);
 
     const changelogPath = join(ROOT, "CHANGELOG.json");
     const existingChangelog = existsSync(changelogPath)
@@ -1474,7 +1540,7 @@ async function main() {
     mkdirSync(join(ROOT, "src", "data"), { recursive: true });
     writeFileSync(join(ROOT, "src", "data", "changelog.json"), changelogJson);
 
-    if (changes.length > 0 || peakChanged) {
+    if (changes.length > 0 || peakChanged || otherPlansChanged) {
       history.snapshots.push(latest);
       writeFileSync(historyPath, JSON.stringify(history, null, 2) + "\n");
       writeFileSync(prevPath, JSON.stringify(latest, null, 2) + "\n");
@@ -1484,7 +1550,7 @@ async function main() {
     const goatAllow = new Set(models.map((m) => m.allowances?.goat).filter((v) => typeof v === "number")).size;
     const proAllow = new Set(models.map((m) => m.allowances?.pro).filter((v) => typeof v === "number")).size;
     console.log(
-      `Gescrapt: ${models.length} Modelle, ${plans.length} Pläne, ${freeModels.length} kostenlose Modelle, ${changes.length} Änderungen (Snapshot ${date}); ${Object.keys(peakRules).length} Peak-Regeln${peakChanged ? " (Peak-Daten aktualisiert)" : ""}; Fähigkeiten (models.dev: ${mdSource}) für ${enriched}/${models.length} Modelle; Allowances (goat/pro): ${goatAllow}/${proAllow} Modelle; Quelle: ${PRICING_URL}.`
+      `Gescrapt: ${models.length} Modelle, ${plans.length} Pläne, ${otherPlans.length} weitere Angebote ohne inkludierte Nutzung, ${freeModels.length} kostenlose Modelle, ${changes.length} Änderungen (Snapshot ${date}); ${Object.keys(peakRules).length} Peak-Regeln${peakChanged ? " (Peak-Daten aktualisiert)" : ""}; Fähigkeiten (models.dev: ${mdSource}) für ${enriched}/${models.length} Modelle; Allowances (goat/pro): ${goatAllow}/${proAllow} Modelle; Quelle: ${PRICING_URL}.`
     );
   } catch (err) {
     console.error(`[scrape] FEHLER: ${err instanceof Error ? err.message : String(err)}`);

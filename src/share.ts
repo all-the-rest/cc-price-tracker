@@ -335,6 +335,8 @@ export function shareToParams(c: ShareConfig, lang?: ShareLang): URLSearchParams
   return p;
 }
 
+// `provider` bleibt nur für Legacy-Links: der Plan ist aus der Quelle verschwunden.
+// Ein alter `sh_plan=provider`-Link fällt im Dialog auf den ersten verfügbaren Plan zurück.
 const PLAN_IDS = ["go", "goat", "pro", "provider", "max10", "max20", "team-pro"] as const;
 
 /** Parse share-link params; returns null when no sh_* param is present. Old sh_metric values are ignored (requests only). Legacy sh_n is tolerated but ignored — the TOP-X count is automatic per preset (landscape Top 5, portrait Top 8). */

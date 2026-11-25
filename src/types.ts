@@ -59,6 +59,12 @@ export interface Plan extends PlanPricing {
   sourceUrl: string;
 }
 
+/** Angebot ohne inkludierte Nutzung — nur als Hinweis im Footer dokumentiert. */
+export interface OtherPlan {
+  name: string;
+  sourceUrl: string;
+}
+
 export interface ModelAvailability {
   go: boolean;
   goat: boolean;
@@ -146,6 +152,8 @@ export interface PriceData {
   capabilitiesSourceUrl: string;
   sourceLang: string;
   plans: Plan[];
+  /** Ausgeschlossene Angebote ohne inkludierte Nutzung (nur Footer-Hinweis). */
+  otherPlans?: OtherPlan[];
   models: Model[];
   freeModels: FreeModel[];
   peakRules: PeakRules;

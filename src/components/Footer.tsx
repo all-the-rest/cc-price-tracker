@@ -1,3 +1,4 @@
+import { For, Show } from "solid-js";
 import type { Lang, Translation } from "../i18n";
 import type { PriceData } from "../types";
 import { fmtDate } from "../util";
@@ -14,6 +15,21 @@ export default function Footer(props: FooterProps) {
     <footer class="mx-auto max-w-6xl px-4 pb-10">
       <div class="flex flex-col gap-2 border-t border-base-300 pt-4 text-xs text-base-content/70">
         <p class="max-w-3xl">{props.t.metricNote}</p>
+        <Show when={props.data.otherPlans?.length}>
+          <p class="max-w-3xl">
+            {props.t.otherPlansNote}{" "}
+            <For each={props.data.otherPlans}>
+              {(plan, i) => (
+                <>
+                  {i() > 0 ? ", " : ""}
+                  <a href={plan.sourceUrl} target="_blank" rel="noopener noreferrer" class="underline">
+                    {plan.name}
+                  </a>
+                </>
+              )}
+            </For>
+          </p>
+        </Show>
         <span>
           {props.t.fetchedAt}: {fmtDate(props.data.fetchedAt, props.lang)}
         </span>

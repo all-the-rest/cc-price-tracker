@@ -29,7 +29,7 @@ type SizeKey = (typeof SIZES)[number]["key"];
 const SIZE_VALUES = SIZES.map((s) => s.key);
 // Automatic TOP-X count per preset (same as ocgo): landscape Top 5, portrait Top 8.
 const AUTO_TOPN: Record<SizeKey, number> = { og: 5, twitter: 5, portrait: 8, story: 8 };
-const PLAN_VALUES = ["go", "goat", "pro", "provider", "max10", "max20"] as const;
+const PLAN_VALUES = ["go", "goat", "pro", "max10", "max20"] as const;
 
 type Lang = "en" | "de";
 const TRIGGER = { en: "Share", de: "Teilen" } as const;
@@ -272,28 +272,6 @@ test("share card topN is automatic per preset, no selector", { tag: ["@screensho
   await expect(svg.locator(":scope > g"), "story: automatic Top 8").toHaveCount(8);
   await expect(dialog.locator("p", { hasText: "Top 8" }), "caption shows Top 8").toBeVisible();
   await dialog.locator(".modal-box").screenshot({ path: out(v, "share-dialog-auto-topn.png") });
-});
-
-test("share card portrait provider (no limits branch)", { tag: ["@screenshot"] }, async ({ page }, testInfo) => {
-  const v = viewportOf(testInfo.project.name);
-  await page.goto("/?lang=en");
-  await waitForApp(page);
-  const dialog = await openShareDialog(page, "en");
-  const modal = await configureCard(dialog, "en", "portrait", "dark", "provider");
-  const svg = dialog.locator("div[role='img'] > svg");
-  await expect(svg).toHaveAttribute("width", "1080");
-  await expect(svg).toHaveAttribute("height", "1350");
-  const texts = (await svg.locator("text").allTextContents()).join(" ");
-  // Provider plan has no limits and no list prices on this basis: "No limits"
-  // note per row + block, "–" price placeholders, domain footer still present,
-  // and no per-request cost figure anywhere.
-  expect(texts, "provider: no-limits note").toContain("No limits");
-  expect(texts, "provider: no per-request cost figure").not.toContain("/req");
-  expect(texts, "provider: domain source in footer").toContain(SOURCE_DOMAIN);
-  expect(texts, "provider: footer stamp with intraday time").toMatch(/As of.*\d{1,2}:\d{2}/);
-  expect(await svg.locator(":scope > g").count(), "provider: automatic Top 8").toBe(8);
-  await expectNoSvgOverflow(modal, "portrait/provider");
-  await modal.screenshot({ path: out(v, "share-portrait-en-dark-top8-provider.png") });
 });
 
 test.describe("share trigger location", () => {

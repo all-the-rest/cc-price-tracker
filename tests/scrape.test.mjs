@@ -48,7 +48,7 @@ const { rows, billingModels } = extractCatalog(pricingHtml);
 const today = "2026-08-15";
 const { models, peakRules } = buildModels(rows, billingModels, today);
 const $ = cheerio.load(pricingHtml);
-const plans = parsePlanTables($);
+const { plans, otherPlans } = parsePlanTables($);
 
 test("extractCatalog: 58 rows + 54 Billing-Modelle aus der RSC-Payload", () => {
   assert.equal(rows.length, 58);
@@ -219,8 +219,8 @@ test("planApiAccessFromHtml: nur die Go-Seite hat keinen API-Zugang", () => {
 });
 
 test("parsePlanTables: Individual-Pläne plus Team Pro mit Preisen/Credits/Requests/Limits", () => {
-  assert.equal(plans.length, 7);
-  assert.deepEqual(plans.map((p) => p.id), ["go", "goat", "pro", "provider", "max10", "max20", "team-pro"]);
+  assert.equal(plans.length, 6);
+  assert.deepEqual(plans.map((p) => p.id), ["go", "goat", "pro", "max10", "max20", "team-pro"]);
 
   const go = plans.find((p) => p.id === "go");
   assert.equal(go.name, "Go");
@@ -248,13 +248,12 @@ test("parsePlanTables: Individual-Pläne plus Team Pro mit Preisen/Credits/Reque
   assert.equal(pro.limits.h5, 16);
   assert.equal(pro.defaultAllowance, 30);
 
-  const provider = plans.find((p) => p.id === "provider");
-  assert.equal(provider.priceMonthly, 15);
-  assert.equal(provider.creditsMonthly, null);
-  assert.equal(provider.requestEstimate, null);
-  assert.equal(provider.limits.h5, null);
-  assert.equal(provider.limits.weekly, null);
-  assert.equal(provider.limits.monthly, null);
+  // Angebote ohne inkludierte Nutzung (MOAT, Enterprise) sind keine Pläne,
+  // sondern werden nur als `otherPlans` mit Quell-URL erfasst.
+  assert.deepEqual(otherPlans, [
+    { name: "MOAT", sourceUrl: "https://commandcode.ai/docs/resources/pricing-limits" },
+    { name: "Enterprise", sourceUrl: "https://commandcode.ai/docs/resources/pricing-limits" },
+  ]);
 
   const max10 = plans.find((p) => p.id === "max10");
   assert.equal(max10.priceMonthly, 100);
@@ -278,6 +277,49 @@ test("parsePlanTables: Individual-Pläne plus Team Pro mit Preisen/Credits/Reque
   assert.equal(team.limits.h5, 12);
   assert.equal(team.limits.weekly, 24);
   assert.equal(team.defaultAllowance, null);
+});
+
+test("parsePlanTables: fehlt ein Track-Plan, bricht der Lauf rot ab", () => {
+  const $missing = cheerio.load(pricingHtml);
+  $missing("main table tbody tr")
+    .filter((_, tr) => $missing(tr).find("td, th").first().text().trim() === "Go")
+    .remove();
+  assert.throws(() => parsePlanTables($missing), /fehlende Pläne/);
+});
+
+test("parsePlanTables: bekannter Pseudo-Plan ohne inkludierte Nutzung wird ausgeschlossen", () => {
+  const $provider = cheerio.load(pricingHtml.replace("<td>MOAT</td>", "<td>Provider</td>"));
+  const parsed = parsePlanTables($provider);
+  assert.deepEqual(parsed.plans.map((p) => p.id), ["go", "goat", "pro", "max10", "max20", "team-pro"]);
+  assert.deepEqual(parsed.otherPlans.map((p) => p.name).includes("Provider"), true);
+});
+
+test("parsePlanTables: unbekannter Plan MIT inkludierter Nutzung bricht rot ab", () => {
+  const $new = cheerio.load(
+    pricingHtml.replace("<td>MOAT</td><td>$10</td><td>Pay as you go</td>", "<td>Mystery Plan</td><td>$10</td><td>$99</td>")
+  );
+  assert.throws(() => parsePlanTables($new), /neuer Plan mit inkludierter Nutzung.*Mystery Plan/);
+});
+
+test("validateSnapshot: fehlende Track-Pläne sind rot", () => {
+  const snap = {
+    fetchedAt: "2026-08-15T00:00:00.000Z",
+    sourceUrl: "https://commandcode.ai/docs/resources/pricing-limits",
+    plansSourceUrl: "https://commandcode.ai/docs/resources/pricing-limits",
+    capabilitiesSourceUrl: "https://models.dev/api.json",
+    sourceLang: "en",
+    plans: plans
+      .filter((p) => p.id !== "go")
+      .map((p) => ({
+        ...p,
+        apiAccess: true,
+        apiAccessSourceUrl: "https://commandcode.ai/docs/plans/" + p.id,
+      })),
+    models,
+    freeModels: buildFreeModels(rows, [], today),
+    peakRules,
+  };
+  assert.throws(() => validateSnapshot(snap), /fehlende Track-Pläne/);
 });
 
 test("validatePlanBaselines: bekannte Pläne passieren, neuer Plan ohne scrapebare Baseline schlägt fehl", () => {

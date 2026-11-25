@@ -137,6 +137,8 @@ export const i18n = {
       "Automatisch täglich aktualisiert. Kein offizielles Command-Code-Angebot. Command Code ist ein Produkt von commandcode.ai; diese Seite ist weder mit commandcode.ai verbunden noch von ihr gesponsert.",
     metricNote:
       "Preisbasis: Listenpreis (aktuelle Now-Preise) · volles Guthaben = Listenpreis × (monatliche Credits / inkl. Nutzung) · was du zahlst = Listenpreis × (tatsächlich berechneter Monatspreis / inkl. Nutzung). Der tatsächlich berechnete Preis schließt die separate Stripe-Bearbeitungsgebühr ein (eigene Position bei Checkout, z. B. Go $1 → $1,36), die in den beworbenen Planpreisen fehlt. Kosten pro Anfrage = Modellpreis × typisches Anfragemuster (~800 frische Input-, ~50.000 Cached-Read- und ~125–200 Output-Tokens — laut Command-Code-Doku; Input-Tokens: 5 % Input-Preis + 95 % Cached-Write-Preis, Cached: Cached-Read, Output: Output — Heuristik). Fehlt ein Cached-Write-Preis („–“), zählt er wie der Input-Preis.",
+    otherPlansNote:
+      "Weitere Angebote ohne inkludierte Nutzung sind nicht Teil dieses Vergleichs (auf der Quellseite dokumentiert):",
     headingRanking: "Modell-Ranking",
     rankingIntro:
       "Top-Modelle im gewählten Plan nach Anfragen pro Monat bei vollem Guthaben (Guthaben ÷ Kosten pro Anfrage).",
@@ -302,6 +304,8 @@ export const i18n = {
       "Updated automatically every day. Not an official Command Code offering. Command Code is a product of commandcode.ai; this site is neither affiliated with nor sponsored by them.",
     metricNote:
       "Price basis: list price (current now prices) · full credit = list price × (monthly credits / included usage) · what you pay = list price × (monthly price / included usage). Cost per request = model price × typical request pattern (~800 fresh input, ~50,000 cache-read and ~125–200 output tokens — per the Command Code docs; input tokens: 5% input price + 95% cache write price, cached: cache read, output: output — heuristic). If no cache write price is listed (\"–\"), it counts as the input price.",
+    otherPlansNote:
+      "Other offers without included usage are not part of this comparison (documented on the source page):",
     headingRanking: "Model ranking",
     rankingIntro:
       "Top models on the selected plan by requests per month at full credit (credit ÷ cost per request).",
