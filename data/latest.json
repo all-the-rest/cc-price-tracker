@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-23T19:00:48.643Z",
+  "fetchedAt": "2026-11-25T18:58:11.502Z",
   "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "plansSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
   "capabilitiesSourceUrl": "https://models.dev/api.json",
@@ -11,7 +11,7 @@
       "priceMonthly": 1,
       "creditsMonthly": 10,
       "requestEstimate": 9000,
-      "apiAccess": false,
+      "apiAccess": true,
       "apiAccessSourceUrl": "https://commandcode.ai/docs/plans/go",
       "limits": {
         "h5": 2,
@@ -54,23 +54,6 @@
       },
       "defaultAllowance": 30,
       "modelsIncluded": "Open-source + premium models, per-model allowances",
-      "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits"
-    },
-    {
-      "id": "provider",
-      "name": "Provider",
-      "priceMonthly": 15,
-      "creditsMonthly": null,
-      "requestEstimate": null,
-      "apiAccess": true,
-      "apiAccessSourceUrl": "https://commandcode.ai/docs/resources/pricing-limits",
-      "limits": {
-        "h5": null,
-        "weekly": null,
-        "monthly": null
-      },
-      "defaultAllowance": null,
-      "modelsIncluded": "Open-source + premium models",
       "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits"
     },
     {
@@ -122,6 +105,16 @@
       },
       "defaultAllowance": null,
       "modelsIncluded": "Open-source + premium models",
+      "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits"
+    }
+  ],
+  "otherPlans": [
+    {
+      "name": "MOAT",
+      "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits"
+    },
+    {
+      "name": "Enterprise",
       "sourceUrl": "https://commandcode.ai/docs/resources/pricing-limits"
     }
   ],
@@ -5097,8 +5090,7 @@
       "capabilities": {
         "input": [
           "text",
-          "image",
-          "pdf"
+          "image"
         ],
         "output": [
           "text"
